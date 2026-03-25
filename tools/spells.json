@@ -32,19 +32,22 @@
         "type": "dungeon",
         "name": "纷争要地布雷福洛克斯野营地",
         "mob": "6号哥布林坦克",
-        "level": 50
+        "level": 50,
+        "color": "grey"
       },
       {
         "type": "dungeon",
         "name": "幻龙残骸密约之塔",
         "mob": "独爪妖禽、魔导炮艇",
-        "level": 50
+        "level": 50,
+        "color": "grey"
       },
       {
         "type": "raid",
         "name": "欧米茄时空狭缝 阿尔法幻境3",
         "mob": "欧米茄",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       }
     ]
   },

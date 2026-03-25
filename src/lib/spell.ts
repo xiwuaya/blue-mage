@@ -14,6 +14,7 @@ export interface SpellMethodBase {
   type: SpellType;
   level: number;
   note?: string;
+  color?: string;
 }
 
 export interface SpellMethodMap extends SpellMethodBase {
