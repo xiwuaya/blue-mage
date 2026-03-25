@@ -15,7 +15,7 @@ const colorAliasMap: Record<string, string> = {
   blue: "#0000ff",
   green: "#00ff00",
   yellow: "#ffff00",
-  grey: "#C4C7C5"
+  grey: "#666"
 };
 
 // 计算最终显示的颜色

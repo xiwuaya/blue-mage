@@ -13,7 +13,8 @@
       {
         "type": "special",
         "text": "自动习得",
-        "level": 1
+        "level": 1,
+        "color": "green"
       }
     ]
   },
@@ -32,22 +33,21 @@
         "type": "dungeon",
         "name": "纷争要地布雷福洛克斯野营地",
         "mob": "6号哥布林坦克",
-        "level": 50,
-        "color": "grey"
+        "level": 50
       },
       {
         "type": "dungeon",
         "name": "幻龙残骸密约之塔",
         "mob": "独爪妖禽、魔导炮艇",
-        "level": 50,
-        "color": "grey"
+        "level": 50
       },
       {
         "type": "raid",
         "name": "欧米茄时空狭缝 阿尔法幻境3",
         "mob": "欧米茄",
         "level": 70,
-        "color": "yellow"
+        "color": "green",
+        "note": "同一副本还有专属技能 94芥末爆弹 101生成外设"
       }
     ]
   },
@@ -103,8 +103,9 @@
         "type": "dungeon",
         "name": "领航明灯天狼星灯塔",
         "mob": "祖",
-        "note": "打破两个蛋后使用",
-        "level": 50
+        "note": "打破两个蛋后使用,同一副本还有专属技能 9苦闷之歌",
+        "level": 50,
+        "color": "green"
       },
       {
         "type": "map",
@@ -277,7 +278,9 @@
         "type": "dungeon",
         "name": "领航明灯天狼星灯塔",
         "mob": "塞壬",
-        "level": 50
+        "level": 50,
+        "color": "green",
+        "note": "同一副本还有专属技能 4狂乱"
       }
     ]
   },
@@ -748,7 +751,20 @@
         "type": "dungeon",
         "name": "纷争要地布雷福洛克斯野营地",
         "mob": "青蓝之手滑翔兵",
-        "level": 50
+        "level": 50,
+        "color": "red"
+      },
+      {
+        "type": "map",
+        "map": "龙堡内陆低地",
+        "rank": null,
+        "position": [
+          9.5,
+          22,
+          0
+        ],
+        "mob": "[A]机工兵 斯利普金克斯",
+        "level": 28
       }
     ]
   },
@@ -877,6 +893,18 @@
         ],
         "mob": "卢恩人烘鸥手",
         "level": 32
+      },
+      {
+        "type": "map",
+        "map": "拉诺西亚低地",
+        "rank": null,
+        "position": [
+          18.5,
+          35.2,
+          0
+        ],
+        "mob": "卢恩人拍岸手",
+        "level": 32
       }
     ]
   },
@@ -953,7 +981,16 @@
         "type": "trail",
         "name": "艾玛吉娜杯斗技大会决赛",
         "mob": "奥尔特罗斯",
-        "level": 50
+        "level": 50,
+        "color": "green"
+      },
+      {
+        "type": "raid",
+        "name": "欧米茄时空狭缝 西格玛幻境3",
+        "mob": "奥尔特罗斯",
+        "level": "80",
+        "note": "确定不会使用",
+        "color": "grey"
       }
     ]
   },
@@ -986,7 +1023,16 @@
         "type": "dungeon",
         "name": "水晶塔 古代人迷宫",
         "mob": "瓦力弗",
-        "level": 50
+        "level": 50,
+        "color": "red"
+      },
+      {
+        "type": "dungeon",
+        "name": "秘本宝库迦巴勒幻想图书馆",
+        "mob": "拜书魔",
+        "level": 60,
+        "note": "无读条顺劈，恰好是第一波怪中唯一有催眠抗性的，同步时推荐使用职能技能先将第一波全部催眠，等它放技能后寒冰咆哮+超振动",
+        "color": "green"
       }
     ]
   },
@@ -1030,6 +1076,11 @@
         "name": "毒雾洞窟黄金谷",
         "mob": "魔界花、守财夫人",
         "level": 47
+      },
+      {
+        "type": "dungeon",
+        "name": "风水灵庙岩燕庙",
+        "level": 70
       }
     ]
   },
@@ -1048,13 +1099,8 @@
         "type": "dungeon",
         "name": "激战城塞石卫塔",
         "mob": "库卡龙龟",
-        "level": 50
-      },
-      {
-        "type": "dungeon",
-        "name": "皇都伊修加德保卫战",
-        "mob": "部落龙龟",
-        "level": 50
+        "level": 50,
+        "color": "green"
       },
       {
         "type": "fate",
@@ -1062,6 +1108,14 @@
         "name": "坚甲铁龙——塔拉斯克",
         "mob": "塔拉斯克",
         "level": 53
+      },
+      {
+        "type": "dungeon",
+        "name": "皇都伊修加德保卫战",
+        "mob": "部落龙龟",
+        "level": 50,
+        "note": "副本已删除",
+        "color": "grey"
       }
     ]
   },
@@ -1169,15 +1223,20 @@
     "icon_book_hr1": "072237_hr1.png",
     "method": [
       {
+        "type": "trail",
+        "name": "死化奇美拉讨伐战",
+        "mob": "死化奇美拉",
+        "level": 50
+      },
+      {
         "type": "dungeon",
         "name": "流沙迷宫樵鸣洞",
         "mob": "奇美拉",
         "level": 38
       },
       {
-        "type": "trail",
-        "name": "死化奇美拉讨伐战",
-        "mob": "死化奇美拉",
+        "type": "raid",
+        "name": "水晶塔 暗之世界",
         "level": 50
       },
       {
@@ -1186,6 +1245,18 @@
         "name": "狂暴巨兽——强化奇美拉",
         "mob": "强化奇美拉",
         "level": 49
+      },
+      {
+        "type": "dungeon",
+        "name": "假面狂欢21",
+        "mob": "阿皮狄马",
+        "level": 50
+      },
+      {
+        "type": "dungeon",
+        "name": "假面狂欢25",
+        "mob": "阿波卡里普斯",
+        "level": 50
       }
     ]
   },
@@ -1201,15 +1272,20 @@
     "icon_book_hr1": "072238_hr1.png",
     "method": [
       {
+        "type": "trail",
+        "name": "死化奇美拉讨伐战",
+        "mob": "奇美拉",
+        "level": 50
+      },
+      {
         "type": "dungeon",
         "name": "流沙迷宫樵鸣洞",
         "mob": "奇美拉",
         "level": 38
       },
       {
-        "type": "trail",
-        "name": "死化奇美拉讨伐战",
-        "mob": "奇美拉",
+        "type": "raid",
+        "name": "水晶塔 暗之世界",
         "level": 50
       },
       {
@@ -1249,6 +1325,14 @@
         "name": "无限城的死斗",
         "mob": "恩奇都",
         "level": 50
+      },
+      {
+        "type": "raid",
+        "name": "欧米茄时空狭缝 西格玛幻境3",
+        "mob": "守护者",
+        "level": 70,
+        "color": "green",
+        "note": "无读条点名，附带火属性烧伤"
       }
     ]
   },
@@ -1366,7 +1450,14 @@
           0
         ],
         "mob": "峭壁巨钳虾",
+        "note": "疑似高血量更容易施放",
         "level": 61
+      },
+      {
+        "type": "raid",
+        "name": "亚历山大机神城 启动之章3",
+        "mob": "巨钳虾",
+        "level": 60
       }
     ]
   },
@@ -1385,7 +1476,8 @@
         "type": "dungeon",
         "name": "地下灵殿塔姆·塔拉墓园",
         "mob": "主宰者 加尔梵斯",
-        "level": 16
+        "level": 16,
+        "note": "低于一定生命值后咏唱，别秒了"
       },
       {
         "type": "map",
@@ -1394,6 +1486,21 @@
         "position": [],
         "mob": "夺心魔",
         "level": 50
+      },
+      {
+        "type": "raid",
+        "name": "亚历山大机神城 律动之章2 ",
+        "mob": "爆破者",
+        "level": "60",
+        "note": "无读条全屏AOE",
+        "color": "green"
+      },
+      {
+        "type": "raid",
+        "name": "亚历山大机神城 律动之章4",
+        "level": "60",
+        "note": "确定无法学会",
+        "color": "red"
       }
     ]
   },
@@ -1411,7 +1518,15 @@
       {
         "type": "special",
         "text": "完成 20 种假面狂欢关卡后可从[乌尔达哈来生回廊]的[异男子嘎希迦]处获得[天青图腾]",
-        "level": 1
+        "level": 1,
+        "color": "green"
+      },
+      {
+        "type": "raid",
+        "name": "欧米茄时空狭缝 德尔塔幻境4",
+        "level": "70",
+        "note": "确定无法学会",
+        "color": "red"
       }
     ]
   },
@@ -1536,13 +1651,21 @@
         "type": "trail",
         "name": "拉姆歼灭战",
         "mob": "拉姆",
-        "level": 50
+        "level": 50,
+        "color": "green"
       },
       {
         "type": "trail",
         "name": "拉姆歼殛战",
         "mob": "拉姆",
         "level": 50
+      },
+      {
+        "type": "raid",
+        "name": "伊甸希望乐园 共鸣之章1",
+        "mob": "拉姆",
+        "level": 80,
+        "color": "grey"
       }
     ]
   },
@@ -1698,7 +1821,8 @@
           0
         ],
         "mob": "雷牙",
-        "level": 50
+        "level": 50,
+        "color": "green"
       }
     ]
   },
@@ -1716,8 +1840,9 @@
       {
         "type": "raid",
         "name": "亚历山大机神城 启动之章1",
-        "mob": "浮士德",
-        "level": 60
+        "mob": "风暴人偶、浮士德",
+        "level": 60,
+        "color": "green"
       },
       {
         "type": "raid",
@@ -1739,6 +1864,12 @@
     "icon_book_hr1": "072256_hr1.png",
     "method": [
       {
+        "type": "dungeon",
+        "name": "恶灵府邸静语庄园",
+        "mob": "阿修",
+        "level": 50
+      },
+      {
         "type": "map",
         "map": "龙堡内陆低地",
         "rank": null,
@@ -1751,7 +1882,8 @@
         "name": "学识宝库迦巴勒幻想图书馆",
         "mob": "偷书者",
         "note": "最终 BOSS 第三次踩塔（虚无召唤）失败后出现的小怪",
-        "level": 59
+        "level": 59,
+        "color": "grey"
       }
     ]
   },
@@ -1820,13 +1952,16 @@
         "type": "trail",
         "name": "莫古力贤王歼灭战",
         "mob": "茸茸之愈 库普洛·奇普",
-        "level": 50
+        "level": 50,
+        "note": "若咏唱过程中治疗目标被击杀，咏唱会被打断",
+        "color": "green"
       },
       {
         "type": "trail",
         "name": "莫古力贤王歼殛战",
         "mob": "茸茸之愈 库普洛·奇普",
-        "level": 50
+        "level": 50,
+        "note": "若咏唱过程中治疗目标被击杀，咏唱会被打断"
       }
     ]
   },
@@ -2063,6 +2198,19 @@
         "name": "监牢铁臂巴埃萨长城",
         "mob": "武装重甲",
         "level": 60
+      },
+      {
+        "type": "dungeon",
+        "name": "解放决战多玛王城",
+        "note": "老三前的精英怪",
+        "level": 67
+      },
+      {
+        "type": "fate",
+        "map": "基拉巴尼亚山区",
+        "name": "失控的最终兵器——致命武器",
+        "note": "同步摸一下仇恨后解除同步等危命失败也有相同概率学会",
+        "level": 68
       }
     ]
   },
@@ -2081,13 +2229,21 @@
         "type": "raid",
         "name": "亚历山大机神城 启动之章4",
         "mob": "操纵者",
-        "level": 60
+        "level": 60,
+        "color": "green"
       },
       {
         "type": "raid",
         "name": "零式亚历山大机神城 启动之章4",
         "mob": "操纵者",
         "level": 60
+      },
+      {
+        "type": "raid",
+        "name": "亚历山大机神城 律动之章4",
+        "level": "60",
+        "note": "确定无法学会",
+        "color": "red"
       }
     ]
   },
@@ -2235,7 +2391,9 @@
         "type": "dungeon",
         "name": "污染庭园圣茉夏娜植物园",
         "mob": "泥口花",
-        "level": 70
+        "level": 70,
+        "color": "green",
+        "note": "同一副本还有专属技能 87污泥泼洒"
       }
     ]
   },

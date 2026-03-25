@@ -71,6 +71,10 @@ const handleOrderChange = (val: boolean) => {
 <template>
   <section>
     <aside>
+      <div class="sponsor-banner">
+        <span>💖 感谢伊春@银泪湖和狗区青魔群1071097359的大力支持</span>
+        <a href="https://example.com" target="_blank" rel="noopener noreferrer">一键加群</a>
+      </div>
       <input
         class="search"
         v-model="filter"
@@ -158,5 +162,31 @@ input[type="number"]::-webkit-inner-spin-button {
 .search {
   width: 100%;
   margin-bottom: 20px;
+}
+/* 新增：赞助商模块样式 */
+.sponsor-banner {
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  background: rgba(255, 190, 49, 0.1); /* 使用略微透明的主题黄作为背景 */
+  border-left: 4px solid #ffbe31;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.sponsor-banner span {
+  color: #ccc;
+}
+
+.sponsor-banner a {
+  color: #ffbe31; /* 赞助商名字使用醒目的颜色 */
+  text-decoration: none;
+  font-weight: bold;
+  transition: opacity 0.2s;
+}
+
+.sponsor-banner a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 </style>
