@@ -72,8 +72,8 @@ const handleOrderChange = (val: boolean) => {
   <section>
     <aside>
       <div class="sponsor-banner">
-        <span>💖 感谢伊春@银泪湖和狗区青魔群1071097359的大力支持</span>
-        <a href="https://example.com" target="_blank" rel="noopener noreferrer">一键加群</a>
+        <span>💖 感谢伊春@银泪湖和豆豆柴青魔群1071097359的大力支持</span>
+        <a href="https://qm.qq.com/q/ps1TQxpzji" target="_blank" rel="noopener noreferrer">一键加群</a>
       </div>
       <input
         class="search"
