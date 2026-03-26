@@ -107,22 +107,22 @@ const allLearned = computed(() =>
       <template v-if="mode === 'notLearned'">
         {{
           showSpells.length
-            ? "展示未学习技能"
+            ? "隐藏已掌握技能"
             : allLearned
             ? "恭喜，您已经掌会了当前版本的所有技能"
             : "当前条件下暂无可学习的技能"
         }}，
         <a href="javascript:void(0)" @click="notLearnedOnly = false">
-          切换至所有技能
+          显示已掌握技能
         </a>，
         <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
           {{ hideSpecialColor ? '显示完整获取方式' : '隐藏不推荐获取方式' }}
         </a>
       </template>
       <template v-else-if="mode === 'all'">
-        展示所有技能，
+        显示已掌握技能，
         <a href="javascript:void(0)" @click="notLearnedOnly = true">
-          切换至未学习技能
+          隐藏已掌握技能
         </a>，
         <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
           {{ hideSpecialColor ? '显示完整获取方式' : '隐藏不推荐获取方式' }}
