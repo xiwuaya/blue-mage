@@ -1901,7 +1901,8 @@
         "position":[20.4, 33.4, 0],
         "name": "吞噬牦牛的巨人——巨脚雪人",
         "mob": "巨脚雪人",
-        "level": 51
+        "level": 51,
+        "color": "red"
       }
     ]
   },
@@ -2280,7 +2281,8 @@
           0
         ],
         "mob": "长颈驼",
-        "level": 56
+        "level": 56,
+        "color": "yellow"
       },
       {
         "type": "dungeon",
