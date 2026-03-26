@@ -14,7 +14,7 @@
         "type": "special",
         "text": "自动习得",
         "level": 1,
-        "color": "green"
+        "color": "yellow"
       }
     ]
   },
@@ -46,7 +46,7 @@
         "name": "欧米茄时空狭缝 阿尔法幻境3",
         "mob": "欧米茄",
         "level": 70,
-        "color": "green",
+        "color": "yellow",
         "note": "同一副本还有专属技能 94芥末爆弹 101生成外设"
       }
     ]
@@ -105,7 +105,7 @@
         "mob": "祖",
         "note": "即死效果与比例伤害有效。同一副本还有专属技能 9苦闷之歌。",
         "level": 50,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "map",
@@ -279,7 +279,7 @@
         "name": "领航明灯天狼星灯塔",
         "mob": "塞壬",
         "level": 50,
-        "color": "green",
+        "color": "yellow",
         "note": "同一副本还有专属技能 4狂乱"
       },
       {
@@ -1016,7 +1016,7 @@
         "name": "艾玛吉娜杯斗技大会决赛",
         "mob": "奥尔特罗斯",
         "level": 50,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -1077,7 +1077,7 @@
         "mob": "拜书魔",
         "level": 60,
         "note": "同一副本还有专属技能 60魔法锤 76小侦测。恰好是第一波怪中唯一有催眠抗性的，同步时推荐使用职能技能先将第一波全部催眠，等它放技能后寒冰咆哮+超振动",
-        "color": "green"
+        "color": "yellow"
       }
     ]
   },
@@ -1146,7 +1146,7 @@
         "name": "激战城塞石卫塔",
         "mob": "库卡龙龟",
         "level": 50,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "fate",
@@ -1396,7 +1396,7 @@
         "name": "欧米茄时空狭缝 西格玛幻境3",
         "mob": "守护者",
         "level": 70,
-        "color": "green",
+        "color": "yellow",
         "note": "不需要推调查员，更容易招募到人。无读条点名，附带火属性烧伤，长得和白光之鞭差不多，一般压不掉"
       }
     ]
@@ -1468,7 +1468,7 @@
         "mob": "折角骑士 寇黑加",
         "level": 50,
         "note": "即死效果与比例伤害有效",
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "fate",
@@ -1528,7 +1528,7 @@
         "mob": "峭壁巨钳虾",
         "note": "疑似高血量更容易施放",
         "level": 61,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -1571,7 +1571,7 @@
         "mob": "爆破者",
         "level": 60,
         "note": "无读条全屏AOE",
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -1598,7 +1598,7 @@
         "type": "special",
         "text": "完成 20 种假面狂欢关卡后可从[乌尔达哈来生回廊]的[异男子嘎希迦]处获得[天青图腾]",
         "level": 1,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -1731,7 +1731,7 @@
         "name": "拉姆歼灭战",
         "mob": "拉姆",
         "level": 50,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -1902,7 +1902,7 @@
         ],
         "mob": "雷牙",
         "level": 50,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "dungeon",
@@ -1928,7 +1928,7 @@
         "name": "亚历山大机神城 启动之章1",
         "mob": "风暴人偶、浮士德",
         "level": 60,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -2067,7 +2067,7 @@
         "mob": "茸茸之愈 库普洛·奇普",
         "level": 50,
         "note": "若咏唱过程中治疗目标被击杀，咏唱会被打断",
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -2302,7 +2302,7 @@
         "mob": "64页",
         "level": 59,
         "note": "疑似在所有人远离拉断线后更容易咏唱",
-        "color": "green"
+        "color": "yellow"
       }
     ]
   },
@@ -2354,7 +2354,7 @@
         "name": "亚历山大机神城 启动之章4",
         "mob": "操纵者",
         "level": 60,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -2517,7 +2517,7 @@
         "name": "污染庭园圣茉夏娜植物园",
         "mob": "泥口花",
         "level": 70,
-        "color": "green",
+        "color": "yellow",
         "note": "同一副本还有专属技能 87污泥泼洒"
       },
       {
@@ -2757,7 +2757,7 @@
         "mob": "雾龙",
         "level": 70,
         "note": "需故意留下三龙头之一或更多，否则咏唱会被打断，推荐携带73蜕皮来驱散冻伤，降低翻车率",
-        "color": "green"
+        "color": "yellow"
       }
     ]
   },
@@ -2931,7 +2931,7 @@
         "mob": "高阶长须豹",
         "level": 24,
         "note": "在另一方被击杀后使用",
-        "color": "green"
+        "color": "yellow"
         
       }
     ]
@@ -2959,7 +2959,7 @@
         ],
         "mob": "恐甲蚂蜓",
         "level": 68,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "map",
@@ -3073,7 +3073,7 @@
         ],
         "mob": "陀鲁婆",
         "level": 69,
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "map",
@@ -3202,7 +3202,7 @@
         "mob": "欧米茄",
         "level": 70,
         "note": "同一副本还有专属技能 2火炎放射 101生成外设",
-        "color": "green"
+        "color": "yellow"
       },
       {
         "type": "raid",

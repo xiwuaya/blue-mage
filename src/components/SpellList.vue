@@ -24,6 +24,9 @@ const emit = defineEmits<{
 
 const notLearnedOnly = ref(true);
 
+// 新增：用于控制是否隐藏红/黄颜色的开关
+const hideSpecialColor = ref(false);
+
 type Mode = "search" | "notLearned" | "all";
 const mode = computed<Mode>(() => {
   if (props.filter) {
@@ -56,8 +59,24 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
     );
   },
 };
+
 const showSpells = computed(() => {
-  const filtered = spells.filter(filters[mode.value]);
+  // 原本的 const 改为 let 以便后续过滤
+  let filtered = spells.filter(filters[mode.value]);
+  
+  // 新增：如果开启了隐藏特定颜色，深度过滤 method 数组
+  if (hideSpecialColor.value) {
+    filtered = filtered.map(spell => {
+      return {
+        ...spell,
+        method: spell.method.filter((m: any) => {
+          const c = (m.color || '').toLowerCase();
+          return !['red', '#ff0000', 'grey', '#666'].includes(c);
+        })
+      };
+    }).filter(spell => spell.method.length > 0); // 隐藏后如果技能没有获取方式了，则不显示该技能
+  }
+
   if (props.orderByLevel) {
     filtered.sort((a, b) => a.level - b.level);
   }
@@ -83,18 +102,27 @@ const allLearned = computed(() =>
         }}，
         <a href="javascript:void(0)" @click="notLearnedOnly = false">
           切换至所有技能
+        </a>，
+        <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
+          {{ hideSpecialColor ? '显示完整获取方式' : '隐藏不推荐获取方式' }}
         </a>
       </template>
       <template v-else-if="mode === 'all'">
         展示所有技能，
         <a href="javascript:void(0)" @click="notLearnedOnly = true">
           切换至未学习技能
+        </a>，
+        <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
+          {{ hideSpecialColor ? '显示完整获取方式' : '隐藏不推荐获取方式' }}
         </a>
       </template>
       <template v-else>
         展示包含“{{ props.filter }}”的技能（{{ showSpells.length }} 个），
         <a href="javascript:void(0)" @click="emit('clearFilter')">
           清空搜索条件
+        </a>，
+        <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
+          {{ hideSpecialColor ? '显示完整获取方式' : '隐藏不推荐获取方式'  }}
         </a>
       </template>
     </div>
