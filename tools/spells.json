@@ -103,7 +103,7 @@
         "type": "dungeon",
         "name": "领航明灯天狼星灯塔",
         "mob": "祖",
-        "note": "打破两个蛋后使用,同一副本还有专属技能 9苦闷之歌",
+        "note": "即死效果与比例伤害有效。同一副本还有专属技能 9苦闷之歌。",
         "level": 50,
         "color": "green"
       },
@@ -281,6 +281,16 @@
         "level": 50,
         "color": "green",
         "note": "同一副本还有专属技能 4狂乱"
+      },
+      {
+        "type": "map",
+        "map": "伊尔美格",
+        "rank": "S",
+        "position": [],
+        "mob": "阿格拉俄珀",
+        "level": 80,
+        "note": "未确定可习得",
+        "color": "red"
       }
     ]
   },
@@ -713,6 +723,18 @@
       },
       {
         "type": "map",
+        "map": "西萨纳兰",
+        "rank": null,
+        "position": [
+          19,
+          26,
+          0
+        ],
+        "mob": "哥布林劫匪",
+        "level": 8
+      },
+      {
+        "type": "map",
         "map": "西拉诺西亚",
         "rank": null,
         "position": [
@@ -757,14 +779,14 @@
       {
         "type": "map",
         "map": "龙堡内陆低地",
-        "rank": null,
+        "rank": "A",
         "position": [
           9.5,
           22,
           0
         ],
-        "mob": "[A]机工兵 斯利普金克斯",
-        "level": 28
+        "mob": "机工兵 斯利普金克斯",
+        "level": 60
       }
     ]
   },
@@ -884,6 +906,18 @@
       },
       {
         "type": "map",
+        "map": "东萨纳兰",
+        "rank": null,
+        "position": [
+          24,
+          23,
+          0
+        ],
+        "mob": "卢恩人跑獐手",
+        "level": 26
+      },
+      {
+        "type": "map",
         "map": "东拉诺西亚",
         "rank": null,
         "position": [
@@ -899,8 +933,8 @@
         "map": "拉诺西亚低地",
         "rank": null,
         "position": [
-          18.5,
-          35.2,
+          19,
+          35,
           0
         ],
         "mob": "卢恩人拍岸手",
@@ -1011,13 +1045,15 @@
         "rank": null,
         "position": null,
         "mob": "理符任务：回收禁书《尖牙利齿的怪物》 暗黑扎哈克",
-        "level": 50
+        "level": 50,
+        "color": "red"
       },
       {
         "type": "dungeon",
         "name": "邪教驻地无限城古堡",
         "mob": "阿难塔波嘉",
-        "level": 50
+        "level": 50,
+        "color": "red"
       },
       {
         "type": "dungeon",
@@ -1027,11 +1063,20 @@
         "color": "red"
       },
       {
+        "type": "fate",
+        "map": "拉诺西亚高地",
+        "name": "星歌异闻：镜里蕴奥",
+        "mob": "恐慌巨龙",
+        "level": 50,
+        "note": "活动已结束",
+        "color": "grey"
+      },
+      {
         "type": "dungeon",
         "name": "秘本宝库迦巴勒幻想图书馆",
         "mob": "拜书魔",
         "level": 60,
-        "note": "无读条顺劈，恰好是第一波怪中唯一有催眠抗性的，同步时推荐使用职能技能先将第一波全部催眠，等它放技能后寒冰咆哮+超振动",
+        "note": "同一副本还有专属技能 60魔法锤 76小侦测。恰好是第一波怪中唯一有催眠抗性的，同步时推荐使用职能技能先将第一波全部催眠，等它放技能后寒冰咆哮+超振动",
         "color": "green"
       }
     ]
@@ -1080,6 +1125,7 @@
       {
         "type": "dungeon",
         "name": "风水灵庙岩燕庙",
+        "mob": "人面树",
         "level": 70
       }
     ]
@@ -1107,7 +1153,8 @@
         "map": "龙堡参天高地",
         "name": "坚甲铁龙——塔拉斯克",
         "mob": "塔拉斯克",
-        "level": 53
+        "level": 53,
+        "color": "red"
       },
       {
         "type": "dungeon",
@@ -1235,16 +1282,19 @@
         "level": 38
       },
       {
-        "type": "raid",
+        "type": "dungeon",
         "name": "水晶塔 暗之世界",
-        "level": 50
+        "mob": null,
+        "level": 50,
+        "note": "生命值低于50%时咏唱"
       },
       {
         "type": "fate",
         "map": "北萨纳兰",
         "name": "狂暴巨兽——强化奇美拉",
         "mob": "强化奇美拉",
-        "level": 49
+        "level": 49,
+        "note": "即死效果与比例伤害有效"
       },
       {
         "type": "dungeon",
@@ -1256,6 +1306,12 @@
         "type": "dungeon",
         "name": "假面狂欢25",
         "mob": "阿波卡里普斯",
+        "level": 50
+      },
+      {
+        "type": "raid",
+        "name": "巴哈姆特大迷宫 入侵之章2",
+        "mob": "原型奇美拉",
         "level": 50
       }
     ]
@@ -1284,16 +1340,19 @@
         "level": 38
       },
       {
-        "type": "raid",
+        "type": "dungeon",
         "name": "水晶塔 暗之世界",
-        "level": 50
+        "mob": null,
+        "level": 50,
+        "note": "生命值低于50%时咏唱"
       },
       {
         "type": "fate",
         "map": "北萨纳兰",
         "name": "狂暴巨兽——强化奇美拉",
         "mob": "强化奇美拉",
-        "level": 49
+        "level": 49,
+        "note": "即死效果与比例伤害有效"
       },
       {
         "type": "dungeon",
@@ -1305,6 +1364,12 @@
         "type": "dungeon",
         "name": "假面狂欢25",
         "mob": "阿波卡里普斯",
+        "level": 50
+      },
+      {
+        "type": "raid",
+        "name": "巴哈姆特大迷宫 入侵之章2",
+        "mob": "原型奇美拉",
         "level": 50
       }
     ]
@@ -1332,7 +1397,7 @@
         "mob": "守护者",
         "level": 70,
         "color": "green",
-        "note": "无读条点名，附带火属性烧伤"
+        "note": "不需要推调查员，更容易招募到人。无读条点名，附带火属性烧伤，长得和白光之鞭差不多，一般压不掉"
       }
     ]
   },
@@ -1401,7 +1466,18 @@
         "type": "dungeon",
         "name": "武装圣域放浪神古神殿",
         "mob": "折角骑士 寇黑加",
-        "level": 50
+        "level": 50,
+        "note": "即死效果与比例伤害有效",
+        "color": "green"
+      },
+      {
+        "type": "fate",
+        "map": "亚克特尔树海",
+        "name": "怒火攻心——与火共舞马玛加",
+        "mob": "与火共舞 马玛加",
+        "level": 53,
+        "note": "未确定可习得",
+        "color": "red"
       }
     ]
   },
@@ -1451,7 +1527,8 @@
         ],
         "mob": "峭壁巨钳虾",
         "note": "疑似高血量更容易施放",
-        "level": 61
+        "level": 61,
+        "color": "green"
       },
       {
         "type": "raid",
@@ -1477,7 +1554,7 @@
         "name": "地下灵殿塔姆·塔拉墓园",
         "mob": "主宰者 加尔梵斯",
         "level": 16,
-        "note": "低于一定生命值后咏唱，别秒了"
+        "note": "解除限制时也必定学会。低于一定生命值后咏唱，别秒了"
       },
       {
         "type": "map",
@@ -1485,22 +1562,24 @@
         "rank": "S",
         "position": [],
         "mob": "夺心魔",
-        "level": 50
+        "level": 50,
+        "color": "red"
       },
       {
         "type": "raid",
-        "name": "亚历山大机神城 律动之章2 ",
+        "name": "亚历山大机神城 律动之章2",
         "mob": "爆破者",
-        "level": "60",
+        "level": 60,
         "note": "无读条全屏AOE",
         "color": "green"
       },
       {
         "type": "raid",
         "name": "亚历山大机神城 律动之章4",
-        "level": "60",
+        "mob": "爆破者",
+        "level": 60,
         "note": "确定无法学会",
-        "color": "red"
+        "color": "grey"
       }
     ]
   },
@@ -1524,9 +1603,9 @@
       {
         "type": "raid",
         "name": "欧米茄时空狭缝 德尔塔幻境4",
-        "level": "70",
+        "level": 70,
         "note": "确定无法学会",
-        "color": "red"
+        "color": "grey"
       }
     ]
   },
@@ -1665,7 +1744,8 @@
         "name": "伊甸希望乐园 共鸣之章1",
         "mob": "拉姆",
         "level": 80,
-        "color": "grey"
+        "note": "未知",
+        "color": "red"
       }
     ]
   },
@@ -1823,6 +1903,12 @@
         "mob": "雷牙",
         "level": 50,
         "color": "green"
+      },
+      {
+        "type": "dungeon",
+        "name": "红玉火山狱之盖",
+        "mob": "狱炎火蛇",
+        "level": 70
       }
     ]
   },
@@ -1848,6 +1934,24 @@
         "type": "raid",
         "name": "亚历山大机神城 启动之章2",
         "mob": "浮士德",
+        "level": 60
+      },
+      {
+        "type": "raid",
+        "name": "亚历山大零式机神城 启动之章4",
+        "mob": "惩罚人偶",
+        "level": 60
+      },
+      {
+        "type": "raid",
+        "name": "亚历山大机神城 律动之章1",
+        "mob": "浮士德、新型浮士德",
+        "level": 60
+      },
+      {
+        "type": "raid",
+        "name": "亚历山大机神城 天动之章1",
+        "mob": "终极浮士德",
         "level": 60
       }
     ]
@@ -1875,7 +1979,8 @@
         "rank": null,
         "position": null,
         "mob": "焚书任务：回收禁书《青眼怪物》 上级恶魔",
-        "level": 58
+        "level": 58,
+        "note": "疑似在高生命值更容易咏唱，同一理符还有 62蛙腿。从伊修加德基础层接取理符，大规模的也可以"
       },
       {
         "type": "dungeon",
@@ -1883,6 +1988,14 @@
         "mob": "偷书者",
         "note": "最终 BOSS 第三次踩塔（虚无召唤）失败后出现的小怪",
         "level": 59,
+        "color": "red"
+      },
+      {
+        "type": "raid",
+        "name": "欧米茄时空狭缝 西格玛幻境3",
+        "mob": "目录专家",
+        "level": 70,
+        "note": "确定不会使用",
         "color": "grey"
       }
     ]
@@ -2051,6 +2164,15 @@
         "type": "map",
         "map": "龙堡内陆低地",
         "rank": null,
+        "position": null,
+        "mob": "焚书任务：回收禁书《青眼怪物》",
+        "level": 58,
+        "note": "需要靠近才会使用，同一理符还有 55深渊贯穿。从伊修加德基础层接取理符，大规模的也可以。"
+      },
+      {
+        "type": "map",
+        "map": "龙堡内陆低地",
+        "rank": null,
         "position": [
           12,
           35,
@@ -2178,7 +2300,9 @@
         "type": "dungeon",
         "name": "学识宝库加巴勒幻想图书馆",
         "mob": "64页",
-        "level": 59
+        "level": 59,
+        "note": "疑似在所有人远离拉断线后更容易咏唱",
+        "color": "green"
       }
     ]
   },
@@ -2241,9 +2365,10 @@
       {
         "type": "raid",
         "name": "亚历山大机神城 律动之章4",
-        "level": "60",
+        "mob": "突击者",
+        "level": 60,
         "note": "确定无法学会",
-        "color": "red"
+        "color": "grey"
       }
     ]
   },
@@ -2394,6 +2519,16 @@
         "level": 70,
         "color": "green",
         "note": "同一副本还有专属技能 87污泥泼洒"
+      },
+      {
+        "type": "map",
+        "map": "基拉巴尼亚湖区",
+        "rank": "A",
+        "position": [],
+        "mob": "马希沙",
+        "level": 70,
+        "note": "未确定可习得",
+        "color": "red"
       }
     ]
   },
@@ -2620,7 +2755,9 @@
         "type": "dungeon",
         "name": "死亡大地终末焦土",
         "mob": "雾龙",
-        "level": 70
+        "level": 70,
+        "note": "需故意留下三龙头之一或更多，否则咏唱会被打断，推荐携带73蜕皮来驱散冻伤，降低翻车率",
+        "color": "green"
       }
     ]
   },
@@ -2792,7 +2929,10 @@
           0
         ],
         "mob": "高阶长须豹",
-        "level": 24
+        "level": 24,
+        "note": "在另一方被击杀后使用",
+        "color": "green"
+        
       }
     ]
   },
@@ -2818,7 +2958,8 @@
           0
         ],
         "mob": "恐甲蚂蜓",
-        "level": 68
+        "level": 68,
+        "color": "green"
       },
       {
         "type": "map",
@@ -2827,6 +2968,13 @@
         "position": [],
         "mob": "蛇仆蚂蜓",
         "level": 70
+      },
+      {
+        "type": "dungeon",
+        "name": "运河宝物库",
+        "mob": null,
+        "level": 70,
+        "color": "red"
       }
     ]
   },
@@ -2924,7 +3072,8 @@
           0
         ],
         "mob": "陀鲁婆",
-        "level": 69
+        "level": 69,
+        "color": "green"
       },
       {
         "type": "map",
@@ -2933,6 +3082,13 @@
         "position": [],
         "mob": "泛光晶体",
         "level": 70
+      },
+      {
+        "type": "dungeon",
+        "name": "运河宝物库",
+        "mob": null,
+        "level": 70,
+        "color": "red"
       }
     ]
   },
@@ -3044,7 +3200,9 @@
         "type": "raid",
         "name": "欧米茄时空狭缝 阿尔法幻境3",
         "mob": "欧米茄",
-        "level": 70
+        "level": 70,
+        "note": "同一副本还有专属技能 2火炎放射 101生成外设",
+        "color": "green"
       },
       {
         "type": "raid",
@@ -3208,6 +3366,15 @@
     "icon_book": "072308.png",
     "icon_book_hr1": "072308_hr1.png",
     "method": [
+      {
+        "type": "map",
+        "map": "安穆·艾兰",
+        "rank": null,
+        "position": [17, 30, 0],
+        "mob": "硬鳞犰狳",
+        "level": 77,
+        "note": "疑似生命值达到50%时使用"
+      },
       {
         "type": "map",
         "map": "安穆·艾兰",
