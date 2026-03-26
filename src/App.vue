@@ -99,6 +99,7 @@ const handleOrderChange = (val: boolean) => {
       :orderByLevel="orderByLevel"
       @change="handleStatusChange"
       @clearFilter="filter = ''"
+      @search="filter = $event"
     />
   </section>
 </template>

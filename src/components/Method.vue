@@ -11,7 +11,7 @@ const text = computed(() => renderSpellMethod(props.method));
 
 //定义颜色别名映射表
 const colorAliasMap: Record<string, string> = {
-  red: "#ff0000",
+  red: "#ca3a3a",
   blue: "#0000ff",
   green: "#00ff00",
   yellow: "#ffff00",
@@ -30,13 +30,38 @@ const textColor = computed(() => {
   // 如果找不到（说明传入的可能本身就是自定义的十六进制代码如 "#123456"），则直接返回原值
   return colorAliasMap[color.toLowerCase()] || color;
 });
+
+// 1. 定义向外抛出的 search 事件
+const emit = defineEmits<{
+  (e: "search", keyword: string): void;
+}>();
+
+// 2. 提取地点或副本名称作为搜索关键词，过滤掉特殊途径（因为描述太长）
+const searchKeyword = computed(() => {
+  if ('name' in props.method && props.method.name) return props.method.name;
+  if ('map' in props.method && props.method.map) return props.method.map;
+  return '';
+});
+
+// 3. 触发搜索事件
+const handleSearch = () => {
+  if (searchKeyword.value) {
+    emit('search', searchKeyword.value);
+  }
+};
+
 </script>
 
 <template>
   <div class="wrap">
     <img class="type" :src="`icons/type_${props.method.type}.png`" />
     
-    <span :style="{ color: textColor }">
+    <span 
+      :style="{ color: textColor }"
+      :class="{ clickable: !!searchKeyword }"
+      @click="handleSearch"
+      :title="searchKeyword ? `点击搜索相同途径：${searchKeyword}` : ''"
+    >
       {{ text }} <sup>Lv.{{ props.method.level }}</sup>
     </span>
     
@@ -62,5 +87,16 @@ const textColor = computed(() => {
   font-size: 0.75rem;
   opacity: 0.75;
   margin-left: 20px;
+}
+
+/* 5. 新增可点击元素的交互样式 */
+.clickable {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.clickable:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 </style>

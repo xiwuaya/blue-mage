@@ -20,11 +20,12 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
   (e: "clearFilter"): void;
+  (e: "search", keyword: string): void;
 }>();
 
 const notLearnedOnly = ref(true);
 
-// 新增：用于控制是否隐藏红/黄颜色的开关
+// 新增：用于控制是否隐藏红/灰颜色的开关
 const hideSpecialColor = ref(false);
 
 type Mode = "search" | "notLearned" | "all";
@@ -132,6 +133,7 @@ const allLearned = computed(() =>
       :spell="spell"
       :learned="learnedByNo(props.spellStatus, spell.no)"
       @change="emit('change', indexByNo(spell.no), $event)"
+      @search="emit('search', $event)"
     />
   </main>
 </template>

@@ -12,6 +12,7 @@ const props = defineProps<{
 }>();
 const emit = defineEmits<{
   (e: "change", status: boolean): void;
+  (e: "search", keyword: string): void;
 }>();
 </script>
 
@@ -40,7 +41,7 @@ const emit = defineEmits<{
       </h4>
       <ul class="methods">
         <li v-for="(m, mi) in props.spell.method" :key="mi">
-          <spell-method :method="m" />
+          <spell-method :method="m" @search="emit('search', $event)" />
         </li>
       </ul>
     </div>
