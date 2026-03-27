@@ -44,12 +44,26 @@ const mode = computed<Mode>(() => {
 
 const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
   search: (spell) => {
-    return (
-      // 新增：判断搜索词是否包含在技能编号中
-      String(spell.no).includes(props.filter) ||
-      spell.spell.includes(props.filter) ||
-      spell.method.some((m) => renderSpellMethod(m).includes(props.filter))
-    );
+    const keyword = props.filter;
+
+  // 1. 匹配技能编号和技能名称
+  if (String(spell.no).includes(keyword) || spell.spell.includes(keyword)) {
+    return true;
+  }
+
+  // 2. 匹配获取途径（专门提取文本字段，避开 position 和 level）
+  return spell.method.some((m) => {
+    const mAny = m as any;
+    // 仅提取地图、副本、怪物、怪物等级评价(如A级,S级)这几个字段
+    const searchableTexts = [
+      mAny.map, 
+      mAny.name, 
+      mAny.mob, 
+      mAny.rank
+    ].filter(Boolean); // filter(Boolean) 会自动过滤掉不存在或为空的字段
+    
+    return searchableTexts.some(text => String(text).includes(keyword));
+  });
   },
   notLearned: (spell, index) => {
     return (
