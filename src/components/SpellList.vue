@@ -29,7 +29,7 @@ const notLearnedOnly = ref(true);
 const showHelpModal = ref(false);
 
 // 新增：用于控制是否隐藏红/灰颜色的开关
-const hideSpecialColor = ref(false);
+const hideSpecialColor = ref(true);
 
 type Mode = "search" | "notLearned" | "all";
 const mode = computed<Mode>(() => {

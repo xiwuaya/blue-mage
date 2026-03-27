@@ -146,7 +146,8 @@
         ],
         "mob": "魔导先锋强化型",
         "level": 50,
-        "note": "血量低于 60% 后使用"
+        "note": "血量低于 60% 后使用",
+        "color": "yellow"
       },
       {
         "type": "dungeon",
@@ -158,13 +159,17 @@
         "type": "dungeon",
         "name": "帝国南方堡外围激战",
         "mob": "魔导先锋、魔导先锋强袭型",
-        "level": 50
+        "level": 50,
+        "note": "副本已删除",
+        "color": "grey"
       },
       {
         "type": "dungeon",
         "name": "天幕魔导城最终决战",
         "mob": "魔导先锋重装型",
-        "level": 50
+        "level": 50,
+        "note": "副本已删除",
+        "color": "grey"
       }
     ]
   },
@@ -1121,6 +1126,30 @@
         "level": 44
       },
       {
+        "type": "map",
+        "map": "黑衣森林南部林区",
+        "rank": null,
+        "position": [
+          21,
+          28,
+          0
+        ],
+        "mob": "套索花",
+        "level": 31
+      },
+      {
+        "type": "map",
+        "map": "黑衣森林东部林区",
+        "rank": null,
+        "position": [
+          23,
+          21,
+          0
+        ],
+        "mob": "魔界花",
+        "level": 44
+      },
+      {
         "type": "dungeon",
         "name": "毒雾洞窟黄金谷",
         "mob": "魔界花、守财夫人",
@@ -1222,7 +1251,8 @@
           0
         ],
         "mob": "痴笑巨蟾蜍",
-        "level": 14
+        "level": 24,
+        "color": "yellow"
       },
       {
         "type": "map",
@@ -1259,7 +1289,8 @@
           0
         ],
         "mob": "痴笑巨蟾蜍",
-        "level": 24
+        "level": 24,
+        "color": "yellow"
       }
     ]
   },
@@ -1433,7 +1464,7 @@
         "type": "dungeon",
         "name": "流沙迷宫樵鸣洞",
         "mob": "仙人刺逃兵",
-        "level": 24
+        "level": 38
       }
     ]
   },
@@ -1480,7 +1511,7 @@
         "map": "亚克特尔树海",
         "name": "怒火攻心——与火共舞马玛加",
         "mob": "与火共舞 马玛加",
-        "level": 53,
+        "level": 95,
         "note": "未确定可习得",
         "color": "red"
       }
@@ -1659,8 +1690,9 @@
       {
         "type": "trail",
         "name": "迦楼罗歼殛战",
-        "mob": "迦楼罗",
-        "level": 50
+        "mob": "迦楼罗、美翼、妙翅",
+        "level": 50,
+        "color": "yellow"
       }
     ]
   },
