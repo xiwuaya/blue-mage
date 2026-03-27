@@ -74,7 +74,7 @@ const handleOrderChange = (val: boolean) => {
       <input
         class="search"
         v-model="filter"
-        placeholder="搜索技能名或获取方式"
+        placeholder="搜索技能编号、名称或获取方式"
       />
       <Filter
         :filterTypes="filterTypes"

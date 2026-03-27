@@ -45,6 +45,8 @@ const mode = computed<Mode>(() => {
 const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
   search: (spell) => {
     return (
+      // 新增：判断搜索词是否包含在技能编号中
+      String(spell.no).includes(props.filter) ||
       spell.spell.includes(props.filter) ||
       spell.method.some((m) => renderSpellMethod(m).includes(props.filter))
     );
