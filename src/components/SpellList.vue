@@ -109,25 +109,25 @@ const allLearned = computed(() =>
       <template v-if="mode === 'notLearned'">
         {{
           showSpells.length
-            ? "隐藏已掌握技能"
+            ? "当前状态"
             : allLearned
             ? "恭喜，您已经掌会了当前版本的所有技能"
             : "当前条件下暂无可学习的技能"
-        }}，
+        }}：
         <a href="javascript:void(0)" @click="notLearnedOnly = false">
-          显示已掌握技能
+          ○隐藏了已掌握技能
         </a>，
         <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
-          {{ hideSpecialColor ? '显示完整获取方式' : '隐藏不推荐获取方式' }}
+          {{ hideSpecialColor ? '○隐藏了糟糕的学习途径' : '●显示了糟糕的学习途径' }}
         </a>
       </template>
       <template v-else-if="mode === 'all'">
-        显示已掌握技能，
+        当前状态：
         <a href="javascript:void(0)" @click="notLearnedOnly = true">
-          隐藏已掌握技能
+          ●显示了已掌握技能
         </a>，
         <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
-          {{ hideSpecialColor ? '显示完整获取方式' : '隐藏不推荐获取方式' }}
+          {{ hideSpecialColor ? '○隐藏了糟糕的学习途径' : '●显示了糟糕的学习途径' }}
         </a>
       </template>
       <template v-else>
@@ -136,7 +136,7 @@ const allLearned = computed(() =>
           清空搜索条件
         </a>，
         <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
-          {{ hideSpecialColor ? '显示完整获取方式' : '隐藏不推荐获取方式'  }}
+          {{ hideSpecialColor ? '○隐藏了糟糕的学习途径' : '●显示了糟糕的学习途径'  }}
         </a>
       </template>
     </div>
@@ -176,7 +176,7 @@ const allLearned = computed(() =>
                 数据来源于<a href="https://thewakingsands.github.io/blue-mage/" target="_blank" rel="noopener noreferrer">青魔法师技能学习指南</a>，同时参考了<a href="http://www.timelysnow.com.cn/bluemagicebook/" target="_blank" rel="noopener noreferrer">青魔法电子书</a>。
               </p>
               <p>
-                有建议或反馈可以在GitHub提出 <a href="https://github.com/xiwuaya/blue-mage/issues" target="_blank" rel="noopener noreferrer">Issue</a>
+                有对网页的建议反馈、或帮忙提供新的学习途径样本，可以在GitHub提出 <a href="https://github.com/xiwuaya/blue-mage/issues" target="_blank" rel="noopener noreferrer">Issue</a> 或加<a href="https://qm.qq.com/q/haCYH87Vug?from=tim" target="_blank" rel="noopener noreferrer">QQ3278542912</a>
               </p>
             </div>
           </div>
