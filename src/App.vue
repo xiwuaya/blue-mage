@@ -71,6 +71,9 @@ const handleOrderChange = (val: boolean) => {
 <template>
   <section>
     <aside>
+      <div class="sponsor-banner">
+        <span>首次使用请查看右上角帮助</span>
+      </div>
       <input
         class="search"
         v-model="filter"
@@ -160,5 +163,30 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 100%;
   margin-bottom: 20px;
 }
+/* 新增：赞助商模块样式 */
+.sponsor-banner {
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  background: rgba(255, 190, 49, 0.1); /* 使用略微透明的主题黄作为背景 */
+  border-left: 4px solid #ffbe31;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
 
+.sponsor-banner span {
+  color: #ccc;
+}
+
+.sponsor-banner a {
+  color: #ffbe31; /* 赞助商名字使用醒目的颜色 */
+  text-decoration: none;
+  font-weight: bold;
+  transition: opacity 0.2s;
+}
+
+.sponsor-banner a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
 </style>

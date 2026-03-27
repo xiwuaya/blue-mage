@@ -9,6 +9,8 @@ import {
 } from "../lib/spell";
 import type { FilterTypes, SpellStatusArray } from "@/lib/interface";
 import SpellItem from "./SpellItem.vue";
+// --- 新增：引入本地存储方法 ---
+import { loadSetting, saveSetting } from "../lib/setting";
 
 const props = defineProps<{
   filterTypes: FilterTypes;
@@ -27,6 +29,16 @@ const notLearnedOnly = ref(true);
 
 // --- 新增：用于控制帮助弹窗的开关 ---
 const showHelpModal = ref(false);
+
+// --- 新增：判断是否是首次打开 ---
+// 尝试从本地存储中读取 'has-seen-help' 标记
+const hasSeenHelp = loadSetting<boolean>("has-seen-help");
+
+// 如果读取不到（说明是第一次来）或者为 false
+if (!hasSeenHelp) {
+  showHelpModal.value = true; // 自动打开弹窗
+  saveSetting("has-seen-help", true); // 记录标记，下次再来就不会弹出了
+}
 
 // 新增：用于控制是否隐藏红/灰颜色的开关
 const hideSpecialColor = ref(true);
