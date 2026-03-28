@@ -43,6 +43,7 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
   search: (spell) => {
     const keyword = props.filter;
 
+    
   // 1. 匹配技能编号和技能名称
   if (String(spell.no).includes(keyword) || spell.spell.includes(keyword)) {
     return true;
@@ -51,6 +52,14 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
   // 2. 匹配获取途径（专门提取文本字段，避开 position 和 level）
   return spell.method.some((m) => {
     const mAny = m as any;
+
+    // --- 新增：如果是灰色的废弃途径，直接不参与搜索匹配 ---
+    const c = (mAny.color || '').toLowerCase();
+      if (['grey', '#666'].includes(c)) {
+        return false;
+      }
+    // -----------------------------------------------------
+
     // 仅提取地图、副本、怪物、怪物等级评价(如A级,S级)这几个字段
     const searchableTexts = [
       mAny.map, 
@@ -94,6 +103,19 @@ const showSpells = computed(() => {
     }).filter(spell => spell.method.length > 0); // 隐藏后如果技能没有获取方式了，则不显示该技能
   }
 
+  // --- 新增：在搜索模式下，自动过滤掉所有灰色途径 ---
+  // if (mode.value === 'search') {
+  //   filtered = filtered.map(spell => {
+  //     return {
+  //       ...spell,
+  //       method: spell.method.filter((m: any) => {
+  //         const c = (m.color || '').toLowerCase();
+  //         return !['grey', '#666'].includes(c);
+  //       })
+  //     };
+  //   }).filter(spell => spell.method.length > 0);
+  // }
+  // ------------------------------------------------
   if (props.orderByLevel) {
     filtered.sort((a, b) => a.level - b.level);
   }
