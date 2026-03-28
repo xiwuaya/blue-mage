@@ -3099,7 +3099,8 @@
         "type": "raid",
         "name": "欧米茄时空狭缝 西格玛幻境1",
         "mob": "魔列车",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -3294,7 +3295,8 @@
         "type": "raid",
         "name": "欧米茄时空狭缝 德尔塔幻境1",
         "mob": "老者",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -3320,7 +3322,8 @@
         "type": "raid",
         "name": "欧米茄时空狭缝 阿尔法幻境3",
         "mob": "欧米茄",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       },
       {
         "type": "raid",

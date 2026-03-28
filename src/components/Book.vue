@@ -52,7 +52,6 @@ const toggleSpell = (i: number) => {
       <img :src="spellIcon(s)" :srcset="spellIconSrcset(s)" />
       <span>{{ s.no }}</span>
     </div>
-    <p class="note">选中（已学习）的技能不会出现在获取方式中</p>
   </div>
 </template>
 
