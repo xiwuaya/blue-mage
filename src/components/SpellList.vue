@@ -195,8 +195,9 @@ const allLearned = computed(() =>
                 <li><span class="color-def text-red">红色代表不建议考虑的途径</span></li>
                 <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
               </ul>
+              <p>据称若解限打本时，高难本的习得概率大于普通版本。</p>
               <p>
-                本网页内容最近一次更新于<strong>2026年3月26日</strong>（7.45版本）。
+                本网页内容最近一次更新于<strong>2026年3月28日</strong>（7.45版本）。
               </p>
               <p>
                 数据来源于<a href="https://thewakingsands.github.io/blue-mage/" target="_blank" rel="noopener noreferrer">青魔法师技能学习指南</a>，同时参考了<a href="http://www.timelysnow.com.cn/bluemagicebook/" target="_blank" rel="noopener noreferrer">青魔法电子书</a>。

@@ -78,7 +78,8 @@
         "type": "trail",
         "name": "利维亚桑歼灭战",
         "mob": "利维亚桑",
-        "level": 50
+        "level": 50,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -129,13 +130,6 @@
     "icon_book_hr1": "072216_hr1.png",
     "method": [
       {
-        "type": "fate",
-        "map": "北萨纳兰",
-        "name": "逆向工程",
-        "mob": "废弃的魔导先锋",
-        "level": 46
-      },
-      {
         "type": "map",
         "map": "北萨纳兰",
         "rank": null,
@@ -154,6 +148,14 @@
         "name": "纷争要地布雷福洛克斯野营地",
         "mob": "3号哥布林装甲",
         "level": 50
+      },
+      {
+        "type": "fate",
+        "map": "北萨纳兰",
+        "name": "逆向工程",
+        "mob": "废弃的魔导先锋",
+        "level": 46,
+        "color": "red"
       },
       {
         "type": "dungeon",
@@ -222,7 +224,8 @@
         "position": [],
         "mob": "永恒不灭的菲兰德副耀士",
         "note": "远离目标时瞬发使用",
-        "level": 50
+        "level": 50,
+        "color": "yellow"
       },
       {
         "type": "dungeon",
@@ -259,13 +262,21 @@
           0
         ],
         "mob": "杀手胡蜂",
-        "level": 13
+        "level": 13,
+        "color": "yellow"
       },
       {
         "type": "dungeon",
         "name": "古代遗迹喀恩埋没圣堂",
         "mob": "圣堂蜂、粪便胡蜂",
         "level": 35
+      },
+      {
+        "type": "dungeon",
+        "name": "财宝传说破舰岛",
+        "mob": "谢尔达莱黄蜂",
+        "level":50,
+        "note": "一定生命值以下"
       }
     ]
   },
@@ -315,7 +326,9 @@
         "type": "dungeon",
         "name": "毒雾洞窟黄金谷",
         "mob": "数币巨人",
-        "level": 47
+        "level": 47,
+        "color": "yellow",
+        "note": "解除限制时也必定学会"
       },
       {
         "type": "map",
@@ -323,7 +336,27 @@
         "rank": "S",
         "position": [],
         "mob": "布隆特斯",
-        "level": 50
+        "level": 50,
+        "color": "red"
+      },
+      {
+        "type": "map",
+        "map": "遗产之地",
+        "rank": null,
+        "position": [25,33,0],
+        "mob": "孤眼巨人",
+        "level": 98,
+        "note": "未确定可习得，需要测试"
+      },
+      {
+        "type": "map",
+        "map": "遗产之地",
+        "rank": null,
+        "position": [24,36,0],
+        "mob": "复仇者",
+        "level": 98,
+        "color": "grey",
+        "note": "未确定可习得，需要测试"
       }
     ]
   },
@@ -375,16 +408,30 @@
         "level": 34
       },
       {
+        "type": "map",
+        "map": "黑衣森林中央林区",
+        "rank": null,
+        "position": [
+          11,
+          16,
+          0
+        ],
+        "mob": "陨坑巨像",
+        "level": 34
+      },
+      {
         "type": "dungeon",
         "name": "骚乱坑道铜铃铜山",
         "mob": "哥革巨像",
-        "level": 50
+        "level": 50,
+        "note": "老二"
       },
       {
         "type": "dungeon",
         "name": "苏醒遗迹喀恩埋没圣堂",
         "mob": "喀恩守护者",
-        "level": 50
+        "level": 50,
+        "note": "老二后面"
       },
       {
         "type": "dungeon",
@@ -415,7 +462,8 @@
           0
         ],
         "mob": "狂野疣猪",
-        "level": 20
+        "level": 20,
+        "color": "yellow"
       }
     ]
   },
@@ -433,13 +481,22 @@
       {
         "type": "special",
         "text": "学习 10 个技能后可从[乌尔达哈来生回廊]的[异男子嘎希迦]处获得[天青图腾]",
-        "level": 1
+        "level": 1,
+        "color": "yellow"
       },
       {
         "type": "trail",
         "name": "无限城的死斗",
         "mob": "恩奇都",
         "level": 50
+      },
+      {
+        "type": "raid",
+        "name": "欧米茄零式时空狭缝 德尔塔幻境3",
+        "mob": "白焰",
+        "level": "70",
+        "note": "未确定可习得，需要测试",
+        "color": "red"
       }
     ]
   },
@@ -518,6 +575,18 @@
         ],
         "mob": "捣蛋小鬼",
         "level": 9
+      },
+      {
+        "type": "map",
+        "map": "东萨纳兰",
+        "rank": null,
+        "position": [
+          14,
+          19,
+          0
+        ],
+        "mob": "破坏小魔精",
+        "level": 19
       },
       {
         "type": "dungeon",
@@ -1049,6 +1118,14 @@
     "icon_book_hr1": "072217_hr1.png",
     "method": [
       {
+        "type": "dungeon",
+        "name": "秘本宝库迦巴勒幻想图书馆",
+        "mob": "拜书魔",
+        "level": 60,
+        "note": "无读条顺劈，同一副本还有专属技能 60魔法锤 76小侦测。恰好是第一波怪中唯一有催眠抗性的，同步时推荐使用职能技能先将第一波全部催眠，等它放技能后寒冰咆哮+超振动",
+        "color": "yellow"
+      },
+      {
         "type": "map",
         "map": "摩杜纳",
         "rank": null,
@@ -1079,14 +1156,6 @@
         "level": 50,
         "note": "活动已结束",
         "color": "grey"
-      },
-      {
-        "type": "dungeon",
-        "name": "秘本宝库迦巴勒幻想图书馆",
-        "mob": "拜书魔",
-        "level": 60,
-        "note": "同一副本还有专属技能 60魔法锤 76小侦测。恰好是第一波怪中唯一有催眠抗性的，同步时推荐使用职能技能先将第一波全部催眠，等它放技能后寒冰咆哮+超振动",
-        "color": "yellow"
       }
     ]
   },
@@ -1179,6 +1248,7 @@
         "name": "激战城塞石卫塔",
         "mob": "库卡龙龟",
         "level": 50,
+        "note": "即死效果与比例伤害有效",
         "color": "yellow"
       },
       {
@@ -1230,6 +1300,40 @@
     "icon_book_hr1": "072230_hr1.png",
     "method": [
       {
+        "type": "fate",
+        "map": "拉诺西亚低地",
+        "name": "临危受命:蛙蛙子",
+        "position": [
+          24,
+          22,
+          0
+        ],
+        "mob": "杖蟾蜍",
+        "level": 2,
+        "color": "red"
+      },
+      {
+        "type": "map",
+        "map": "拉诺西亚低地",
+        "rank": "S",
+        "position": [],
+        "mob": "咕尔呱洛斯",
+        "level": 50,
+        "color": "red"
+      },
+      {
+        "type": "map",
+        "map": "西萨纳兰",
+        "rank": null,
+        "position": [
+          23,
+          23,
+          0
+        ],
+        "mob": "沙蟾蜍",
+        "level": 14
+      },
+      {
         "type": "map",
         "map": "中萨纳兰",
         "rank": null,
@@ -1265,6 +1369,53 @@
         ],
         "mob": "巨蟾蜍",
         "level": 33
+      },
+      {
+        "type": "map",
+        "map": "黑衣森林东部林区",
+        "rank": null,
+        "position": [
+          26,
+          18,
+          0
+        ],
+        "mob": "梦蟾蜍",
+        "level": 46
+      },
+      {
+        "type": "dungeon",
+        "name": "骚乱坑道铜铃铜山",
+        "mob": "铜铃夜蟾蜍",
+        "level": 50,
+        "note": "2号boss后2体"
+      },
+      {
+        "type": "dungeon",
+        "name": "幻龙残骸密约之塔",
+        "mob": "战舰夜蟾蜍",
+        "level": 50,
+        "note": "开场1体"
+      },
+      {
+        "type": "dungeon",
+        "name": "武装圣域放浪神古神殿",
+        "mob": "犀蜴饲料",
+        "level": 50,
+        "note": "2号boss后打完粘液怪1体）"
+      },
+      {
+        "type": "dungeon",
+        "name": "山中战线泽梅尔要塞",
+        "mob": "韧骨夜蟾",
+        "level": 44,
+        "note": "1号boss后3体"
+      },
+      {
+        "type": "dungeon",
+        "name": "毒雾洞黄金谷",
+        "mob": "地底夜蟾蜍",
+        "level": 47,
+        "note": "开场2体"
       }
     ]
   },
@@ -1290,6 +1441,7 @@
         ],
         "mob": "痴笑巨蟾蜍",
         "level": 24,
+        "note": "无读条瞬发使用，赋予自身回避率提高的buff",
         "color": "yellow"
       }
     ]
@@ -1425,7 +1577,8 @@
         "type": "trail",
         "name": "无限城的死斗",
         "mob": "恩奇都",
-        "level": 50
+        "level": 50,
+        "note": "只对变鸡角色使用"
       },
       {
         "type": "raid",
@@ -1511,7 +1664,7 @@
         "map": "亚克特尔树海",
         "name": "怒火攻心——与火共舞马玛加",
         "mob": "与火共舞 马玛加",
-        "level": 95,
+        "level": 94,
         "note": "未确定可习得",
         "color": "red"
       }
@@ -1607,14 +1760,15 @@
         "name": "亚历山大机神城 律动之章2",
         "mob": "爆破者",
         "level": 60,
-        "note": "无读条全屏AOE",
+        "note": "无读条全屏AOE，疑似解除限制时也必定学会",
         "color": "yellow"
       },
       {
         "type": "raid",
         "name": "亚历山大机神城 律动之章4",
         "mob": "爆破者",
-        "level": 60
+        "level": 60,
+        "note": "需要测试"
       }
     ]
   },
@@ -1666,13 +1820,16 @@
           0
         ],
         "mob": "静水泥沼蝾螈",
-        "level": 45
+        "level": 45,
+        "color": "yellow"
       },
       {
         "type": "dungeon",
         "name": "休养胜地布雷福洛克斯野营地",
-        "mob": "水栖蝾螈",
-        "level": 32
+        "mob": "冲浪水蜥、水栖蝾螈",
+        "level": 32,
+        "note": "冲浪水蜥生命值低于50%后咏唱",
+        "color": "red"
       }
     ]
   },
@@ -1711,13 +1868,15 @@
         "type": "trail",
         "name": "伊弗利特讨伐战",
         "mob": "伊弗利特",
-        "level": 20
+        "level": 20,
+        "color": "yellow"
       },
       {
         "type": "trail",
         "name": "伊弗利特歼灭战",
         "mob": "伊弗利特",
-        "level": 50
+        "level": 50,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -1758,7 +1917,8 @@
         "type": "trail",
         "name": "泰坦歼灭战",
         "mob": "泰坦",
-        "level": 50
+        "level": 50,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -1817,7 +1977,8 @@
         "type": "trail",
         "name": "希瓦歼殛战",
         "mob": "希瓦",
-        "level": 50
+        "level": 50,
+        "color": "yellow"
       }
     ]
   },
@@ -1836,7 +1997,8 @@
         "type": "trail",
         "name": "利维亚桑歼灭战",
         "mob": "利维亚桑",
-        "level": 50
+        "level": 50,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -1939,6 +2101,7 @@
         "name": "吞噬牦牛的巨人——巨脚雪人",
         "mob": "巨脚雪人",
         "level": 51,
+        "note": "成就危命",
         "color": "red"
       }
     ]
@@ -2099,6 +2262,27 @@
         "mob": "斯特拉斯",
         "level": 60,
         "color": "red"
+      },
+      {
+        "type": "map",
+        "map": "活着的记忆",
+        "rank": null,
+        "position": [
+          37,
+          26,
+          0
+        ],
+        "mob": "棕仙",
+        "level": 90,
+        "color": "red",
+        "note": "未确定可习得，需要测试"
+      },
+      {
+        "type": "dungeon",
+        "name": "运河宝物库神殿",
+        "mob": "神殿斯卡尼特",
+        "level": 70,
+        "color": "red"
       }
     ]
   },
@@ -2123,7 +2307,8 @@
           0
         ],
         "mob": "疫虫",
-        "level": 59
+        "level": 59,
+        "color": "yellow"
       }
     ]
   },
@@ -2204,6 +2389,13 @@
         "name": "假面狂欢24",
         "mob": "艾匹罗基",
         "level": 50
+      },
+      {
+        "type": "dungeon",
+        "name": "运河宝物库神殿",
+        "mob": "神殿阿班达",
+        "level": 70,
+        "color": "red"
       }
     ]
   },
@@ -2222,7 +2414,8 @@
         "type": "dungeon",
         "name": "草木庭园圣茉夏娜植物园",
         "mob": "鹰锋女王",
-        "level": 60
+        "level": 60,
+        "color": "yellow"
       }
     ]
   },
@@ -2289,7 +2482,8 @@
           0
         ],
         "mob": "安祖",
-        "level": 59
+        "level": 59,
+        "color": "yellow"
       },
       {
         "type": "dungeon",
@@ -2347,7 +2541,8 @@
         "type": "dungeon",
         "name": "圣教中枢伊修加德教皇厅",
         "mob": "白骑士",
-        "level": 57
+        "level": 57,
+        "color": "yellow"
       }
     ]
   },
@@ -2366,7 +2561,8 @@
         "type": "dungeon",
         "name": "圣教中枢伊修加德教皇厅",
         "mob": "黑骑士",
-        "level": 57
+        "level": 57,
+        "color": "yellow"
       }
     ]
   },
@@ -2474,7 +2670,9 @@
         "type": "dungeon",
         "name": "苏醒遗迹喀恩埋没圣堂",
         "mob": "仙人刺守卫",
-        "level": 50
+        "level": 50,
+        "note": "BOSS#2 召唤的小怪",
+        "color": "yellow"
       }
     ]
   },
@@ -2543,7 +2741,9 @@
           0
         ],
         "mob": "阿巴拉提亚瓦魔蛾",
-        "level": 57
+        "level": 57,
+        "note": "同时拉住另一只怪并将另一只怪血量削到55%以下，注意不要和附近同模小一些的天窗瓦魔蛾搞混",
+        "color": "yellow"
       }
     ]
   },
@@ -2568,7 +2768,8 @@
           0
         ],
         "mob": "云上双足飞龙",
-        "level": 56
+        "level": 56,
+        "color": "yellow"
       },
       {
         "type": "dungeon",
@@ -2661,7 +2862,8 @@
         "type": "dungeon",
         "name": "地脉灵灯天狼星灯塔",
         "mob": "被腐化连线后产生的小怪",
-        "level": 60
+        "level": 60,
+        "color": "yellow"
       }
     ]
   },
@@ -2680,7 +2882,8 @@
         "type": "trail",
         "name": "罗波那歼灭战",
         "mob": "罗波那",
-        "level": 53
+        "level": 53,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -2705,7 +2908,8 @@
         "type": "trail",
         "name": "索菲娅歼灭战",
         "mob": "索菲娅",
-        "level": 60
+        "level": 60,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -2730,7 +2934,8 @@
         "type": "raid",
         "name": "亚历山大机神城 律动之章4",
         "mob": "残暴正义号",
-        "level": 60
+        "level": 60,
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -2824,7 +3029,8 @@
         "type": "dungeon",
         "name": "恶党孤城黄金阁",
         "mob": "道顺丸",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       }
     ]
   },
@@ -2866,7 +3072,8 @@
         "type": "trail",
         "name": "吉祥天女歼灭战",
         "mob": "吉祥天女",
-        "level": 67
+        "level": 67,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -2926,7 +3133,8 @@
         "rank": "A",
         "position": [],
         "mob": "泥人",
-        "level": 80
+        "level": 80,
+        "color": "red"
       }
     ]
   },
@@ -2967,7 +3175,8 @@
         "type": "dungeon",
         "name": "红玉火山狱之盖",
         "mob": "玄武",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       }
     ]
   },
@@ -2987,7 +3196,8 @@
         "type": "dungeon",
         "name": "修行古刹星导寺",
         "mob": "双豹伊沃恩",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       }
     ]
   },
@@ -3199,7 +3409,8 @@
         "type": "dungeon",
         "name": "沉没神殿斯卡拉遗迹",
         "mob": "凯尔派",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       }
     ]
   },
@@ -3219,7 +3430,8 @@
         "type": "dungeon",
         "name": "风水灵庙岩燕庙",
         "mob": "赛太岁",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       }
     ]
   },
@@ -3320,7 +3532,8 @@
         "type": "dungeon",
         "name": "风水灵庙岩燕庙",
         "mob": "齐天大圣",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       }
     ]
   },
@@ -3340,7 +3553,8 @@
         "type": "trail",
         "name": "朱雀镇魂战",
         "mob": "朱雀",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -3366,7 +3580,8 @@
         "type": "trail",
         "name": "月读歼灭战",
         "mob": "月读",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -3441,7 +3656,8 @@
         "name": "避暑离宫马利卡大井",
         "mob": "大犰狳",
         "note": "BOSS #1",
-        "level": 77
+        "level": 77,
+        "color": "yellow"
       }
     ]
   },
@@ -3504,7 +3720,8 @@
         "rank": null,
         "position": [32, 9, 0],
         "mob": "滑溜犰狳",
-        "level": 70
+        "level": 70,
+        "color": "yellow"
       }
     ]
   },
@@ -3547,7 +3764,8 @@
         "name": "暗影决战诺弗兰特",
         "mob": "幻光狂战士",
         "note": "BOSS #3",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       }
     ]
   },
@@ -3569,7 +3787,8 @@
         "name": "魔术工房玛托雅工作室",
         "mob": "土泥人",
         "note": "BOSS #1",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       }
     ]
   },
@@ -3591,7 +3810,8 @@
         "name": "魔法宫殿宇宙宫",
         "mob": "宫殿的隐者",
         "note": "BOSS #1",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       }
     ]
   },
@@ -3612,7 +3832,8 @@
         "type": "trail",
         "name": "红宝石神兵破坏作战",
         "mob": "红宝石神兵",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -3639,7 +3860,8 @@
         "type": "trail",
         "name": "缇坦妮雅歼灭战",
         "mob": "缇坦妮雅",
-        "level": 73
+        "level": 73,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -3666,7 +3888,8 @@
         "type": "raid",
         "name": "伊甸希望乐园 觉醒之章1",
         "mob": "至尊伊甸",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -3694,7 +3917,8 @@
         "name": "伪造天界格鲁格火山",
         "mob": "得到宽恕的猥亵",
         "note": "BOSS #3",
-        "level": 79
+        "level": 79,
+        "color": "yellow"
       }
     ]
   },
@@ -3714,7 +3938,8 @@
       {
         "type": "special",
         "text": "学习 120 个技能后可从[乌尔达哈来生回廊]的[异男子嘎希迦]处获得[天青图腾]",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -3741,7 +3966,8 @@
         "type": "trail",
         "name": "无瑕灵君歼灭战",
         "mob": "无瑕灵君",
-        "level": 79
+        "level": 79,
+        "color": "yellow"
       },
       {
         "type": "trail",
@@ -3768,7 +3994,8 @@
         "type": "raid",
         "name": "伊甸希望乐园 再生之章4",
         "mob": "伊甸之约",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -3796,7 +4023,8 @@
         "name": "水妖幻园多恩美格禁园",
         "mob": "美眼 因克·佐恩",
         "note": "BOSS #1",
-        "level": 73
+        "level": 73,
+        "color": "yellow"
       }
     ]
   },
@@ -3818,7 +4046,8 @@
         "name": "魔法宫殿宇宙宫",
         "mob": "卢格斯",
         "note": "BOSS #3",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       }
     ]
   },
@@ -3840,7 +4069,8 @@
         "name": "魔术工房玛托雅工作室",
         "mob": "水滴精",
         "note": "BOSS #2",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       }
     ]
   },
@@ -3862,7 +4092,8 @@
         "name": "末日暗影亚马乌罗提",
         "mob": "至大灾兽",
         "note": "BOSS #3",
-        "level": 80
+        "level": 80,
+        "color": "yellow"
       }
     ]
   },
@@ -3883,7 +4114,8 @@
         "type": "trail",
         "name": "缇坦妮雅歼灭战",
         "mob": "缇坦妮雅",
-        "level": 73
+        "level": 73,
+        "color": "yellow"
       },
       {
         "type": "trail",
