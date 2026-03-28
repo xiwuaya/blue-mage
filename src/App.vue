@@ -26,7 +26,18 @@ const filterTypes = ref<FilterTypes>({
 const filterLevel = ref(80);
 const orderByLevel = ref(false);
 
+// --- 新增：帮助弹窗开关 ---
+const showHelpModal = ref(false);
+
 onBeforeMount(() => {
+  // --- 新增：首次加载自动弹出帮助 ---
+  const hasSeenHelp = loadSetting<boolean>("has-seen-help");
+  if (!hasSeenHelp) {
+    showHelpModal.value = true;
+    saveSetting("has-seen-help", true);
+  }
+  // ------------------------------
+
   let statusArr = loadSetting<SpellStatusArray>("spell-status") || [];
   if (!Array.isArray(statusArr)) {
     statusArr = [];
@@ -73,34 +84,56 @@ const handleOrderChange = (val: boolean) => {
     <aside>
       <div class="sponsor-banner">
         <span>首次使用请查看右上角帮助</span>
+        <div class="help-icon" @click="showHelpModal = true" title="查看网页使用帮助">
+          ?
+        </div>
       </div>
-      <input
-        class="search"
-        v-model="filter"
-        placeholder="搜索技能编号、名称或获取方式"
-      />
-      <Filter
-        :filterTypes="filterTypes"
-        :filterLevel="filterLevel"
-        :orderByLevel="orderByLevel"
-        @typeChange="handleTypeChange"
-        @levelChange="handleLevelChange"
-        @orderChange="handleOrderChange"
-      />
+
+      <input class="search" v-model="filter" placeholder="搜索技能编号、名称或获取方式" />
+      <Filter :filterTypes="filterTypes" :filterLevel="filterLevel" :orderByLevel="orderByLevel"
+        @typeChange="handleTypeChange" @levelChange="handleLevelChange" @orderChange="handleOrderChange" />
       <Book :spellStatus="spellStatus" @change="handleStatusChange" />
       <Progress :spellStatus="spellStatus" @change="handleStatusChange" />
     </aside>
-    <SpellList
-      :filter="filter"
-      :filterTypes="filterTypes"
-      :filterLevel="filterLevel"
-      :spellStatus="spellStatus"
-      :orderByLevel="orderByLevel"
-      @change="handleStatusChange"
-      @clearFilter="filter = ''"
-      @search="filter = $event"
-    />
+    <SpellList :filter="filter" :filterTypes="filterTypes" :filterLevel="filterLevel" :spellStatus="spellStatus"
+      :orderByLevel="orderByLevel" @change="handleStatusChange" @clearFilter="filter = ''" @search="filter = $event" />
   </section>
+  <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="showHelpModal" class="modal-backdrop" @click.self="showHelpModal = false">
+        <div class="modal-content">
+          <button class="close-btn" @click="showHelpModal = false">&times;</button>
+          <h3>帮助指南</h3>
+          <div class="help-text">
+            <p>
+              进本前建议在本网页<strong>单击副本名</strong>（将自动填入搜索框），以检查副本中是否有其他专属技能可以学。
+            </p>
+            <p><strong>获取途径颜色标识：</strong></p>
+            <ul>
+              <li><span class="color-def text-gold">金色代表最推荐的学习途径</span></li>
+              <li><span class="color-def text-white">白色代表其他可选途径</span></li>
+              <li><span class="color-def text-red">红色代表不建议考虑的途径</span></li>
+              <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
+            </ul>
+            <p>据称若解限打本时，高难本的习得概率大于普通版本。</p>
+            <p>
+              本网页内容最近一次更新于<strong>2026年3月28日</strong>（7.45版本）。
+            </p>
+            <p>
+              数据来源于<a href="https://thewakingsands.github.io/blue-mage/" target="_blank"
+                rel="noopener noreferrer">青魔法师技能学习指南</a>，同时参考了<a href="http://www.timelysnow.com.cn/bluemagicebook/"
+                target="_blank" rel="noopener noreferrer">青魔法电子书</a>。
+            </p>
+            <p>
+              有对网页的建议反馈、或帮忙提供新的学习途径样本，可以在GitHub提出 <a href="https://github.com/xiwuaya/blue-mage/issues" target="_blank"
+                rel="noopener noreferrer">Issue</a> 或加<a href="https://qm.qq.com/q/haCYH87Vug?from=tim" target="_blank"
+                rel="noopener noreferrer">QQ3278542912</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <style>
@@ -163,30 +196,159 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 100%;
   margin-bottom: 20px;
 }
-/* 新增：赞助商模块样式 */
+
+/* --- 修改：使用 Flex 布局让问号靠右 --- */
 .sponsor-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
-  padding: 10px 15px;
-  background: rgba(255, 190, 49, 0.1); /* 使用略微透明的主题黄作为背景 */
+  padding: 8px 12px;
+  background: rgba(255, 190, 49, 0.1);
   border-left: 4px solid #ffbe31;
   border-radius: 4px;
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
-.sponsor-banner span {
+.sponsor-info span {
   color: #ccc;
 }
 
-.sponsor-banner a {
-  color: #ffbe31; /* 赞助商名字使用醒目的颜色 */
+.sponsor-info a {
+  color: #ffbe31;
   text-decoration: none;
   font-weight: bold;
-  transition: opacity 0.2s;
 }
 
-.sponsor-banner a:hover {
+.sponsor-info a:hover {
   opacity: 0.8;
   text-decoration: underline;
+}
+
+/* --- 修改：移除绝对定位，适应 Flex --- */
+/* --- 新增：问号图标样式 --- */
+.help-icon {
+  width: 22px;
+  height: 22px;
+  background-color: #ffbe31;  /* 使用主题黄 from App.vue */
+  color: #1a1a1a;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 22px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+.help-icon:hover {
+  opacity: 0.9;
+  transform: scale(1.1);
+}
+
+/* --- 弹窗背景（全局覆盖） --- */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;  /* 确保在最上层 */
+}
+/* --- 弹窗内容样式 --- */
+.modal-content {
+  background-color: #2c2c2c;
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  color: #e0e0e0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  border: 1px solid #444;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ffbe31;
+  padding-bottom: 10px;
+  color: #ffbe31;
+}
+
+.help-text p {
+  line-height: 1.6;
+  margin: 15px 0;
+}
+
+.help-text ul {
+  list-style: none;
+  padding-left: 5px;
+  margin: 15px 0;
+}
+
+.help-text li {
+  margin-bottom: 12px;
+}
+
+.help-text a {
+  color: #ffbe31;
+  text-decoration: underline;
+}
+/* --- 特定颜色文字定义 --- */
+.color-def {
+  font-weight: bold;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.text-gold {
+  color: #ffff00;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-red {
+  color: #ca3a3a;
+}
+
+.text-grey {
+  color: #666;
+}
+
+/* --- 关闭按钮 --- */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #ffbe31;
+}
+
+/* --- 新增：弹窗淡入淡出动画 --- */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
