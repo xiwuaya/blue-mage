@@ -345,14 +345,13 @@
         "rank": null,
         "position": [25,33,0],
         "mob": "孤眼巨人",
-        "level": 98,
-        "note": "未确定可习得，需要测试"
+        "level": 98
       },
       {
-        "type": "map",
+        "type": "fate",
         "map": "遗产之地",
-        "rank": null,
-        "position": [24,36,0],
+        "position": [24,34.5,0],
+        "name": "怨怼的独眼——复仇者",
         "mob": "复仇者",
         "level": 98,
         "color": "grey",
@@ -674,6 +673,18 @@
         "level": 37
       },
       {
+        "type": "map",
+        "map": "黑衣森林北部林区",
+        "rank": null,
+        "position": [
+          23,
+          25,
+          0
+        ],
+        "mob": "小狐蝠",
+        "level": 37
+      },
+      {
         "type": "dungeon",
         "name": "名门府邸静语庄园",
         "mob": "阁楼蝙蝠",
@@ -849,7 +860,7 @@
         "name": "纷争要地布雷福洛克斯野营地",
         "mob": "青蓝之手滑翔兵",
         "level": 50,
-        "color": "red"
+        "note": "2号boss无限刷，boss之前同名怪不会使用该技能"
       },
       {
         "type": "map",
@@ -934,6 +945,13 @@
       },
       {
         "type": "dungeon",
+        "name": "骚乱坑道铜铃铜山",
+        "mob": "烈火弹怪",
+        "level": 50,
+        "note": "1号boss后3体"
+      },
+      {
+        "type": "raid",
         "name": "巴哈姆特大迷宫 真源之章2",
         "mob": "护卫系统",
         "level": 50
@@ -1017,6 +1035,30 @@
         ],
         "mob": "卢恩人拍岸手",
         "level": 32
+      },
+      {
+        "type": "map",
+        "map": "黑衣森林中央林区",
+        "rank": null,
+        "position": [
+          17,
+          20,
+          0
+        ],
+        "mob": "卢恩人捣乱者",
+        "level": 10
+      },
+      {
+        "type": "map",
+        "map": "黑衣森林北部林区",
+        "rank": null,
+        "position": [
+          22,
+          30,
+          0
+        ],
+        "mob": "卢恩人助猎者",
+        "level": 29
       }
     ]
   },
@@ -1223,6 +1265,13 @@
         "name": "毒雾洞窟黄金谷",
         "mob": "魔界花、守财夫人",
         "level": 47
+      },
+      {
+        "type": "dungeon",
+        "name": "邪念妖地无限城古堡",
+        "mob": "魔界蔷薇",
+        "level": 50,
+        "note": "1号boss后2体"
       },
       {
         "type": "dungeon",
@@ -1443,6 +1492,13 @@
         "level": 24,
         "note": "无读条瞬发使用，赋予自身回避率提高的buff",
         "color": "yellow"
+      },
+      {
+        "type": "dungeon",
+        "name": "骚乱坑道铜铃铜山",
+        "mob": "铜铃夜蟾",
+        "level": 50,
+        "note": "2号boss后2体"
       }
     ]
   },
@@ -2274,8 +2330,7 @@
         ],
         "mob": "棕仙",
         "level": 90,
-        "color": "red",
-        "note": "未确定可习得，需要测试"
+        "color": "red"
       },
       {
         "type": "dungeon",
@@ -2515,6 +2570,19 @@
         ],
         "mob": "长颈驼",
         "level": 56,
+        "color": "yellow"
+      },
+      {
+        "type": "map",
+        "map": "基拉巴尼亚山区",
+        "rank": null,
+        "position": [
+          26.9,
+          29.7,
+          0
+        ],
+        "mob": "长颈骆",
+        "level": 68,
         "color": "yellow"
       },
       {
@@ -3126,7 +3194,8 @@
         "type": "dungeon",
         "name": "污染庭园圣茉夏娜植物园",
         "mob": "枯腐泥妖",
-        "level": 70
+        "level": 70,
+        "note": "同一副本还有专属技能 75捕食"
       },
       {
         "type": "map",
@@ -3684,7 +3753,8 @@
         "position": [17, 30, 0],
         "mob": "硬鳞犰狳",
         "level": 77,
-        "note": "疑似生命值达到50%时使用"
+        "note": "疑似生命值达到50%时使用",
+        "color": "yellow"
       },
       {
         "type": "map",
@@ -3692,7 +3762,8 @@
         "rank": null,
         "position": [17, 30, 0],
         "mob": "长尾犰狳",
-        "level": 77
+        "level": 77,
+        "color": "yellow"
       },
       {
         "type": "map",

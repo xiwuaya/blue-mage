@@ -82,9 +82,9 @@ const handleOrderChange = (val: boolean) => {
 <template>
   <section>
     <aside>
-      <div class="sponsor-banner">
-        <span>首次使用请查看右上角帮助</span>
-        <div class="help-icon" @click="showHelpModal = true" title="查看网页使用帮助">
+      <div class="sponsor-banner" @click="showHelpModal = true">
+        <span>首次使用请点此查看帮助</span>
+        <div class="help-icon" title="查看网页使用帮助">
           ?
         </div>
       </div>
@@ -106,7 +106,7 @@ const handleOrderChange = (val: boolean) => {
           <h3>帮助指南</h3>
           <div class="help-text">
             <p>
-              进本前建议在本网页<strong>单击副本名</strong>（将自动填入搜索框），以检查副本中是否有其他专属技能可以学。
+              进本前建议在本网页<strong>单击副本名</strong>（将自动填入搜索框），以检查副本中是否有其他专属技能可以学。另外，据称若解限打本时，高难本的习得概率大于普通版本。
             </p>
             <p><strong>获取途径颜色标识：</strong></p>
             <ul>
@@ -115,7 +115,6 @@ const handleOrderChange = (val: boolean) => {
               <li><span class="color-def text-red">红色代表不建议考虑的途径</span></li>
               <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
             </ul>
-            <p>据称若解限打本时，高难本的习得概率大于普通版本。</p>
             <p>
               本网页内容最近一次更新于<strong>2026年3月28日</strong>（7.45版本）。
             </p>
