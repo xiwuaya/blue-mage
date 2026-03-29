@@ -78,8 +78,7 @@
         "type": "trail",
         "name": "利维亚桑歼灭战",
         "mob": "利维亚桑",
-        "level": 50,
-        "color": "yellow"
+        "level": 50
       },
       {
         "type": "trail",
@@ -515,7 +514,8 @@
         "name": "名门府邸静语庄园",
         "mob": "庄园的守卫",
         "note": "血量低于 20% 后使用",
-        "level": 28
+        "level": 28,
+        "color": "yellow"
       },
       {
         "type": "dungeon",
@@ -1261,6 +1261,32 @@
         "level": 44
       },
       {
+        "type": "fate",
+        "map": "太阳神草原",
+        "position": [
+          30.2,
+          15.8,
+          0
+        ],
+        "name": "臭得冒泡",
+        "mob": "紫魔花",
+        "level": 62,
+        "color": "red"
+      },
+      {
+        "type": "fate",
+        "map": "太阳神草原",
+        "position": [
+          33,
+          24.6,
+          0
+        ],
+        "name": "重逢的阻挠者——太阳魔花纳兰切切格",
+        "mob": "太阳魔花纳兰切切格",
+        "level": 62,
+        "color": "red"
+      },
+      {
         "type": "dungeon",
         "name": "毒雾洞窟黄金谷",
         "mob": "魔界花、守财夫人",
@@ -1931,8 +1957,7 @@
         "type": "trail",
         "name": "伊弗利特歼灭战",
         "mob": "伊弗利特",
-        "level": 50,
-        "color": "yellow"
+        "level": 50
       },
       {
         "type": "trail",
@@ -2085,13 +2110,69 @@
           0
         ],
         "mob": "狮鹫",
-        "level": 59
+        "level": 59,
+        "color": "yellow"
       },
       {
         "type": "dungeon",
         "name": "冰雪废堡暮卫塔",
         "mob": "狮身巨鹰",
-        "level": 51
+        "level": 51,
+        "color": "red"
+      },
+      {
+        "type": "fate",
+        "map": "基拉巴尼亚山区 (X: 26.7, Y: 25.5) ",
+        "rank": null,
+        "position": [
+          26.7,
+          25.5,
+          0
+        ],
+        "name": "行刑人的家人——断颈鹰",
+        "mob": "断颈鹰",
+        "level": 68,
+        "color": "red"
+      },
+      {
+        "type": "fate",
+        "map": "基拉巴尼亚山区",
+        "rank": null,
+        "position": [
+          26,
+          29,
+          0
+        ],
+        "name": "狮鹫物语",
+        "mob": "真狮鹫",
+        "level": 65,
+        "color": "red"
+      },
+      {
+        "type": "fate",
+        "map": "基拉巴尼亚山区",
+        "rank": null,
+        "position": [
+          15,
+          25,
+          0
+        ],
+        "name": "自血而生",
+        "mob": "真狮鹫",
+        "level": 65,
+        "color": "red"
+      },
+      {
+        "type": "map",
+        "map": "基拉巴尼亚山区",
+        "rank": null,
+        "position": [
+          26.1,
+          25.2,
+          0
+        ],
+        "mob": "真狮鹫",
+        "level": 68
       }
     ]
   },
@@ -2122,7 +2203,8 @@
         "type": "dungeon",
         "name": "假面狂欢29",
         "mob": "水之式神、水龙卷",
-        "level": 60
+        "level": 60,
+        "note": "天青斗场中最难的一关，请慎重考虑"
       }
     ]
   },
@@ -2338,6 +2420,14 @@
         "mob": "神殿斯卡尼特",
         "level": 70,
         "color": "red"
+      },
+      {
+        "type": "dungeon",
+        "name": "陈旧的卡冈图亚革地图",
+        "mob": "护领棕仙",
+        "level": 100,
+        "note": "地表小怪",
+        "color": "red"
       }
     ]
   },
@@ -2364,6 +2454,20 @@
         "mob": "疫虫",
         "level": 59,
         "color": "yellow"
+      },
+      {
+        "type": "dungeon",
+        "name": "腐坏遗迹无限城市街古迹",
+        "mob": "阿里奥克",
+        "level": 50,
+        "note": "2号boss"
+      },
+      {
+        "type": "dungeon",
+        "name": "无限城的死斗",
+        "mob": "恩奇都",
+        "level": 50,
+        "note": "会使用但是个扇形AOE"
       }
     ]
   },
@@ -2569,8 +2673,7 @@
           0
         ],
         "mob": "长颈驼",
-        "level": 56,
-        "color": "yellow"
+        "level": 56
       },
       {
         "type": "map",
@@ -2582,14 +2685,21 @@
           0
         ],
         "mob": "长颈骆",
-        "level": 68,
-        "color": "yellow"
+        "level": 68
       },
       {
         "type": "dungeon",
         "name": "运河宝物库",
         "mob": "运河长颈驼",
         "level": 70,
+        "color": "red"
+      },
+      {
+        "type": "fate",
+        "map": "基拉巴尼亚山区",
+        "name": "复仇鳏夫——涅那乌尼尔",
+        "mob": "涅那乌尼尔",
+        "level": 68,
         "color": "red"
       }
     ]
@@ -2647,7 +2757,7 @@
     "method": [
       {
         "type": "dungeon",
-        "name": "学识宝库加巴勒幻想图书馆",
+        "name": "学识宝库迦巴勒幻想图书馆",
         "mob": "64页",
         "level": 59,
         "note": "疑似在所有人远离拉断线后更容易咏唱",
@@ -2797,7 +2907,8 @@
         "type": "dungeon",
         "name": "腐坏遗迹无限城市街古迹",
         "mob": "瓦魔蛾",
-        "level": 50
+        "level": 50,
+        "note": "1号boss前3体，第3体较远，同时拉到的其他敌人HP50%以下时使用"
       },
       {
         "type": "map",
@@ -2843,7 +2954,8 @@
         "type": "dungeon",
         "name": "邪龙王座龙巢神殿",
         "mob": "雷雅克魔龙",
-        "level": 55
+        "level": 55,
+        "color": "red"
       }
     ]
   },

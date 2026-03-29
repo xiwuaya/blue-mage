@@ -119,15 +119,21 @@ const handleOrderChange = (val: boolean) => {
               本网页内容最近一次更新于<strong>2026年3月28日</strong>（7.45版本）。
             </p>
             <p>
-              数据来源于<a href="https://thewakingsands.github.io/blue-mage/" target="_blank"
-                rel="noopener noreferrer">青魔法师技能学习指南</a>，同时参考了<a href="http://www.timelysnow.com.cn/bluemagicebook/"
-                target="_blank" rel="noopener noreferrer">青魔法电子书</a>。
-            </p>
-            <p>
               有对网页的建议反馈、或帮忙提供新的学习途径样本，可以在GitHub提出 <a href="https://github.com/xiwuaya/blue-mage/issues" target="_blank"
                 rel="noopener noreferrer">Issue</a> 或加<a href="https://qm.qq.com/q/haCYH87Vug?from=tim" target="_blank"
                 rel="noopener noreferrer">QQ3278542912</a>
             </p>
+            <p>
+              数据来源于<a href="https://thewakingsands.github.io/blue-mage/" target="_blank"
+                rel="noopener noreferrer">青魔法师技能学习指南</a>，同时参考了<a href="http://www.timelysnow.com.cn/bluemagicebook/"
+                target="_blank" rel="noopener noreferrer">青魔法电子书</a>
+            </p>
+            <!-- <p>
+              在此衷心感谢<a href="https://thewakingsands.github.io/blue-mage/" target="_blank"
+                rel="noopener noreferrer">青魔法师技能学习指南</a>和<a href="http://www.timelysnow.com.cn/bluemagicebook/"
+                target="_blank" rel="noopener noreferrer">青魔法电子书</a>提供的框架及数据，以及 <strong>伊春@银泪湖  千羽绘@银泪湖 </strong>对数据的大量补充和整理。
+            </p>
+            <p>同时感谢所有参与测试及热爱青魔的广大玩家们，正是因为有你们的坚持与热爱，青魔才能在代代传承中不断探索，薪火相传，让后来者得以站在前人的肩膀上继续前行。</p> -->
           </div>
         </div>
       </div>
@@ -230,7 +236,8 @@ input[type="number"]::-webkit-inner-spin-button {
 .help-icon {
   width: 22px;
   height: 22px;
-  background-color: #ffbe31;  /* 使用主题黄 from App.vue */
+  background-color: #ffbe31;
+  /* 使用主题黄 from App.vue */
   color: #1a1a1a;
   border-radius: 50%;
   text-align: center;
@@ -258,8 +265,10 @@ input[type="number"]::-webkit-inner-spin-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;  /* 确保在最上层 */
+  z-index: 2000;
+  /* 确保在最上层 */
 }
+
 /* --- 弹窗内容样式 --- */
 .modal-content {
   background-color: #2c2c2c;
@@ -300,6 +309,7 @@ input[type="number"]::-webkit-inner-spin-button {
   color: #ffbe31;
   text-decoration: underline;
 }
+
 /* --- 特定颜色文字定义 --- */
 .color-def {
   font-weight: bold;
