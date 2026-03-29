@@ -119,9 +119,8 @@ const handleOrderChange = (val: boolean) => {
               本网页内容最近一次更新于<strong>2026年3月28日</strong>（7.45版本）。
             </p>
             <p>
-              有对网页的建议反馈、或帮忙提供新的学习途径样本，可以在GitHub提出 <a href="https://github.com/xiwuaya/blue-mage/issues" target="_blank"
-                rel="noopener noreferrer">Issue</a> 或加<a href="https://qm.qq.com/q/haCYH87Vug?from=tim" target="_blank"
-                rel="noopener noreferrer">QQ3278542912</a>
+              有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+                rel="noopener noreferrer">点此提出建议</a>
             </p>
             <p>
               数据来源于<a href="https://thewakingsands.github.io/blue-mage/" target="_blank"
