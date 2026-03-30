@@ -38,6 +38,13 @@ const emit = defineEmits<{
 
 // 2. 提取地点或副本名称作为搜索关键词，过滤掉特殊途径（因为描述太长）
 const searchKeyword = computed(() => {
+  // --- 新增：如果是 fate 类型，强制优先使用 map 字段 ---
+  if (props.method.type === 'fate' && 'map' in props.method && props.method.map) {
+      return props.method.map;
+    }
+  // ----------------------------------------------------
+
+  // 其他类型保持原有的优先级：有 name 取 name，没有 name 取 map
   if ('name' in props.method && props.method.name) return props.method.name;
   if ('map' in props.method && props.method.map) return props.method.map;
   return '';
