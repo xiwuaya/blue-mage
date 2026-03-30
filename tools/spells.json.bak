@@ -692,8 +692,7 @@
         "type": "dungeon",
         "name": "古代遗迹喀恩埋没圣堂",
         "mob": "圣堂蝙蝠",
-        "level": 35,
-        "color": "red"
+        "level": 35
       },
       {
         "type": "dungeon",
