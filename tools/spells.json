@@ -38,8 +38,17 @@
       {
         "type": "dungeon",
         "name": "幻龙残骸密约之塔",
-        "mob": "独爪妖禽、魔导炮艇",
-        "level": 50
+        "mob": "独爪妖禽",
+        "level": 50,
+        "note": "BOSS #1 副本已修改",
+        "color": "grey"
+      },
+      {
+        "type": "dungeon",
+        "name": "幻龙残骸密约之塔",
+        "mob": "魔导炮艇",
+        "level": 50,
+        "note": "BOSS #2"
       },
       {
         "type": "raid",
@@ -511,7 +520,6 @@
         "type": "dungeon",
         "name": "名门府邸静语庄园",
         "mob": "庄园的守卫",
-        "note": "血量低于 20% 后使用",
         "level": 28,
         "color": "yellow"
       },
@@ -771,10 +779,11 @@
       },
       {
         "type": "map",
-        "map": "黑衣森林中央林区",
+        "map": "黑衣森林东部林区",
         "rank": "S",
-        "mob": "乌尔迦鲁",
-        "level": 50
+        "mob": "乌尔伽鲁",
+        "level": 50,
+        "color": "red"
       },
       {
         "type": "dungeon",
@@ -2008,7 +2017,7 @@
       {
         "type": "raid",
         "name": "伊甸希望乐园 共鸣之章2",
-        "mob": "伊弗利特",
+        "mob": "赤翼罗羯坨博叉",
         "level": 80,
         "note": "确定无法习得，原因未知",
         "color": "grey"
@@ -2016,7 +2025,7 @@
       {
         "type": "raid",
         "name": "伊甸零式希望乐园 共鸣之章2",
-        "mob": "伊弗利特",
+        "mob": "赤翼罗羯坨博叉",
         "level": 80,
         "note": "未确定可习得",
         "color": "grey"
