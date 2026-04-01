@@ -3706,7 +3706,7 @@
     "icon_book_hr1": "072300_hr1.png",
     "method": [
       {
-        "type": "dungeon",
+        "type": "raid",
         "name": "失落之都拉巴纳斯塔",
         "mob": "?",
         "level": 70,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import {
   spells,
   learnedByNo,
@@ -9,6 +9,8 @@ import {
 } from "../lib/spell";
 import type { FilterTypes, SpellStatusArray } from "@/lib/interface";
 import SpellItem from "./SpellItem.vue";
+// 新增：引入本地存储方法
+import { loadSetting, saveSetting } from "../lib/setting";
 
 const props = defineProps<{
   filterTypes: FilterTypes;
@@ -23,10 +25,19 @@ const emit = defineEmits<{
   (e: "search", keyword: string): void;
 }>();
 
-const notLearnedOnly = ref(true);
-
+// --- 修改：从本地存储读取初始状态，如果从未设置过则默认为 true ---
+const notLearnedOnly = ref(loadSetting<boolean>("notLearnedOnly") ?? true);
 // 新增：用于控制是否隐藏红/灰颜色的开关
-const hideSpecialColor = ref(true);
+const hideSpecialColor = ref(loadSetting<boolean>("hide-special-color") ?? true);
+
+// --- 新增：监听 notLearnedOnly和hideSpecialColor 的变化，一旦改变就自动保存到本地 ---
+watch(notLearnedOnly, (newVal) => {
+  saveSetting("notLearnedOnly", newVal);
+});
+watch(hideSpecialColor, (newVal) => {
+  saveSetting("hide-special-color", newVal);
+});
+// -------------------------------------------------------------
 
 type Mode = "search" | "notLearned" | "all";
 const mode = computed<Mode>(() => {
