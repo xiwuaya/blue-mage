@@ -996,7 +996,7 @@
         "type": "dungeon",
         "name": "文明古迹奇坦那神影洞",
         "mob": "奇坦那回声",
-        "note": "BOSS#2后小怪2只。未确定可习得",
+        "note": "BOSS#2后小怪2只",
         "level": 75,
         "color": "red"
       },
@@ -1670,7 +1670,7 @@
         "name": "失落之都拉巴纳斯塔",
         "mob": "古奇美拉",
         "level": 70,
-        "note": "BOSS#2后精英怪1只",
+        "note": "BOSS#2后精英怪2只",
         "color": "red"
       },
       {
@@ -1758,7 +1758,7 @@
         "name": "失落之都拉巴纳斯塔",
         "mob": "古奇美拉",
         "level": 70,
-        "note": "BOSS#2后精英怪1只",
+        "note": "BOSS#2后精英怪2只",
         "color": "red"
       },
       {
@@ -2260,8 +2260,7 @@
           0
         ],
         "mob": "狮鹫",
-        "level": 59,
-        "color": "yellow"
+        "level": 59
       },
       {
         "type": "dungeon",
@@ -2459,7 +2458,7 @@
       {
         "type": "dungeon",
         "name": "红玉火山狱之盖",
-        "mob": "狱炎火蛇",
+        "mob": "火蛇、狱炎火蛇",
         "level": 70
       }
     ]
