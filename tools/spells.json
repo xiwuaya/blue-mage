@@ -628,7 +628,7 @@
         "name": "星歌异闻：伟大武士的证明",
         "mob": "守序小魔精",
         "level": 28,
-        "note": "5月8日-5月25日，活动开放中",
+        "note": "5月8日-5月25日，活动fate开放中",
         "color": "red"
       }
     ]
@@ -1166,7 +1166,8 @@
         "rank": "B",
         "position": [],
         "mob": "血腥玛丽",
-        "level": 50
+        "level": 50,
+        "color": "red"
       }
     ]
   },
@@ -1271,8 +1272,8 @@
         "name": "星歌异闻：镜里蕴奥",
         "mob": "恐慌巨龙",
         "level": 33,
-        "note": "5月8日-5月25日，活动开放中",
-        "color": "red"
+        "note": "5月8日-5月25日，活动fate开放中",
+        "color": "yellow"
       }
     ]
   },
@@ -3043,7 +3044,7 @@
         "name": "学识宝库迦巴勒幻想图书馆",
         "mob": "64页",
         "level": 59,
-        "note": "疑似在所有人远离拉断线后更容易咏唱",
+        "note": "在所有人远离拉断线后更容易咏唱",
         "color": "yellow"
       }
     ]
@@ -3258,12 +3259,14 @@
         "type": "dungeon",
         "name": "腐坏遗迹无限城市街古迹",
         "mob": "腐坏贪吃鬼",
-        "level": 50
+        "level": 50,
+        "note": "BOSS#1"
       },
       {
         "type": "raid",
         "name": "巴哈姆特大迷宫 邂逅之章1",
         "mob": "神杖巨蛇",
+        "note": "最终BOSS",
         "level": 50
       },
       {
@@ -3279,7 +3282,7 @@
         "mob": "泥口花",
         "level": 70,
         "color": "yellow",
-        "note": "同一副本还有专属技能 87污泥泼洒"
+        "note": "BOSS#1 同一副本还有专属技能 87污泥泼洒"
       },
       {
         "type": "map",
@@ -3469,7 +3472,8 @@
         "rank": "B",
         "position": [],
         "mob": "闪雷击 鱼雷",
-        "level": 70
+        "level": 70,
+        "color": "red"
       }
     ]
   },
@@ -3504,7 +3508,8 @@
         "rank": "B",
         "position": [],
         "mob": "闪雷击 鱼雷",
-        "level": 70
+        "level": 70,
+        "color": "red"
       }
     ]
   },
@@ -3764,7 +3769,8 @@
         "rank": "B",
         "position": [],
         "mob": "蛇仆蚂蜓",
-        "level": 70
+        "level": 70,
+        "color": "red"
       },
       {
         "type": "dungeon",
@@ -4211,7 +4217,8 @@
         "rank": "B",
         "position": [],
         "mob": "金刚鸠摩罗",
-        "level": 90
+        "level": 90,
+        "color": "red"
       }
     ]
   },
