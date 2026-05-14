@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@thewakingsands/kit-tooltip": "^0.3.5",
-    "vue": "^3.2.29"
+    "vue": "~3.2.29"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
