@@ -22,6 +22,8 @@ const filterTypes = ref<FilterTypes>({
   dungeon: true,
   trail: true,
   raid: true,
+  treasure: true, // 新增这一行让其默认开启
+  guildhests: true, //新增
 });
 const filterLevel = ref(80);
 const orderByLevel = ref(false);

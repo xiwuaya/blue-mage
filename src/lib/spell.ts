@@ -1,6 +1,7 @@
 import rawSpells from "../../tools/spells.json";
 import type { SpellStatusArray } from "./interface";
 
+// 1. 在枚举中新增 Treasure
 export enum SpellType {
   Map = "map",
   Raid = "raid",
@@ -8,6 +9,8 @@ export enum SpellType {
   Trail = "trail",
   FATE = "fate",
   Special = "special",
+  Treasure = "treasure", // 新增：寻宝类型
+  Guildhests = "guildhests", //新增：行会令
 }
 
 export interface SpellMethodBase {
@@ -43,11 +46,27 @@ export interface SpellMethodSpecial extends SpellMethodBase {
   text: string;
 }
 
+// 2. 新增 Treasure 接口 (继承包含 level, color, note 的 Base，再单独指定 name 和 mob)
+export interface SpellMethodTreasure extends SpellMethodBase {
+  type: SpellType.Treasure;
+  name: string;
+  mob: string;
+}
+
+export interface SpellMethodGuildhests extends SpellMethodBase {
+  type: SpellType.Guildhests;
+  name: string;
+  mob: string;
+}
+
+// 3. 将其加入联合类型
 export type SpellMethod =
   | SpellMethodMap
   | SpellMethodSpecial
   | SpellMethodFate
-  | SpellMethodInstance;
+  | SpellMethodInstance
+  | SpellMethodTreasure // 新增;
+  | SpellMethodGuildhests; // 新增;
 
 export interface Spell {
   no: string;
@@ -66,6 +85,7 @@ export interface Spell {
 
 export const spells = rawSpells as Spell[];
 
+// 4. 修改 renderSpellMethod，让它和副本/讨伐一样渲染为 "名字 - 怪物"
 export function renderSpellMethod(method: SpellMethod) {
   switch (method.type) {
     case SpellType.Map: {
@@ -81,6 +101,8 @@ export function renderSpellMethod(method: SpellMethod) {
     case SpellType.Raid:
     case SpellType.Dungeon:
     case SpellType.Trail:
+    case SpellType.Treasure:
+    case SpellType.Guildhests: // 新增这一行复用渲染逻辑
       return `${method.name} - ${method.mob}`;
     case SpellType.FATE:
       return `${method.map} - ${method.name} - ${method.mob}`;

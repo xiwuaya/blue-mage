@@ -455,7 +455,7 @@
         "level": 50
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "惊奇百宝城",
         "mob": "七彩巨像",
         "level": 90,
@@ -924,8 +924,9 @@
         "color": "red"
       },
       {
-        "type": "special",
-        "text": "行会令：击溃哥布林炸弹军团！ - 法外哥布林",
+        "type": "guildhests",
+        "name": "行会令：击溃哥布林炸弹军团！",
+        "mob": " 法外哥布林",
         "level": 25,
         "color": "red"
       }
@@ -1583,8 +1584,9 @@
         "note": "2号boss后打完粘液怪1体"
       },
       {
-        "type": "special",
-        "text": "行会令：突破所有关门，讨伐最深处的敌人！ - 越壁蟾蜍",
+        "type": "guildhests",
+        "name": "行会令：突破所有关门，讨伐最深处的敌人！",
+        "mob": "越壁蟾蜍",
         "level": 15,
         "color": "red"
       }
@@ -1705,7 +1707,7 @@
         "color": "red"
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "运河宝物库神殿",
         "mob": "神殿奇美拉",
         "note": "寻宝：陈旧的瞪羚革地图（G10）",
@@ -1795,7 +1797,7 @@
         "color": "red"
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "运河宝物库神殿",
         "mob": "神殿奇美拉",
         "note": "寻宝：陈旧的瞪羚革地图（G10）",
@@ -2426,7 +2428,7 @@
         "note": "天青斗场中最难的一关，请慎重考虑"
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "巡梦金库",
         "mob": "金库液态灵魂",
         "level": 100,
@@ -2658,7 +2660,7 @@
         "color": "red"
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "运河宝物库神殿",
         "mob": "神殿斯卡尼特",
         "level": 70,
@@ -2666,7 +2668,7 @@
         "color": "red"
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "陈旧的卡冈图亚革地图",
         "mob": "护领棕仙",
         "level": 100,
@@ -2802,7 +2804,7 @@
         "level": 50
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "运河宝物库神殿",
         "mob": "神殿阿班达",
         "level": 70,
@@ -2963,7 +2965,7 @@
         "level": 68
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "运河宝物库",
         "mob": "运河长颈驼",
         "level": 70,
@@ -3773,7 +3775,7 @@
         "color": "red"
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "运河宝物库",
         "mob": "运河恐甲蚂蜓",
         "level": 70,
@@ -3891,7 +3893,7 @@
         "level": 70
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "运河宝物库",
         "mob": "运河陀鲁婆",
         "level": 70,
@@ -3920,7 +3922,7 @@
         "color": "yellow"
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "运河宝物库神殿",
         "mob": "神殿凯尔派",
         "level": 70,
