@@ -52,6 +52,15 @@ const mode = computed<Mode>(() => {
 
 const hiddenColors = ['red', '#ff0000', 'grey', '#666'];
 
+// 辅助函数：将底层获取途径映射到 UI 过滤器的 key 上
+const getFilterKey = (type: string): keyof FilterTypes => {
+  if (type==='fate' || type === 'treasure' || type === 'guildhests' ) {
+    return 'other';
+  }
+  return type as keyof FilterTypes;
+};
+
+
 const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
   search: (spell) => {
     const keyword = props.filter;
@@ -90,7 +99,8 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
       spell.level <= props.filterLevel &&
       spell.method.some((m) => {
         // 条件1：该途径必须在当前勾选的 filterTypes 中
-        if (!props.filterTypes[m.type]) return false;
+        if (!props.filterTypes[getFilterKey(m.type)]) return false;
+        //if (!props.filterTypes[m.type]) return false;
 
         // 条件2：如果开启了隐藏特定颜色，则该途径的颜色不能是被隐藏的颜色
         if (hideSpecialColor.value) {
@@ -107,7 +117,8 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
     return (
       spell.level <= props.filterLevel &&
       spell.method.some((m) => {
-        if (!props.filterTypes[m.type]) return false;
+        if (!props.filterTypes[getFilterKey(m.type)]) return false;
+        //if (!props.filterTypes[m.type]) return false;
 
         if (hideSpecialColor.value) {
           const c = ((m as any).color || '').toLowerCase();

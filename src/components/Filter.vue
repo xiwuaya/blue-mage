@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { FilterTypes } from "@/lib/interface";
+// 1. 修改引入，增加 FilterKey
+import type { FilterTypes, FilterKey } from "@/lib/interface";
 import type { SpellType } from "@/lib/spell";
 import Title from "./Title.vue";
 import Indicator from "./Indicator.vue";
@@ -10,9 +11,10 @@ const props = defineProps<{
   orderByLevel: boolean;
 }>();
 
+// 2. 将 typeChange 事件的值类型改为 FilterKey
 const emit = defineEmits<{
   (e: "levelChange", val: number): void;
-  (e: "typeChange", val: SpellType, checked: boolean): void;
+  (e: "typeChange", val: FilterKey, checked: boolean): void;
   (e: "orderChange", val: boolean): void;
 }>();
 
@@ -22,8 +24,9 @@ const handleInput = (e: Event) => {
   emit("levelChange", val);
 };
 
-const handleClick = (type: SpellType, checked: boolean) => {
-  emit("typeChange", type, !checked);
+// 3. 这里的 type 接收字符串，并断言为 FilterKey
+const handleClick = (type: string | number, checked: boolean) => {
+  emit("typeChange", type as FilterKey, !checked);
 };
 
 const handleOrder = (order: boolean) => {

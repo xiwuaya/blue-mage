@@ -49,11 +49,6 @@ onBeforeMount(() => {
     ...filterTypes.value,
     ...(loadSetting("filter-types") || {}),
   };
-  // --- 新增：剔除旧版本遗留的分类 ---
-  delete (filterTypes.value as any).fate;
-  delete (filterTypes.value as any).treasure;
-  delete (filterTypes.value as any).guildhests
-  // --------------------------------------------------------
   filterLevel.value = loadSetting("filter-level") || 80;
   orderByLevel.value = loadSetting("order-by-level") || false;
 });
