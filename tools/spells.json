@@ -158,6 +158,13 @@
         "level": 50
       },
       {
+        "type": "dungeon",
+        "name": "幻龙残骸密约之塔",
+        "mob": "第六大队魔导先锋",
+        "level": 50,
+        "note": "BOSS#2召唤的小怪"
+      },
+      {
         "type": "fate",
         "map": "北萨纳兰",
         "name": "逆向工程",
@@ -1459,7 +1466,7 @@
     "action": 11412,
     "patch": "4.5",
     "spell": "滑舌",
-    "level": 14,
+    "level": 2,
     "icon": "003280.png",
     "icon_hr1": "003280_hr1.png",
     "icon_book": "072230.png",
@@ -3357,8 +3364,9 @@
       {
         "type": "dungeon",
         "name": "地脉灵灯天狼星灯塔",
-        "mob": "被腐化连线后产生的小怪",
+        "mob": "腐化物",
         "level": 60,
+        "note": "BOSS#1召唤的小怪，无法从此前同名小怪处习得",
         "color": "yellow"
       }
     ]
