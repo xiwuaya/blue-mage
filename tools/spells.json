@@ -78,7 +78,7 @@
         "level": 50
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢20",
         "mob": "奥尔特罗斯",
         "level": 50
@@ -117,7 +117,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "拉诺西亚外地",
         "rank": "A",
         "position": [],
@@ -214,7 +214,7 @@
         "level": 50
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢15",
         "mob": "斗兽系统",
         "level": 50
@@ -233,7 +233,7 @@
     "icon_book_hr1": "072219_hr1.png",
     "method": [
       {
-        "type": "map",
+        "type": "hunt",
         "map": "北萨纳兰",
         "rank": "B",
         "position": [],
@@ -324,7 +324,7 @@
         "note": "同一副本还有专属技能 4狂乱"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "伊尔美格",
         "rank": "S",
         "position": [],
@@ -355,7 +355,7 @@
         "note": "解除限制时也必定学会"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "中萨纳兰",
         "rank": "S",
         "position": [],
@@ -456,7 +456,7 @@
         "note": "老二后面"
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢25",
         "mob": "启示者",
         "level": 50
@@ -573,7 +573,7 @@
         "level": 50
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "拉诺西亚高地",
         "rank": "A",
         "position": [],
@@ -624,7 +624,7 @@
         "level": 50
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢25",
         "mob": "启示者",
         "level": 50
@@ -811,7 +811,7 @@
         "level": 12
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "黑衣森林东部林区",
         "rank": "S",
         "mob": "乌尔伽鲁",
@@ -918,7 +918,7 @@
         "note": "2号boss无限刷，boss之前同名怪不会使用该技能"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "龙堡内陆低地",
         "rank": "A",
         "position": [
@@ -1169,7 +1169,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "东拉诺西亚",
         "rank": "B",
         "position": [],
@@ -1197,7 +1197,7 @@
         "level": 50
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢20",
         "mob": "提丰",
         "level": 50
@@ -1486,7 +1486,7 @@
         "color": "red"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "拉诺西亚低地",
         "rank": "S",
         "position": [],
@@ -1687,13 +1687,13 @@
         "note": "成就危命。即死效果与比例伤害有效。似乎在低体力时更容易咏唱"
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢21",
         "mob": "阿皮狄马",
         "level": 50
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢25",
         "mob": "阿波卡里普斯",
         "level": 50
@@ -1777,13 +1777,13 @@
         "note": "成就危命。即死效果与比例伤害有效。似乎在低体力时更容易咏唱"
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢21",
         "mob": "阿皮狄马",
         "level": 50
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢25",
         "mob": "阿波卡里普斯",
         "level": 50
@@ -2021,7 +2021,7 @@
         "note": "BOSS#3。解除限制时也必定学会。低于一定生命值后咏唱，别秒了。"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "黑衣森林南部林区",
         "rank": "S",
         "position": [],
@@ -2389,7 +2389,7 @@
         "level": 68
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "基拉巴尼亚山区",
         "rank": "A",
         "position": [
@@ -2428,7 +2428,7 @@
         "level": 60
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢29",
         "mob": "水之式神、水龙卷",
         "level": 60,
@@ -2641,7 +2641,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "龙堡内陆低地",
         "rank": "A",
         "position": [
@@ -2771,7 +2771,7 @@
     "icon_book_hr1": "072260_hr1.png",
     "method": [
       {
-        "type": "map",
+        "type": "hunt",
         "map": "龙堡内陆低地",
         "rank": "A",
         "position": null,
@@ -2805,7 +2805,7 @@
         "level": 60
       },
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢24",
         "mob": "艾匹罗基",
         "level": 50
@@ -3294,7 +3294,7 @@
         "note": "BOSS#1 同一副本还有专属技能 87污泥泼洒"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "基拉巴尼亚湖区",
         "rank": "A",
         "position": [],
@@ -3304,7 +3304,7 @@
         "color": "red"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "萨维奈岛",
         "rank": "A",
         "position": [],
@@ -3336,7 +3336,7 @@
     "icon_book_hr1": "072277_hr1.png",
     "method": [
       {
-        "type": "dungeon",
+        "type": "carnivale",
         "name": "假面狂欢24",
         "mob": "斗场抄写员",
         "level": 50
@@ -3477,7 +3477,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "延夏",
         "rank": "B",
         "position": [],
@@ -3513,7 +3513,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "延夏",
         "rank": "B",
         "position": [],
@@ -3641,7 +3641,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "伊尔美格",
         "rank": "A",
         "position": [],
@@ -3774,7 +3774,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "基拉巴尼亚山区",
         "rank": "B",
         "position": [],
@@ -3893,7 +3893,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "基拉巴尼亚湖区",
         "rank": "A",
         "position": [],
@@ -4157,7 +4157,7 @@
         "level": 70
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "珂露西亚岛",
         "rank": "A",
         "position": [],
@@ -4222,7 +4222,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "hunt",
         "map": "萨维奈岛",
         "rank": "B",
         "position": [],

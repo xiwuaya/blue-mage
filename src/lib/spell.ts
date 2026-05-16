@@ -9,8 +9,10 @@ export enum SpellType {
   Trail = "trail",
   FATE = "fate",
   Special = "special",
-  Treasure = "treasure", // 新增：寻宝类型
+  Treasure = "treasure", // 新增：寻宝
   Guildhests = "guildhests", //新增：行会令
+  Hunt = "hunt", //新增：怪物狩猎
+  Carnivale = "carnivale", //新增：假面狂欢
 }
 
 export interface SpellMethodBase {
@@ -21,15 +23,16 @@ export interface SpellMethodBase {
 }
 
 export interface SpellMethodMap extends SpellMethodBase {
-  type: SpellType.Map;
+  type: SpellType.Map | SpellType.Hunt;
   map: string;
   rank: string | null;
   position: [number, number] | [number, number, number] | number[];
   mob: string;
 }
 
+// 2.新增类型
 export interface SpellMethodInstance extends SpellMethodBase {
-  type: SpellType.Raid | SpellType.Dungeon | SpellType.Trail;
+  type: SpellType.Raid | SpellType.Dungeon | SpellType.Trail | SpellType.Carnivale | SpellType.Treasure | SpellType.Guildhests;
   name: string;
   mob: string;
 }
@@ -46,18 +49,6 @@ export interface SpellMethodSpecial extends SpellMethodBase {
   text: string;
 }
 
-// 2. 新增 Treasure 接口 (继承包含 level, color, note 的 Base，再单独指定 name 和 mob)
-export interface SpellMethodTreasure extends SpellMethodBase {
-  type: SpellType.Treasure;
-  name: string;
-  mob: string;
-}
-
-export interface SpellMethodGuildhests extends SpellMethodBase {
-  type: SpellType.Guildhests;
-  name: string;
-  mob: string;
-}
 
 // 3. 将其加入联合类型
 export type SpellMethod =
@@ -65,8 +56,6 @@ export type SpellMethod =
   | SpellMethodSpecial
   | SpellMethodFate
   | SpellMethodInstance
-  | SpellMethodTreasure // 新增;
-  | SpellMethodGuildhests; // 新增;
 
 export interface Spell {
   no: string;
@@ -88,7 +77,8 @@ export const spells = rawSpells as Spell[];
 // 4. 修改 renderSpellMethod，让它和副本/讨伐一样渲染为 "名字 - 怪物"
 export function renderSpellMethod(method: SpellMethod) {
   switch (method.type) {
-    case SpellType.Map: {
+    case SpellType.Map:
+    case SpellType.Hunt: {
       const pos = method.position;
       return `${method.map} ${method.rank ? `[${method.rank}]` : ""}${
         pos && pos.length
@@ -102,7 +92,8 @@ export function renderSpellMethod(method: SpellMethod) {
     case SpellType.Dungeon:
     case SpellType.Trail:
     case SpellType.Treasure:
-    case SpellType.Guildhests: // 新增这一行复用渲染逻辑
+    case SpellType.Guildhests:
+    case SpellType.Carnivale: // 新增这一行复用渲染逻辑
       return `${method.name} - ${method.mob}`;
     case SpellType.FATE:
       return `${method.map} - ${method.name} - ${method.mob}`;

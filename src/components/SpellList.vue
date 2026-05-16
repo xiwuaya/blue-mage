@@ -54,8 +54,11 @@ const hiddenColors = ['red', '#ff0000', 'grey', '#666'];
 
 // 辅助函数：将底层获取途径映射到 UI 过滤器的 key 上
 const getFilterKey = (type: string): keyof FilterTypes => {
-  if (type==='fate' || type === 'treasure' || type === 'guildhests' ) {
+  if (type==='fate' || type==='hunt' || type === 'treasure' || type === 'guildhests' ) {
     return 'other';
+  }
+  if (type==='carnivale') {
+    return 'special';
   }
   return type as keyof FilterTypes;
 };
