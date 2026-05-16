@@ -4162,7 +4162,8 @@
         "rank": "A",
         "position": [],
         "mob": "小小杀手",
-        "level": 80
+        "level": 80,
+        "color": "red"
       }
     ]
   },
