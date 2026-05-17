@@ -57,8 +57,8 @@ const getFilterKey = (type: string): keyof FilterTypes => {
   if (type==='fate' || type==='hunt' || type === 'treasure' || type === 'guildhests' ) {
     return 'other';
   }
-  if (type==='carnivale') {
-    return 'special';
+  if (type==='special') {
+    return 'carnivale';
   }
   return type as keyof FilterTypes;
 };

@@ -1252,7 +1252,7 @@
         "color": "yellow"
       },
       {
-        "type": "map",
+        "type": "levequests",
         "map": "摩杜纳",
         "rank": null,
         "position": null,
@@ -2590,7 +2590,7 @@
         "level": 50
       },
       {
-        "type": "map",
+        "type": "levequests",
         "map": "龙堡内陆低地",
         "rank": null,
         "position": null,
@@ -2852,7 +2852,7 @@
     "icon_book_hr1": "072263_hr1.png",
     "method": [
       {
-        "type": "map",
+        "type": "levequests",
         "map": "龙堡内陆低地",
         "rank": null,
         "position": null,

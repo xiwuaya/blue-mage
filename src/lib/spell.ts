@@ -13,6 +13,7 @@ export enum SpellType {
   Guildhests = "guildhests", //新增：行会令
   Hunt = "hunt", //新增：怪物狩猎
   Carnivale = "carnivale", //新增：假面狂欢
+  Levequests = "levequests",//新增：理符任务
 }
 
 export interface SpellMethodBase {
@@ -23,7 +24,7 @@ export interface SpellMethodBase {
 }
 
 export interface SpellMethodMap extends SpellMethodBase {
-  type: SpellType.Map | SpellType.Hunt;
+  type: SpellType.Map | SpellType.Hunt | SpellType.Levequests;
   map: string;
   rank: string | null;
   position: [number, number] | [number, number, number] | number[];
@@ -78,7 +79,8 @@ export const spells = rawSpells as Spell[];
 export function renderSpellMethod(method: SpellMethod) {
   switch (method.type) {
     case SpellType.Map:
-    case SpellType.Hunt: {
+    case SpellType.Hunt:
+    case SpellType.Levequests: {
       const pos = method.position;
       return `${method.map} ${method.rank ? `[${method.rank}]` : ""}${
         pos && pos.length

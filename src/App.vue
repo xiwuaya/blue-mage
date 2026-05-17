@@ -17,7 +17,7 @@ import Progress from "./components/Progress.vue";
 const filter = ref("");
 const spellStatus = ref<SpellStatusArray>([]);
 const filterTypes = ref<FilterTypes>({
-  special: true,
+  carnivale: true,
   map: true,
   dungeon: true,
   trail: true,
@@ -50,6 +50,7 @@ onBeforeMount(() => {
     ...(loadSetting("filter-types") || {}),
   };
   // --- 新增：剔除旧版本遗留的分类 ---
+  delete (filterTypes.value as any).special;
   delete (filterTypes.value as any).fate;
   delete (filterTypes.value as any).treasure;
   delete (filterTypes.value as any).guildhests
