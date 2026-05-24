@@ -248,13 +248,15 @@
         "type": "dungeon",
         "name": "腐坏遗迹无限城市街古迹",
         "mob": "巴尔泽芬",
-        "level": 50
+        "level": 50,
+        "note": "BOSS #3前小怪"
       },
       {
         "type": "dungeon",
         "name": "惨剧灵殿塔姆·塔拉墓园",
         "mob": "但他林、幻影骑士",
-        "level": 50
+        "level": 50,
+        "note": "BOSS #2前小怪"
       }
     ]
   },
@@ -286,7 +288,8 @@
         "type": "dungeon",
         "name": "古代遗迹喀恩埋没圣堂",
         "mob": "圣堂蜂、粪便胡蜂",
-        "level": 35
+        "level": 35,
+        "note": "BOSS #1前小怪"
       },
       {
         "type": "dungeon",
@@ -732,26 +735,30 @@
         "type": "dungeon",
         "name": "名门府邸静语庄园",
         "mob": "阁楼蝙蝠",
-        "level": 28
+        "level": 28,
+        "note": "BOSS #1前小怪"
       },
       {
         "type": "dungeon",
         "name": "古代遗迹喀恩埋没圣堂",
         "mob": "圣堂蝙蝠",
         "level": 35,
+        "note": "BOSS #1前小怪",
         "color": "red"
       },
       {
         "type": "dungeon",
         "name": "流沙迷宫樵鸣洞",
         "mob": "沙漠蝙蝠",
-        "level": 38
+        "level": 38,
+        "note": "开场小怪"
       },
       {
         "type": "dungeon",
         "name": "毒雾洞窟黄金谷",
         "mob": "金谷蝙蝠",
-        "level": 47
+        "level": 47,
+        "note": "BOSS #2前小怪"
       },
       {
         "type": "dungeon",
@@ -764,7 +771,8 @@
         "type": "dungeon",
         "name": "苏醒遗迹喀恩埋没圣堂",
         "mob": "圣堂蝙蝠",
-        "level": 50
+        "level": 50,
+        "note": "BOSS #1前小怪"
       }
     ]
   },
@@ -1005,13 +1013,15 @@
         "type": "dungeon",
         "name": "名门府邸静语庄园",
         "mob": "夫人手提灯",
-        "level": 28
+        "level": 28,
+        "note": "BOSS #3召唤的小怪"
       },
       {
         "type": "dungeon",
         "name": "流沙迷宫樵鸣洞",
         "mob": "榴霰弹怪",
-        "level": 38
+        "level": 38,
+        "note": "BOSS #1前小怪"
       },
       {
         "type": "dungeon",
@@ -1025,7 +1035,8 @@
         "type": "dungeon",
         "name": "地脉灵灯天狼星灯塔",
         "mob": "定时爆弹怪",
-        "level": 60
+        "level": 60,
+        "note": "BOSS#2前后小怪"
       },
       {
         "type": "raid",
@@ -1259,7 +1270,7 @@
         "name": "秘本宝库迦巴勒幻想图书馆",
         "mob": "拜书魔",
         "level": 60,
-        "note": "无读条顺劈，同一副本还有专属技能 60魔法锤 76小侦测。恰好是第一波怪中唯一有催眠抗性的，同步时推荐使用职能技能先将第一波全部催眠，等它放技能后寒冰咆哮+超振动",
+        "note": "BOSS #1前小怪，无读条顺劈，同一副本还有专属技能 60魔法锤 76小侦测。恰好是第一波怪中唯一有催眠抗性的，同步时推荐使用职能技能先将第一波全部催眠，等它放技能后寒冰咆哮+超振动",
         "color": "yellow"
       },
       {
@@ -1267,7 +1278,7 @@
         "map": "摩杜纳",
         "rank": null,
         "position": null,
-        "mob": "理符任务：回收禁书《尖牙利齿的怪物》 暗黑扎哈克",
+        "mob": "焚书任务：回收禁书《尖牙利齿的怪物》 暗黑扎哈克",
         "level": 50,
         "color": "red"
       },
@@ -1397,7 +1408,7 @@
         "type": "dungeon",
         "name": "毒雾洞窟黄金谷",
         "mob": "魔界花、守财夫人",
-        "note": "BOSS #2, BOSS #3前各有一只，BOSS #3",
+        "note": "BOSS #2前一只, BOSS #3前两只，BOSS #3",
         "level": 47
       },
       {
@@ -1412,7 +1423,8 @@
         "type": "dungeon",
         "name": "风水灵庙岩燕庙",
         "mob": "人面树",
-        "level": 70
+        "level": 70,
+        "note": "BOSS #2前小怪"
       }
     ]
   },
@@ -1487,15 +1499,14 @@
       {
         "type": "fate",
         "map": "拉诺西亚低地",
-        "name": "临危受命:蛙蛙子",
+        "name": "蛙蛙子",
         "position": [
           24,
           22,
           0
         ],
         "mob": "杖蟾蜍",
-        "level": 2,
-        "color": "red"
+        "level": 2
       },
       {
         "type": "hunt",
@@ -1593,7 +1604,7 @@
         "name": "毒雾洞黄金谷",
         "mob": "地底夜蟾蜍",
         "level": 47,
-        "note": "开场2体"
+        "note": "BOSS #1前两只"
       },
       {
         "type": "dungeon",
@@ -1667,7 +1678,7 @@
         "name": "流沙迷宫樵鸣洞",
         "mob": "奇美拉",
         "level": 38,
-        "note": "BOSS#3"
+        "note": "BOSS #3"
       },
       {
         "type": "raid",
@@ -1757,7 +1768,7 @@
         "name": "流沙迷宫樵鸣洞",
         "mob": "奇美拉",
         "level": 38,
-        "note": "BOSS#3"
+        "note": "BOSS #3"
       },
       {
         "type": "raid",
@@ -1881,7 +1892,8 @@
         "type": "dungeon",
         "name": "流沙迷宫樵鸣洞",
         "mob": "仙人刺逃兵",
-        "level": 38
+        "level": 38,
+        "note": "BOSS #1后小怪"
       }
     ]
   },
@@ -2538,7 +2550,8 @@
         "type": "dungeon",
         "name": "红玉火山狱之盖",
         "mob": "火蛇、狱炎火蛇",
-        "level": 70
+        "level": 70,
+        "note": "BOSS #2前小怪"
       }
     ]
   },
@@ -3072,7 +3085,7 @@
         "name": "学识宝库迦巴勒幻想图书馆",
         "mob": "64页",
         "level": 59,
-        "note": "在所有人远离拉断线后更容易咏唱",
+        "note": "BOSS #2前小怪，在所有人远离拉断线后更容易咏唱",
         "color": "yellow"
       }
     ]
@@ -3793,6 +3806,7 @@
         ],
         "mob": "恐甲蚂蜓",
         "level": 68,
+        "note": "疑似高血量更容易施放",
         "color": "yellow"
       },
       {

@@ -54,10 +54,10 @@ const hiddenColors = ['red', '#ff0000', 'grey', '#666'];
 
 // 辅助函数：将底层获取途径映射到 UI 过滤器的 key 上
 const getFilterKey = (type: string): keyof FilterTypes => {
-  if (type==='fate' || type==='hunt' || type === 'treasure' || type === 'guildhests' ) {
+  if (type === 'fate' || type === 'hunt' || type === 'treasure' || type === 'guildhests' ) {
     return 'other';
   }
-  if (type==='special') {
+  if (type === 'special') {
     return 'carnivale';
   }
   return type as keyof FilterTypes;
@@ -196,7 +196,7 @@ const allLearned = computed(() =>
         }}：
         <a href="javascript:void(0)" @click="notLearnedOnly = false">
           ○隐藏了已掌握技能
-        </a>，
+        </a>；
         <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
           {{ hideSpecialColor ? '○隐藏了糟糕的学习途径' : '●显示了糟糕的学习途径' }}
         </a>
@@ -205,7 +205,7 @@ const allLearned = computed(() =>
         当前状态：
         <a href="javascript:void(0)" @click="notLearnedOnly = true">
           ●显示了已掌握技能
-        </a>，
+        </a>；
         <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
           {{ hideSpecialColor ? '○隐藏了糟糕的学习途径' : '●显示了糟糕的学习途径' }}
         </a>
