@@ -33,6 +33,7 @@
         "type": "dungeon",
         "name": "纷争要地布雷福洛克斯野营地",
         "mob": "6号哥布林坦克",
+        "note": "BOSS #3",
         "level": 50
       },
       {
@@ -112,7 +113,7 @@
         "type": "dungeon",
         "name": "领航明灯天狼星灯塔",
         "mob": "祖",
-        "note": "打破两个蛋后使用，即死效果与比例伤害有效。同一副本还有专属技能 9苦闷之歌。",
+        "note": "BOSS #2，打破两个蛋后使用，即死效果与比例伤害有效。同一副本还有专属技能 9苦闷之歌。",
         "level": 50,
         "color": "yellow"
       },
@@ -155,6 +156,7 @@
         "type": "dungeon",
         "name": "纷争要地布雷福洛克斯野营地",
         "mob": "3号哥布林装甲",
+        "note": "BOSS #2",
         "level": 50
       },
       {
@@ -321,7 +323,7 @@
         "mob": "塞壬",
         "level": 50,
         "color": "yellow",
-        "note": "同一副本还有专属技能 4狂乱"
+        "note": "BOSS #4，同一副本还有专属技能 4狂乱"
       },
       {
         "type": "hunt",
@@ -352,7 +354,7 @@
         "mob": "数币巨人",
         "level": 47,
         "color": "yellow",
-        "note": "解除限制时也必定学会"
+        "note": "BOSS #2，解除限制时也必定学会"
       },
       {
         "type": "hunt",
@@ -446,14 +448,14 @@
         "name": "骚乱坑道铜铃铜山",
         "mob": "哥革巨像",
         "level": 50,
-        "note": "老二"
+        "note": "BOSS #2"
       },
       {
         "type": "dungeon",
         "name": "苏醒遗迹喀恩埋没圣堂",
         "mob": "喀恩守护者",
         "level": 50,
-        "note": "老二后面"
+        "note": "BOSS #2后面"
       },
       {
         "type": "carnivale",
@@ -545,6 +547,7 @@
         "name": "名门府邸静语庄园",
         "mob": "庄园的守卫",
         "level": 28,
+        "note": "BOSS #1门前小怪",
         "color": "yellow"
       },
       {
@@ -570,6 +573,7 @@
         "type": "dungeon",
         "name": "神灵圣域放浪神古神殿",
         "mob": "冬贝利王",
+        "note": "BOSS #3",
         "level": 50
       },
       {
@@ -621,6 +625,7 @@
         "type": "dungeon",
         "name": "名门府邸静语庄园",
         "mob": "庄园小丑",
+        "note": "BOSS #2",
         "level": 50
       },
       {
@@ -1392,6 +1397,7 @@
         "type": "dungeon",
         "name": "毒雾洞窟黄金谷",
         "mob": "魔界花、守财夫人",
+        "note": "BOSS #2, BOSS #3前各有一只，BOSS #3",
         "level": 47
       },
       {
@@ -1426,7 +1432,7 @@
         "name": "激战城塞石卫塔",
         "mob": "库卡龙龟",
         "level": 50,
-        "note": "即死效果与比例伤害有效",
+        "note": "BOSS #2，即死效果与比例伤害有效",
         "color": "yellow"
       },
       {
@@ -1895,6 +1901,7 @@
         "name": "逆转要害沙斯塔夏溶洞",
         "mob": "克拉肯",
         "level": 50,
+        "note": "BOSS #3",
         "color": "yellow"
       }
     ]
@@ -1915,7 +1922,7 @@
         "name": "武装圣域放浪神古神殿",
         "mob": "折角骑士 寇黑加",
         "level": 50,
-        "note": "即死效果与比例伤害有效",
+        "note": "BOSS #1，即死效果与比例伤害有效",
         "color": "yellow"
       },
       {
@@ -1963,6 +1970,7 @@
         "type": "dungeon",
         "name": "逆转要害沙斯塔夏溶洞",
         "mob": "真红龙虾",
+        "note": "BOSS #1",
         "level": 50
       },
       {
@@ -2593,6 +2601,7 @@
         "type": "dungeon",
         "name": "恶灵府邸静语庄园",
         "mob": "阿修",
+        "note": "BOSS #2",
         "level": 50
       },
       {
@@ -2719,7 +2728,7 @@
         "name": "腐坏遗迹无限城市街古迹",
         "mob": "阿里奥克",
         "level": 50,
-        "note": "2号boss"
+        "note": "BOSS #2"
       },
       {
         "type": "dungeon",
@@ -2842,6 +2851,7 @@
         "name": "草木庭园圣茉夏娜植物园",
         "mob": "鹰锋女王",
         "level": 60,
+        "note": "BOSS #2",
         "color": "yellow"
       }
     ]
@@ -2930,6 +2940,7 @@
         "type": "dungeon",
         "name": "领航明灯天狼星灯塔",
         "mob": "祖",
+        "note": "BOSS #2",
         "level": 50
       },
       {
@@ -3019,6 +3030,7 @@
         "name": "圣教中枢伊修加德教皇厅",
         "mob": "白骑士",
         "level": 57,
+        "note": "BOSS #2前后各有两只",
         "color": "yellow"
       }
     ]
@@ -3039,6 +3051,7 @@
         "name": "圣教中枢伊修加德教皇厅",
         "mob": "黑骑士",
         "level": 57,
+        "note": "BOSS #2前后各有两只",
         "color": "yellow"
       }
     ]
@@ -3275,7 +3288,7 @@
         "name": "腐坏遗迹无限城市街古迹",
         "mob": "腐坏贪吃鬼",
         "level": 50,
-        "note": "BOSS#1"
+        "note": "BOSS #1"
       },
       {
         "type": "raid",
@@ -3546,6 +3559,7 @@
         "name": "恶党孤城黄金阁",
         "mob": "道顺丸",
         "level": 70,
+        "note": "BOSS #2",
         "color": "yellow"
       }
     ]
@@ -3567,7 +3581,7 @@
         "name": "死亡大地终末焦土",
         "mob": "雾龙",
         "level": 70,
-        "note": "需故意留下三龙头之一或更多，否则咏唱会被打断，推荐携带73蜕皮来驱散冻伤，降低翻车率",
+        "note": "BOSS #3，需故意留下三龙头之一或更多，否则咏唱会被打断，推荐携带73蜕皮来驱散冻伤，降低翻车率",
         "color": "yellow"
       }
     ]
@@ -3643,7 +3657,7 @@
         "name": "污染庭园圣茉夏娜植物园",
         "mob": "枯腐泥妖",
         "level": 70,
-        "note": "同一副本还有专属技能 75捕食",
+        "note": "BOSS #3，同一副本还有专属技能 75捕食",
         "color": "yellow"
       },
       {
@@ -3694,6 +3708,7 @@
         "name": "红玉火山狱之盖",
         "mob": "玄武",
         "level": 70,
+        "note": "BOSS #3",
         "color": "yellow"
       }
     ]
@@ -3714,6 +3729,7 @@
         "type": "dungeon",
         "name": "修行古刹星导寺",
         "mob": "双豹伊沃恩",
+        "note": "BOSS #3",
         "level": 70,
         "color": "yellow"
       }
@@ -3735,7 +3751,7 @@
         "type": "dungeon",
         "name": "修行古刹星导寺",
         "mob": "凶豹所闻，凶豹所忆",
-        "note": "在另一方被击杀后使用",
+        "note": "BOSS #1，在另一方被击杀后使用",
         "level": 70
       },
       {
@@ -3933,6 +3949,7 @@
         "name": "沉没神殿斯卡拉遗迹",
         "mob": "凯尔派",
         "level": 70,
+        "note": "BOSS #1",
         "color": "yellow"
       },
       {
@@ -4067,6 +4084,7 @@
         "name": "风水灵庙岩燕庙",
         "mob": "齐天大圣",
         "level": 70,
+        "note": "BOSS #3",
         "color": "yellow"
       }
     ]
