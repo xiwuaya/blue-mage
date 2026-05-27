@@ -9,6 +9,8 @@ import Indicator from "./Indicator.vue";
 const props = defineProps<{
   spell: Spell;
   learned: boolean;
+  unlearnedCount?: number;
+  showUnlearnedCount?: boolean;
 }>();
 const emit = defineEmits<{
   (e: "change", status: boolean): void;
@@ -38,6 +40,9 @@ const emit = defineEmits<{
         </Tag>
         {{ props.spell.spell }}
         <small>(Lv.{{ props.spell.level }})</small>
+        <small v-if="props.showUnlearnedCount" class="unlearned-count text-gold">
+          (未掌握人数: {{ props.unlearnedCount }})
+        </small>
       </h4>
       <ul class="methods">
         <li v-for="(m, mi) in props.spell.method" :key="mi">
@@ -78,6 +83,14 @@ const emit = defineEmits<{
 
 .content .indicator {
   margin-right: 3px;
+}
+
+.unlearned-count {
+  margin-left: 8px;
+  font-weight: bold;
+}
+.text-gold {
+  color: #ffbe31;
 }
 
 .methods {

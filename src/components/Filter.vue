@@ -7,21 +7,22 @@ import Indicator from "./Indicator.vue";
 
 const props = defineProps<{
   filterTypes: FilterTypes;
-  filterLevel: number;
-  orderByLevel: boolean;
+  minUnlearned: number;
+  orderByUnlearned: boolean;
 }>();
 
-// 2. 将 typeChange 事件的值类型改为 FilterKey
+// 2. 将 typeChange 事件的值类型改为 FilterKey（已将 levelChange 改为 unlearnedChange，并新增 openConfig）
 const emit = defineEmits<{
-  (e: "levelChange", val: number): void;
+  (e: "unlearnedChange", val: number): void;
   (e: "typeChange", val: FilterKey, checked: boolean): void;
   (e: "orderChange", val: boolean): void;
+  (e: "openConfig"): void;
 }>();
 
 const handleInput = (e: Event) => {
   let val = +(e?.target as any).value;
-  if (isNaN(val)) val = 80;
-  emit("levelChange", val);
+  if (isNaN(val)) val = 1;
+  emit("unlearnedChange", val);
 };
 
 // 3. 这里的 type 接收字符串，并断言为 FilterKey
@@ -36,22 +37,28 @@ const handleOrder = (order: boolean) => {
 
 <template>
   <div class="wrap">
-    <Title>角色等级</Title>
+    <Title>
+      开车模式
+      <button class="config-btn" @click="emit('openConfig')" title="配置组队成员">配置</button>
+    </Title>
     <div class="level">
+      <span class="label">至少有</span>
       <input
         type="number"
-        max="80"
-        min="1"
-        :value="props.filterLevel"
+        max="8"
+        min="0"
+        class="num-input"
+        :value="props.minUnlearned"
         @input="handleInput"
       />
+      <span class="label">人未掌握</span>
       <div
         class="order"
-        :class="{ checked: props.orderByLevel }"
-        @click="handleOrder(props.orderByLevel)"
+        :class="{ checked: props.orderByUnlearned }"
+        @click="handleOrder(props.orderByUnlearned)"
       >
-        <Indicator :checked="props.orderByLevel" bordered />
-        按等级排序
+        <Indicator :checked="props.orderByUnlearned" bordered />
+        按未掌握人数排序
       </div>
     </div>
 
@@ -88,19 +95,56 @@ const handleOrder = (order: boolean) => {
   border-radius: 16px;
 }
 
+.config-btn {
+  margin-left: 8px;
+  background-color: #ffbe31;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  vertical-align: middle;
+}
+.config-btn:hover {
+  opacity: 0.8;
+}
+
 .level {
   display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.label {
+  font-size: 0.9rem;
+  color: #ccc;
+  white-space: nowrap;
+}
+
+.num-input {
+  width: 50px;
+  text-align: center;
+  padding: 0 5px;
+  line-height: 32px;
+  background: #333;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 16px;
 }
 
 .order {
   display: flex;
   align-items: center;
-  margin-left: 10px;
+  margin-left: auto;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
 .order .indicator {
-  margin-right: 10px;
+  margin-right: 6px;
 }
 
 /* 修改：开启横向滚动并防止换行 */
@@ -125,8 +169,6 @@ const handleOrder = (order: boolean) => {
 .wrap ul::-webkit-scrollbar-track {
   background-color: #333;
 }
-
-
 
 
 /* 修改：固定单个分类的宽度 */

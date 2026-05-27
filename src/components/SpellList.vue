@@ -9,15 +9,19 @@ import {
 } from "../lib/spell";
 import type { FilterTypes, SpellStatusArray } from "@/lib/interface";
 import SpellItem from "./SpellItem.vue";
-// 新增：引入本地存储方法
+// --- 新增：引入本地存储方法，用于保存用户的过滤偏好 ---
 import { loadSetting, saveSetting } from "../lib/setting";
 
 const props = defineProps<{
   filterTypes: FilterTypes;
-  filterLevel: number;
+  minUnlearned: number;
   filter: string;
-  orderByLevel: boolean;
+  orderByUnlearned: boolean;
   spellStatus: SpellStatusArray;
+  // --- 新增：接收从 App.vue 传来的每个技能未掌握人数 Map ---
+  unlearnedCountMap: Map<number, number>;
+  // --- 新增：接收是否处于开车模式（队伍人数 > 1）的状态 ---
+  isPartyModeActive: boolean;
 }>();
 const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
@@ -27,10 +31,10 @@ const emit = defineEmits<{
 
 // --- 修改：从本地存储读取初始状态，如果从未设置过则默认为 true ---
 const notLearnedOnly = ref(loadSetting<boolean>("notLearnedOnly") ?? true);
-// 新增：用于控制是否隐藏红/灰颜色的开关
+// --- 新增：用于控制是否隐藏红/灰等不推荐途径颜色的开关 ---
 const hideSpecialColor = ref(loadSetting<boolean>("hide-special-color") ?? true);
 
-// --- 新增：监听 notLearnedOnly和hideSpecialColor 的变化，一旦改变就自动保存到本地 ---
+// --- 新增：监听 notLearnedOnly 和 hideSpecialColor 的变化，一旦改变就自动保存到本地 ---
 watch(notLearnedOnly, (newVal) => {
   saveSetting("notLearnedOnly", newVal);
 });
@@ -50,6 +54,7 @@ const mode = computed<Mode>(() => {
   }
 });
 
+// --- 新增：需要被隐藏的颜色常量列表 ---
 const hiddenColors = ['red', '#ff0000', 'grey', '#666'];
 
 // 辅助函数：将底层获取途径映射到 UI 过滤器的 key 上
@@ -67,7 +72,6 @@ const getFilterKey = (type: string): keyof FilterTypes => {
 const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
   search: (spell) => {
     const keyword = props.filter;
-
 
     // 1. 匹配技能编号和技能名称
     if (String(spell.no).includes(keyword) || spell.spell.includes(keyword)) {
@@ -97,15 +101,20 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
     });
   },
   notLearned: (spell, index) => {
+    // --- 修改：加入 Number() 强制类型转换以修复 TS 类型不匹配（因为 spell.no 类型定义为 string，而 Map 的 key 是 number） ---
+    const count = props.unlearnedCountMap.get(Number(spell.no)) || 0;
+    // --- 修改：当处于开车模式，未掌握的标准是这支队伍中有人没掌握(未掌握人数 > 0)；否则就是当前使用者(你)没掌握 ---
+    const isNeeded = props.isPartyModeActive ? count > 0 : !props.spellStatus[index];
+
     return (
-      !props.spellStatus[index] &&
-      spell.level <= props.filterLevel &&
+      isNeeded &&
+      // --- 修改：判断未掌握人数是否达到填写的最小门槛 ---
+      count >= props.minUnlearned &&
       spell.method.some((m) => {
         // 条件1：该途径必须在当前勾选的 filterTypes 中
         if (!props.filterTypes[getFilterKey(m.type)]) return false;
-        //if (!props.filterTypes[m.type]) return false;
 
-        // 条件2：如果开启了隐藏特定颜色，则该途径的颜色不能是被隐藏的颜色
+        // --- 新增：条件2：如果开启了隐藏特定颜色，则该途径的颜色不能是被隐藏的颜色 ---
         if (hideSpecialColor.value) {
           const c = ((m as any).color || '').toLowerCase();
           if (hiddenColors.includes(c)) return false;
@@ -117,12 +126,13 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
     );
   },
   all: (spell) => {
+    // --- 修复：在 all（显示全部）模式下，不应该再被 minUnlearned (至少多少人未掌握) 门槛拦截。
+    // 如果拦截了，那么所有人已掌握的技能(count === 0)将永远无法被显示。 ---
     return (
-      spell.level <= props.filterLevel &&
       spell.method.some((m) => {
         if (!props.filterTypes[getFilterKey(m.type)]) return false;
-        //if (!props.filterTypes[m.type]) return false;
 
+        // --- 新增：剔除隐藏颜色的获取途径 ---
         if (hideSpecialColor.value) {
           const c = ((m as any).color || '').toLowerCase();
           if (hiddenColors.includes(c)) return false;
@@ -148,31 +158,21 @@ const showSpells = computed(() => {
         ...spell,
         method: spell.method.filter((m: any) => {
           const c = (m.color || '').toLowerCase();
-          //只要属于被隐藏的颜色，就从界面上移除
+          // 只要属于被隐藏的颜色，就从界面上移除
           return !hiddenColors.includes(c);
         })
       };
     }).filter(spell => spell.method.length > 0); // 隐藏后如果技能没有获取方式了，则不显示该技能
   }
 
-
-
-  // ------------------------------------------------
-  // --- 新增：在搜索模式下，自动过滤掉所有灰色途径 ---
-  // if (mode.value === 'search') {
-  //   filtered = filtered.map(spell => {
-  //     return {
-  //       ...spell,
-  //       method: spell.method.filter((m: any) => {
-  //         const c = (m.color || '').toLowerCase();
-  //         return !['grey', '#666'].includes(c);
-  //       })
-  //     };
-  //   }).filter(spell => spell.method.length > 0);
-  // }
-  // ------------------------------------------------
-  if (props.orderByLevel) {
-    filtered.sort((a, b) => a.level - b.level);
+  // --- 新增：如果勾选了按未掌握人数排序，则将未掌握人数最多的技能排在最前面 ---
+  if (props.orderByUnlearned) {
+    filtered.sort((a, b) => {
+      // 修复：加入 Number() 避免TS类型检查阻断及运行报错
+      const countDiff = (props.unlearnedCountMap.get(Number(b.no)) || 0) - (props.unlearnedCountMap.get(Number(a.no)) || 0);
+      // 若未掌握人数相等，则按编号从小到大排序作为备选规则
+      return countDiff !== 0 ? countDiff : (Number(a.no) - Number(b.no));
+    });
   }
 
   return filtered;
@@ -190,7 +190,7 @@ const allLearned = computed(() =>
         {{
           showSpells.length
             ? "当前状态"
-            : allLearned
+            : allLearned && !props.isPartyModeActive
               ? "恭喜，您已经掌会了当前版本的所有技能"
               : "当前条件下暂无可学习的技能"
         }}：
@@ -220,8 +220,12 @@ const allLearned = computed(() =>
         </a>
       </template>
     </div>
+    
     <spell-item v-for="spell in showSpells" :key="spell.no" :spell="spell"
-      :learned="learnedByNo(props.spellStatus, spell.no)" @change="emit('change', indexByNo(spell.no), $event)"
+      :learned="props.isPartyModeActive ? (props.unlearnedCountMap.get(Number(spell.no)) || 0) === 0 : learnedByNo(props.spellStatus, spell.no)" 
+      :unlearnedCount="props.unlearnedCountMap.get(Number(spell.no))"
+      :showUnlearnedCount="props.isPartyModeActive"
+      @change="emit('change', indexByNo(spell.no), $event)"
       @search="emit('search', $event)" />
   </main>
 </template>
