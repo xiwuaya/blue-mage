@@ -1,13 +1,8 @@
 <script setup lang="ts">
-// --- 新增：引入 ref 用于控制折叠面板的状态 ---
 import { ref } from "vue";
-import type { FilterTypes, FilterKey } from "@/lib/interface";
-import type { SpellType } from "@/lib/spell";
-import Title from "./Title.vue";
 import Indicator from "./Indicator.vue";
 
 const props = defineProps<{
-  filterTypes: FilterTypes;
   // --- 新增：接收从 App 传来的角色等级和是否按等级排序的状态 ---
   level: number;
   orderByLevel: boolean;
@@ -25,8 +20,7 @@ const emit = defineEmits<{
   (e: "orderChange", val: boolean): void;
   // --- 新增：点击配置按钮，通知父组件打开队伍配置弹窗 ---
   (e: "openConfig"): void;
-  
-  (e: "typeChange", val: FilterKey, checked: boolean): void;
+
 }>();
 
 // --- 新增：控制“等级与多人模式”整个面板是否折叠的状态，默认为 false (收起) ---
@@ -51,11 +45,6 @@ const handleInput = (e: Event) => {
   // 如果输入不合法，默认回退到 1 人
   if (isNaN(val)) val = 1;
   emit("unlearnedChange", val);
-};
-
-// 处理学习途径类型的点击切换
-const handleClick = (type: string | number, checked: boolean) => {
-  emit("typeChange", type as FilterKey, !checked);
 };
 
 // --- 新增：处理按未掌握人数排序按钮的点击 ---
@@ -116,22 +105,6 @@ const handleOrder = (order: boolean) => {
         </div>
       </div>
     </div>
-
-    <Title>学习途径过滤</Title>
-    <ul>
-      <li
-        v-for="(checked, type, i) in filterTypes"
-        :key="type"
-        class="type"
-        :class="{
-          lighter: i % 2 === 0,
-        }"
-        @click="handleClick(type, checked)"
-      >
-        <img :src="`icons/type_${type}.png`" />
-        <Indicator :checked="checked" />
-      </li>
-    </ul>
   </div>
 </template>
 

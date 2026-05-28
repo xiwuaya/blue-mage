@@ -2,6 +2,7 @@
 import Book from "./components/Book.vue";
 import SpellList from "./components/SpellList.vue";
 import Filter from "./components/Filter.vue";
+import TypeFilter from "./components/TypeFilter.vue";
 import spells from "../tools/spells.json";
 import { loadSetting, saveSetting } from "./lib/setting";
 import { onBeforeMount, ref, computed, watch } from "vue";
@@ -31,7 +32,7 @@ const orderByLevel = ref(false);
 
 // --- 新增：多人模式的过滤与排序状态 ---
 const minUnlearned = ref(1);
-const orderByUnlearned = ref(false);
+const orderByUnlearned = ref(true);
 
 const showHelpModal = ref(false);
 
@@ -218,6 +219,8 @@ const handleTypeChange = (type: any, checked: boolean) => {
       </div>
 
       <input class="search" v-model="filter" placeholder="搜索技能编号、名称或获取方式" />
+      
+      <TypeFilter :filterTypes="filterTypes" @typeChange="handleTypeChange" />
       
       <Book :spellStatus="spellStatus" @change="handleStatusChange" />
       <Progress :spellStatus="spellStatus" @change="handleStatusChange" />
