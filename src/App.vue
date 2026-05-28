@@ -181,7 +181,7 @@ const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
       const str = newPartyData[i] || "";
       if (str.trim()) {
         // 解析该队友目前的【未掌握】技能集合
-        const nums = str.split(/[,，.、\s]+/).map(Number).filter(n => !isNaN(n));
+        const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
         const numSet = new Set(nums);
         
         // --- 修改：逻辑翻转 ---
