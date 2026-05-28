@@ -219,6 +219,9 @@ const handleTypeChange = (type: any, checked: boolean) => {
 
       <input class="search" v-model="filter" placeholder="搜索技能编号、名称或获取方式" />
       
+      <Book :spellStatus="spellStatus" @change="handleStatusChange" />
+      <Progress :spellStatus="spellStatus" @change="handleStatusChange" />
+      
       <Filter 
         :filterTypes="filterTypes" 
         :level="level" 
@@ -232,8 +235,6 @@ const handleTypeChange = (type: any, checked: boolean) => {
         @orderChange="val => orderByUnlearned = val" 
         @openConfig="showPartyModal = true" 
       />
-      <Book :spellStatus="spellStatus" @change="handleStatusChange" />
-      <Progress :spellStatus="spellStatus" @change="handleStatusChange" />
     </aside>
     
     <SpellList 
@@ -270,7 +271,7 @@ const handleTypeChange = (type: any, checked: boolean) => {
               <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
             </ul>
             <p>
-              本网页内容最近一次更新于<strong>2026年5月27日</strong>（7.50版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+              本网页内容最近一次更新于<strong>2026年5月28日</strong>（7.50版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
                 rel="noopener noreferrer">点此提出</a>
             </p>
             <p>
