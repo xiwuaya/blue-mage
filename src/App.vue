@@ -29,7 +29,7 @@ const filterTypes = ref<FilterTypes>({
 const level = ref(80);
 const orderByLevel = ref(false);
 
-// --- 新增：开车模式的过滤与排序状态 ---
+// --- 新增：多人模式的过滤与排序状态 ---
 const minUnlearned = ref(1);
 const orderByUnlearned = ref(false);
 
@@ -37,16 +37,38 @@ const showHelpModal = ref(false);
 
 // --- 新增：队伍数据管理 ---
 const partyData = ref<string[]>(Array(7).fill("")); // 保存用户2至用户8的字符串数据
+// --- 新增：保存用户2至用户8的自定义名称 ---
+const partyNames = ref<string[]>(Array(7).fill("")); 
 const showPartyModal = ref(false);
 
-// --- 修改：获取当前使用者(用户1)“未掌握”的技能编号 ---
-const user1Spells = computed(() => {
-  return spells
-    .filter((_, i) => spellStatus.value[i] !== 1) // !== 1 表示未掌握
-    .map((s: any) => Number(s.no))
-    .sort((a: number, b: number) => a - b)
-    .join(", ");
+// --- 修改：将用户1的数据改为可读写的计算属性，实现未掌握技能数据的导入和导出 ---
+const user1Spells = computed({
+  get() {
+    return spells
+      .filter((_, i) => spellStatus.value[i] !== 1) // !== 1 表示未掌握
+      .map((s: any) => Number(s.no))
+      .sort((a: number, b: number) => a - b)
+      .join(", ");
+  },
+  set(val: string) {
+    // 解析输入的未掌握技能编号
+    const nums = val.split(/[,，\s]+/).map(Number).filter(n => !isNaN(n));
+    const unlearnedSet = new Set(nums);
+    
+    // 如果在输入框的未掌握集合中，状态设为 0 (未掌握)，否则设为 1 (已掌握)
+    const statusArr: SpellStatusArray = spells.map((s: any) =>
+      unlearnedSet.has(Number(s.no)) ? 0 : 1
+    );
+    saveSetting("spell-status", statusArr);
+    spellStatus.value = statusArr;
+  }
 });
+
+// --- 新增：一键重置队友数据和名称的函数 (仅重置用户2-8) ---
+const resetParty = () => {
+  partyData.value = Array(7).fill("");
+  partyNames.value = Array(7).fill("");
+};
 
 // --- 修改：解析有效的队伍用户，返回一个包含所“未掌握”技能Set的数组 ---
 const validUsers = computed(() => {
@@ -82,17 +104,19 @@ const unlearnedCountMap = computed(() => {
   return map;
 });
 
-// 是否处于开车模式（有除用户1之外的其他人存在）
+// 是否处于多人模式（有除用户1之外的其他人存在）
 const isPartyModeActive = computed(() => validUsers.value.length > 1);
 
 // --- 新增：监听等级过滤和排序变更并自动保存 ---
 watch(level, val => saveSetting("level", val));
 watch(orderByLevel, val => saveSetting("order-by-level", val));
 
-// --- 新增：监听开车模式相关配置变化并自动保存 ---
+// --- 新增：监听多人模式相关配置变化并自动保存 ---
 watch(minUnlearned, val => saveSetting("min-unlearned", val));
 watch(orderByUnlearned, val => saveSetting("order-by-unlearned", val));
 watch(partyData, val => saveSetting("party-data", val), { deep: true });
+// --- 新增：监听队友名称配置并自动保存 ---
+watch(partyNames, val => saveSetting("party-names", val), { deep: true });
 
 onBeforeMount(() => {
   // --- 新增：首次加载自动弹出帮助 ---
@@ -131,6 +155,12 @@ onBeforeMount(() => {
   if (Array.isArray(savedParty) && savedParty.length === 7) {
     partyData.value = savedParty;
   }
+
+  // --- 新增：读取保存的队友自定义名称 ---
+  const savedNames = loadSetting<string[]>("party-names");
+  if (Array.isArray(savedNames) && savedNames.length === 7) {
+    partyNames.value = savedNames;
+  }
 });
 
 const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
@@ -141,7 +171,7 @@ const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
   saveSetting("spell-status", statusArr);
   spellStatus.value = statusArr;
 
-  // 2. 新增：如果在开车模式下操作，同步更新列表里其他组队成员的状态
+  // 2. 新增：如果在多人模式下操作，同步更新列表里其他组队成员的状态
   if (isPartyModeActive.value) {
     const targetSpellNo = Number(spells[index].no);
     const newPartyData = [...partyData.value];
@@ -260,24 +290,28 @@ const handleTypeChange = (type: any, checked: boolean) => {
       <div v-if="showPartyModal" class="modal-backdrop" @click.self="showPartyModal = false">
         <div class="modal-content party-modal">
           <button class="close-btn" @click="showPartyModal = false">&times;</button>
-          <h3>开车模式配置</h3>
+          <h3>多人模式配置</h3>
           <div class="help-text">
             <p style="margin-bottom: 20px;">
               在此配置队伍成员<strong>未掌握</strong>的技能编号以开启共同学习。<strong>用户 1</strong> 默认为当前使用者，请直接复制框内数据分享给其他队员。<br/>
-              在其他用户的框中粘贴他人分享的编号数据（按逗号或空格分隔均可），系统会自动计算各个技能的未掌握人数，并允许依据未掌握人数在列表中过滤与排序。<br/>
-              当用户2-8文本框非空时，自动进入开车模式，恢复到单人模式仅需要清空其他用户文本框中的内容即可<br/>
-            （注：此功能尚在测试阶段，如果遇到问题可前往帮助中的文档反馈）
+              在其他用户的框中粘贴他人分享的编号数据（按逗号或空格分隔均可），系统会自动计算各个技能的未掌握人数，并允许依据未掌握人数在列表中过滤与排序。
             </p>
+            
             <div class="party-grid">
               <div class="party-user">
                 <label>用户 1 (我)</label>
-                <textarea :value="user1Spells" readonly title="在此复制你未掌握的技能数据分享给他人"></textarea>
+                <textarea v-model="user1Spells" title="在此编辑或复制你未掌握的技能数据" placeholder="填入未掌握技能编号..."></textarea>
               </div>
               <div class="party-user" v-for="i in 7" :key="i">
-                <label>用户 {{ i + 1 }}</label>
+                <input class="name-input" v-model="partyNames[i-1]" :placeholder="'用户 ' + (i + 1)" />
                 <textarea v-model="partyData[i-1]" placeholder="请粘贴其他用户分享的未掌握技能编号..."></textarea>
               </div>
             </div>
+            
+            <div class="reset-wrap">
+              <button class="reset-btn" @click="resetParty">一键重置队友数据</button>
+            </div>
+
           </div>
         </div>
       </div>
@@ -523,7 +557,32 @@ input[type="number"]::-webkit-inner-spin-button {
   color: #ffbe31;
   font-size: 0.9rem;
   font-weight: bold;
+  /* --- 新增行高对齐以和右侧的可编辑名字输入框平齐 --- */
+  line-height: 28px; 
 }
+
+/* --- 新增：可编辑玩家名字的样式 --- */
+.name-input {
+  margin-bottom: 5px;
+  background: transparent;
+  border: 1px dashed transparent;
+  color: #ffbe31;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0 4px;
+  border-radius: 4px;
+  height: 28px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.name-input:hover, .name-input:focus {
+  border-color: #ffbe31;
+  outline: none;
+  background: #2b2b2b; /* 悬浮或聚焦时展现可输入框的底色 */
+}
+
 .party-user textarea {
   background: #1a1a1a;
   color: #fff;
@@ -535,13 +594,34 @@ input[type="number"]::-webkit-inner-spin-button {
   font-family: monospace;
   font-size: 0.85rem;
 }
-.party-user textarea:read-only {
-  background: #333;
-  color: #999;
-  cursor: copy;
-}
+
 .party-user textarea:focus {
   outline: none;
   border-color: #ffbe31;
+}
+
+/* --- 新增：一键重置按钮外层容器 --- */
+.reset-wrap {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* --- 新增：一键重置按钮样式 --- */
+.reset-btn {
+  background-color: transparent;
+  color: #ffbe31;
+  border: 1px solid #ffbe31;
+  border-radius: 4px;
+  padding: 6px 16px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reset-btn:hover {
+  background-color: #ffbe31;
+  color: #1a1a1a;
 }
 </style>

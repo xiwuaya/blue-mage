@@ -29,8 +29,8 @@ const emit = defineEmits<{
   (e: "typeChange", val: FilterKey, checked: boolean): void;
 }>();
 
-// --- 新增：控制“等级与开车模式”整个面板是否折叠的状态，默认为 true (展开) ---
-const isSettingsExpanded = ref(true);
+// --- 新增：控制“等级与多人模式”整个面板是否折叠的状态，默认为 false (收起) ---
+const isSettingsExpanded = ref(false);
 
 // --- 新增：处理角色等级输入框的值变化 ---
 const handleLevelInput = (e: Event) => {
@@ -66,14 +66,13 @@ const handleOrder = (order: boolean) => {
 
 <template>
   <div class="wrap">
-    <Title @click="isSettingsExpanded = !isSettingsExpanded" class="collapsible-title">
-      <span class="collapse-icon">{{ isSettingsExpanded ? '▼' : '▶' }}</span> 等级与开车模式
-      <button class="config-btn" @click.stop="emit('openConfig')" title="配置组队成员">配置</button>
-    </Title>
+    <div @click="isSettingsExpanded = !isSettingsExpanded" class="filter-header">
+      <span class="collapse-icon">{{ isSettingsExpanded ? '▼' : '▶' }}</span> ----过滤器----
+    </div>
     
     <div v-show="isSettingsExpanded" class="collapse-content">
+      <div class="large-title">角色等级</div>
       <div class="level row-spacing">
-        <span class="label">角色等级</span>
         <input
           type="number"
           max="80"
@@ -92,8 +91,12 @@ const handleOrder = (order: boolean) => {
         </div>
       </div>
 
+      <div class="large-title">
+        多人模式
+        <button class="config-btn" @click.stop="emit('openConfig')" title="配置组队成员">配置</button>
+      </div>
       <div class="level">
-        <span class="label">至少有</span>
+        <span class="label">至少</span>
         <input
           type="number"
           max="8"
@@ -147,13 +150,18 @@ const handleOrder = (order: boolean) => {
   border-radius: 16px;
 }
 
-/* --- 新增：折叠标题和图标的样式 --- */
-.collapsible-title {
+/* --- 新增：小字过滤器折叠头的样式 --- */
+.filter-header {
+  font-size: 0.8rem;
+  color: #999;
   cursor: pointer;
-  transition: opacity 0.2s;
+  margin-bottom: 10px;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
 }
-.collapsible-title:hover {
-  opacity: 0.8;
+.filter-header:hover {
+  color: #ddd;
 }
 .collapse-icon {
   display: inline-block;
@@ -161,12 +169,22 @@ const handleOrder = (order: boolean) => {
   font-size: 0.8rem;
   color: #ffbe31;
 }
+
+/* --- 新增：大字体标题的样式 --- */
+.large-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
 .collapse-content {
-  padding-top: 5px;
   margin-bottom: 15px; 
 }
 
-/* --- 新增：角色等级与开车模式两行输入框之间的垂直间距 --- */
+/* --- 新增：角色等级与多人模式两行输入框之间的垂直间距 --- */
 .row-spacing {
   margin-bottom: 15px; 
 }
@@ -195,6 +213,7 @@ const handleOrder = (order: boolean) => {
   gap: 5px;
 }
 
+/* 正常大小字体 */
 .label {
   font-size: 0.9rem;
   color: #ccc;
@@ -212,6 +231,7 @@ const handleOrder = (order: boolean) => {
   border-radius: 16px;
 }
 
+/* 正常大小字体 */
 .order {
   display: flex;
   align-items: center;
@@ -227,12 +247,12 @@ const handleOrder = (order: boolean) => {
 /* --- 修改：开启横向滚动并防止换行，以适配分类类型过多的情况 --- */
 .wrap ul {
   display: flex;
-  flex-wrap: nowrap; /* 从 wrap 改为 nowrap */
+  flex-wrap: nowrap;  /* 从 wrap 改为 nowrap */
   margin: 0;
   padding: 0 0 6px 0; /* 底部稍微留一点空间给滚动条 */
   flex-shrink: 0;
   list-style: none;
-  overflow-x: auto; /* 开启横向滚动 */
+  overflow-x: auto;  /* 开启横向滚动 */
 }
 
 /* --- 新增：美化滚动条，使其适配网页的暗色主题 --- */
@@ -251,7 +271,7 @@ const handleOrder = (order: boolean) => {
 .type {
   position: relative;
   padding: 10px 0 6px;
-  flex: 0 0 calc(100% / 6); /* 确保无论几个图标，每个依然只占原先的 1/6 宽度 */
+  flex: 0 0 calc(100% / 6);  /* 确保无论几个图标，每个依然只占原先的 1/6 宽度 */
   display: flex;
   flex-direction: column;
   align-items: center;
