@@ -25,37 +25,39 @@ const filterTypes = ref<FilterTypes>({
   other: true, // 新增 other，删掉 fate, treasure, guildhests 
 });
 
-// --- 修改：将按等级过滤改为按未掌握人数过滤 ---
+// --- 新增：恢复角色等级和等级排序的数据状态 ---
+const level = ref(80);
+const orderByLevel = ref(false);
+
+// --- 新增：开车模式的过滤与排序状态 ---
 const minUnlearned = ref(1);
 const orderByUnlearned = ref(false);
 
-// --- 新增：帮助弹窗开关 ---
 const showHelpModal = ref(false);
 
 // --- 新增：队伍数据管理 ---
 const partyData = ref<string[]>(Array(7).fill("")); // 保存用户2至用户8的字符串数据
 const showPartyModal = ref(false);
 
-// 根据当前使用者的状态，自动生成掌握的技能编号字符串（用作用户1的数据）
+// --- 修改：获取当前使用者(用户1)“未掌握”的技能编号 ---
 const user1Spells = computed(() => {
   return spells
-    .filter((_, i) => spellStatus.value[i] === 1)
+    .filter((_, i) => spellStatus.value[i] !== 1) // !== 1 表示未掌握
     .map((s: any) => Number(s.no))
     .sort((a: number, b: number) => a - b)
     .join(", ");
 });
 
-// 解析有效的队伍用户，返回一个包含所掌握技能Set的数组
+// --- 修改：解析有效的队伍用户，返回一个包含所“未掌握”技能Set的数组 ---
 const validUsers = computed(() => {
   const users = [];
-  // 用户1：修复为数字 Set
-  const u1 = new Set(spells.filter((_, i) => spellStatus.value[i] === 1).map((s: any) => Number(s.no)));
+  // 用户1：存放未掌握的技能
+  const u1 = new Set(spells.filter((_, i) => spellStatus.value[i] !== 1).map((s: any) => Number(s.no)));
   users.push(u1);
-  // 用户2-8
   for (let i = 0; i < 7; i++) {
     const str = partyData.value[i] || "";
     if (str.trim()) {
-      // 兼容中英文逗号或空格分隔，解析为数字类型
+      // 队友：存放输入的未掌握技能
       const nums = str.split(/[,，\s]+/).map(Number).filter(n => !isNaN(n));
       users.push(new Set(nums));
     }
@@ -63,14 +65,15 @@ const validUsers = computed(() => {
   return users;
 });
 
-// 计算出每个技能有多少个有效用户尚未掌握
+// --- 修改：计算出每个技能有多少个有效用户尚未掌握 ---
 const unlearnedCountMap = computed(() => {
   const map = new Map<number, number>();
   spells.forEach((spell: any) => {
     let count = 0;
     validUsers.value.forEach(userSet => {
-      // 修复：强制转换为 Number 再使用 has() 判断
-      if (!userSet.has(Number(spell.no))) {
+      // 因为现在 userSet 里面存的是“未掌握”的技能编号，
+      // 所以如果 Set 里包含了这个技能，就代表他没掌握，count++
+      if (userSet.has(Number(spell.no))) {
         count++;
       }
     });
@@ -81,6 +84,10 @@ const unlearnedCountMap = computed(() => {
 
 // 是否处于开车模式（有除用户1之外的其他人存在）
 const isPartyModeActive = computed(() => validUsers.value.length > 1);
+
+// --- 新增：监听等级过滤和排序变更并自动保存 ---
+watch(level, val => saveSetting("level", val));
+watch(orderByLevel, val => saveSetting("order-by-level", val));
 
 // --- 新增：监听开车模式相关配置变化并自动保存 ---
 watch(minUnlearned, val => saveSetting("min-unlearned", val));
@@ -113,7 +120,11 @@ onBeforeMount(() => {
   delete (filterTypes.value as any).guildhests
   // --------------------------------------------------------
   
-  // --- 修改：读取新的队伍与过滤配置 ---
+  // --- 新增：读取保存的等级数据，如果没有则默认为80级 ---
+  level.value = loadSetting("level") ?? 80;
+  orderByLevel.value = loadSetting("order-by-level") ?? false;
+
+  // --- 新增：读取新的队伍与过滤配置 ---
   minUnlearned.value = loadSetting("min-unlearned") ?? 1;
   orderByUnlearned.value = loadSetting("order-by-unlearned") ?? false;
   const savedParty = loadSetting<string[]>("party-data");
@@ -130,7 +141,7 @@ const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
   saveSetting("spell-status", statusArr);
   spellStatus.value = statusArr;
 
-  // 2. 修改：如果在开车模式下操作，同步更新列表里其他组队成员的状态
+  // 2. 新增：如果在开车模式下操作，同步更新列表里其他组队成员的状态
   if (isPartyModeActive.value) {
     const targetSpellNo = Number(spells[index].no);
     const newPartyData = [...partyData.value];
@@ -138,15 +149,17 @@ const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
     for (let i = 0; i < 7; i++) {
       const str = newPartyData[i] || "";
       if (str.trim()) {
-        // 解析该队友目前的技能集合
+        // 解析该队友目前的【未掌握】技能集合
         const nums = str.split(/[,，\s]+/).map(Number).filter(n => !isNaN(n));
         const numSet = new Set(nums);
         
-        // 增减勾选的技能
+        // --- 修改：逻辑翻转 ---
+        // 如果 learned === true (学会了)，说明不再是“未掌握”，要从集合中移除
+        // 如果 learned === false (忘了)，说明变成“未掌握”，要加入到集合中
         if (learned) {
-          numSet.add(targetSpellNo);
-        } else {
           numSet.delete(targetSpellNo);
+        } else {
+          numSet.add(targetSpellNo);
         }
         
         // 重新转回字符串写回框内
@@ -175,15 +188,40 @@ const handleTypeChange = (type: any, checked: boolean) => {
       </div>
 
       <input class="search" v-model="filter" placeholder="搜索技能编号、名称或获取方式" />
-      <Filter :filterTypes="filterTypes" :minUnlearned="minUnlearned" :orderByUnlearned="orderByUnlearned"
-        @typeChange="handleTypeChange" @unlearnedChange="val => minUnlearned = val" @orderChange="val => orderByUnlearned = val" @openConfig="showPartyModal = true" />
+      
+      <Filter 
+        :filterTypes="filterTypes" 
+        :level="level" 
+        :orderByLevel="orderByLevel"
+        :minUnlearned="minUnlearned" 
+        :orderByUnlearned="orderByUnlearned"
+        @typeChange="handleTypeChange" 
+        @levelChange="val => level = val" 
+        @orderLevelChange="val => orderByLevel = val"
+        @unlearnedChange="val => minUnlearned = val" 
+        @orderChange="val => orderByUnlearned = val" 
+        @openConfig="showPartyModal = true" 
+      />
       <Book :spellStatus="spellStatus" @change="handleStatusChange" />
       <Progress :spellStatus="spellStatus" @change="handleStatusChange" />
     </aside>
-    <SpellList :filter="filter" :filterTypes="filterTypes" :minUnlearned="minUnlearned" :spellStatus="spellStatus"
-      :orderByUnlearned="orderByUnlearned" :unlearnedCountMap="unlearnedCountMap" :isPartyModeActive="isPartyModeActive"
-      @change="handleStatusChange" @clearFilter="filter = ''" @search="filter = $event" />
+    
+    <SpellList 
+      :filter="filter" 
+      :filterTypes="filterTypes" 
+      :level="level"
+      :orderByLevel="orderByLevel"
+      :minUnlearned="minUnlearned" 
+      :spellStatus="spellStatus"
+      :orderByUnlearned="orderByUnlearned" 
+      :unlearnedCountMap="unlearnedCountMap" 
+      :isPartyModeActive="isPartyModeActive"
+      @change="handleStatusChange" 
+      @clearFilter="filter = ''" 
+      @search="filter = $event" 
+    />
   </section>
+  
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="showHelpModal" class="modal-backdrop" @click.self="showHelpModal = false">
@@ -225,17 +263,19 @@ const handleTypeChange = (type: any, checked: boolean) => {
           <h3>开车模式配置</h3>
           <div class="help-text">
             <p style="margin-bottom: 20px;">
-              在此配置队伍成员已掌握的技能编号以开启共同学习。<strong>用户 1</strong> 默认为当前使用者，请直接复制框内数据分享给其他队员。<br/>
-              在其他用户的框中粘贴他人分享的编号数据（按逗号或空格分隔均可），系统会自动计算各个技能的未掌握人数，并允许依据未掌握人数在列表中过滤与排序。<br/>（注：此功能尚在测试阶段，如果遇到问题可前往帮助中的文档反馈）
+              在此配置队伍成员<strong>未掌握</strong>的技能编号以开启共同学习。<strong>用户 1</strong> 默认为当前使用者，请直接复制框内数据分享给其他队员。<br/>
+              在其他用户的框中粘贴他人分享的编号数据（按逗号或空格分隔均可），系统会自动计算各个技能的未掌握人数，并允许依据未掌握人数在列表中过滤与排序。<br/>
+              当用户2-8文本框非空时，自动进入开车模式，恢复到单人模式仅需要清空其他用户文本框中的内容即可<br/>
+            （注：此功能尚在测试阶段，如果遇到问题可前往帮助中的文档反馈）
             </p>
             <div class="party-grid">
               <div class="party-user">
                 <label>用户 1 (我)</label>
-                <textarea :value="user1Spells" readonly title="在此复制你已掌握的技能数据分享给他人"></textarea>
+                <textarea :value="user1Spells" readonly title="在此复制你未掌握的技能数据分享给他人"></textarea>
               </div>
               <div class="party-user" v-for="i in 7" :key="i">
                 <label>用户 {{ i + 1 }}</label>
-                <textarea v-model="partyData[i-1]" placeholder="请粘贴其他用户分享的已掌握技能编号..."></textarea>
+                <textarea v-model="partyData[i-1]" placeholder="请粘贴其他用户分享的未掌握技能编号..."></textarea>
               </div>
             </div>
           </div>
@@ -341,7 +381,6 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 22px;
   height: 22px;
   background-color: #ffbe31;
-  /* 使用主题黄 from App.vue */
   color: #1a1a1a;
   border-radius: 50%;
   text-align: center;
@@ -370,7 +409,6 @@ input[type="number"]::-webkit-inner-spin-button {
   justify-content: center;
   align-items: center;
   z-index: 2000;
-  /* 确保在最上层 */
 }
 
 /* --- 弹窗内容样式 --- */

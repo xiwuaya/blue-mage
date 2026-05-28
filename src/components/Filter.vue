@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// 1. 修改引入，增加 FilterKey
+// --- 新增：引入 ref 用于控制折叠面板的状态 ---
+import { ref } from "vue";
 import type { FilterTypes, FilterKey } from "@/lib/interface";
 import type { SpellType } from "@/lib/spell";
 import Title from "./Title.vue";
@@ -7,29 +8,57 @@ import Indicator from "./Indicator.vue";
 
 const props = defineProps<{
   filterTypes: FilterTypes;
+  // --- 新增：接收从 App 传来的角色等级和是否按等级排序的状态 ---
+  level: number;
+  orderByLevel: boolean;
+  // --- 新增：接收从 App 传来的最少未掌握人数和是否按未掌握人数排序的状态 ---
   minUnlearned: number;
   orderByUnlearned: boolean;
 }>();
 
-// 2. 将 typeChange 事件的值类型改为 FilterKey（已将 levelChange 改为 unlearnedChange，并新增 openConfig）
 const emit = defineEmits<{
+  // --- 新增：当角色等级或等级排序发生改变时，通知父组件 ---
+  (e: "levelChange", val: number): void;
+  (e: "orderLevelChange", val: boolean): void;
+  // --- 新增：当未掌握人数或人数排序发生改变时，通知父组件 ---
   (e: "unlearnedChange", val: number): void;
-  (e: "typeChange", val: FilterKey, checked: boolean): void;
   (e: "orderChange", val: boolean): void;
+  // --- 新增：点击配置按钮，通知父组件打开队伍配置弹窗 ---
   (e: "openConfig"): void;
+  
+  (e: "typeChange", val: FilterKey, checked: boolean): void;
 }>();
 
+// --- 新增：控制“等级与开车模式”整个面板是否折叠的状态，默认为 true (展开) ---
+const isSettingsExpanded = ref(true);
+
+// --- 新增：处理角色等级输入框的值变化 ---
+const handleLevelInput = (e: Event) => {
+  let val = +(e?.target as any).value;
+  // 如果输入不合法，默认回退到 80 级
+  if (isNaN(val)) val = 80;
+  emit("levelChange", val);
+};
+
+// --- 新增：处理按等级排序按钮的点击 ---
+const handleOrderLevel = (order: boolean) => {
+  emit("orderLevelChange", !order);
+};
+
+// --- 新增：处理未掌握人数输入框的值变化 ---
 const handleInput = (e: Event) => {
   let val = +(e?.target as any).value;
+  // 如果输入不合法，默认回退到 1 人
   if (isNaN(val)) val = 1;
   emit("unlearnedChange", val);
 };
 
-// 3. 这里的 type 接收字符串，并断言为 FilterKey
+// 处理学习途径类型的点击切换
 const handleClick = (type: string | number, checked: boolean) => {
   emit("typeChange", type as FilterKey, !checked);
 };
 
+// --- 新增：处理按未掌握人数排序按钮的点击 ---
 const handleOrder = (order: boolean) => {
   emit("orderChange", !order);
 };
@@ -37,28 +66,51 @@ const handleOrder = (order: boolean) => {
 
 <template>
   <div class="wrap">
-    <Title>
-      开车模式
-      <button class="config-btn" @click="emit('openConfig')" title="配置组队成员">配置</button>
+    <Title @click="isSettingsExpanded = !isSettingsExpanded" class="collapsible-title">
+      <span class="collapse-icon">{{ isSettingsExpanded ? '▼' : '▶' }}</span> 等级与开车模式
+      <button class="config-btn" @click.stop="emit('openConfig')" title="配置组队成员">配置</button>
     </Title>
-    <div class="level">
-      <span class="label">至少有</span>
-      <input
-        type="number"
-        max="8"
-        min="0"
-        class="num-input"
-        :value="props.minUnlearned"
-        @input="handleInput"
-      />
-      <span class="label">人未掌握</span>
-      <div
-        class="order"
-        :class="{ checked: props.orderByUnlearned }"
-        @click="handleOrder(props.orderByUnlearned)"
-      >
-        <Indicator :checked="props.orderByUnlearned" bordered />
-        按未掌握人数排序
+    
+    <div v-show="isSettingsExpanded" class="collapse-content">
+      <div class="level row-spacing">
+        <span class="label">角色等级</span>
+        <input
+          type="number"
+          max="80"
+          min="1"
+          class="num-input"
+          :value="props.level"
+          @input="handleLevelInput"
+        />
+        <div
+          class="order"
+          :class="{ checked: props.orderByLevel }"
+          @click="handleOrderLevel(props.orderByLevel)"
+        >
+          <Indicator :checked="props.orderByLevel" bordered />
+          按等级排序
+        </div>
+      </div>
+
+      <div class="level">
+        <span class="label">至少有</span>
+        <input
+          type="number"
+          max="8"
+          min="0"
+          class="num-input"
+          :value="props.minUnlearned"
+          @input="handleInput"
+        />
+        <span class="label">人未掌握</span>
+        <div
+          class="order"
+          :class="{ checked: props.orderByUnlearned }"
+          @click="handleOrder(props.orderByUnlearned)"
+        >
+          <Indicator :checked="props.orderByUnlearned" bordered />
+          按未掌握人数排序
+        </div>
       </div>
     </div>
 
@@ -95,6 +147,31 @@ const handleOrder = (order: boolean) => {
   border-radius: 16px;
 }
 
+/* --- 新增：折叠标题和图标的样式 --- */
+.collapsible-title {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.collapsible-title:hover {
+  opacity: 0.8;
+}
+.collapse-icon {
+  display: inline-block;
+  width: 16px;
+  font-size: 0.8rem;
+  color: #ffbe31;
+}
+.collapse-content {
+  padding-top: 5px;
+  margin-bottom: 15px; 
+}
+
+/* --- 新增：角色等级与开车模式两行输入框之间的垂直间距 --- */
+.row-spacing {
+  margin-bottom: 15px; 
+}
+
+/* --- 新增：配置按钮的样式 --- */
 .config-btn {
   margin-left: 8px;
   background-color: #ffbe31;
@@ -147,7 +224,7 @@ const handleOrder = (order: boolean) => {
   margin-right: 6px;
 }
 
-/* 修改：开启横向滚动并防止换行 */
+/* --- 修改：开启横向滚动并防止换行，以适配分类类型过多的情况 --- */
 .wrap ul {
   display: flex;
   flex-wrap: nowrap; /* 从 wrap 改为 nowrap */
@@ -158,7 +235,7 @@ const handleOrder = (order: boolean) => {
   overflow-x: auto; /* 开启横向滚动 */
 }
 
-/* 新增：美化滚动条，使其适配网页的暗色主题 */
+/* --- 新增：美化滚动条，使其适配网页的暗色主题 --- */
 .wrap ul::-webkit-scrollbar {
   height: 6px;
 }
@@ -170,12 +247,10 @@ const handleOrder = (order: boolean) => {
   background-color: #333;
 }
 
-
-/* 修改：固定单个分类的宽度 */
+/* --- 修改：固定单个分类的宽度，确保等比排列 --- */
 .type {
   position: relative;
   padding: 10px 0 6px;
-  /* flex: 1; -> 删除原有的 flex: 1 */
   flex: 0 0 calc(100% / 6); /* 确保无论几个图标，每个依然只占原先的 1/6 宽度 */
   display: flex;
   flex-direction: column;

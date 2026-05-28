@@ -14,6 +14,10 @@ import { loadSetting, saveSetting } from "../lib/setting";
 
 const props = defineProps<{
   filterTypes: FilterTypes;
+  // --- 新增：接收从 App 传来的角色等级和等级排序布尔值 ---
+  level: number;
+  orderByLevel: boolean;
+  
   minUnlearned: number;
   filter: string;
   orderByUnlearned: boolean;
@@ -68,7 +72,6 @@ const getFilterKey = (type: string): keyof FilterTypes => {
   return type as keyof FilterTypes;
 };
 
-
 const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
   search: (spell) => {
     const keyword = props.filter;
@@ -101,13 +104,15 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
     });
   },
   notLearned: (spell, index) => {
-    // --- 修改：加入 Number() 强制类型转换以修复 TS 类型不匹配（因为 spell.no 类型定义为 string，而 Map 的 key 是 number） ---
+    // --- 修改：加入 Number() 强制类型转换以修复 TS 类型不匹配 ---
     const count = props.unlearnedCountMap.get(Number(spell.no)) || 0;
     // --- 修改：当处于开车模式，未掌握的标准是这支队伍中有人没掌握(未掌握人数 > 0)；否则就是当前使用者(你)没掌握 ---
     const isNeeded = props.isPartyModeActive ? count > 0 : !props.spellStatus[index];
 
     return (
       isNeeded &&
+      // --- 新增：仅显示小于或等于填写的角色等级的技能 ---
+      spell.level <= props.level &&
       // --- 修改：判断未掌握人数是否达到填写的最小门槛 ---
       count >= props.minUnlearned &&
       spell.method.some((m) => {
@@ -126,9 +131,10 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
     );
   },
   all: (spell) => {
-    // --- 修复：在 all（显示全部）模式下，不应该再被 minUnlearned (至少多少人未掌握) 门槛拦截。
-    // 如果拦截了，那么所有人已掌握的技能(count === 0)将永远无法被显示。 ---
     return (
+      // --- 新增：仅显示小于或等于填写的角色等级的技能 ---
+      spell.level <= props.level &&
+      // --- 修复：在 all（显示全部）模式下，不应该被 minUnlearned 门槛拦截 ---
       spell.method.some((m) => {
         if (!props.filterTypes[getFilterKey(m.type)]) return false;
 
@@ -150,8 +156,6 @@ const showSpells = computed(() => {
 
   // 从视觉上剔除掉不需要渲染在页面上的获取途径
   // --- 修改：统一视觉过滤逻辑，将控制权完全交给开关 ---
-  // 无论是在“分类模式”还是“搜索模式”，只要开关开启，就剔除红/灰
-  // 如果开关关闭，就原样展示所有（包括搜索出来的技能里的灰色途径）
   if (hideSpecialColor.value) {
     filtered = filtered.map(spell => {
       return {
@@ -165,13 +169,28 @@ const showSpells = computed(() => {
     }).filter(spell => spell.method.length > 0); // 隐藏后如果技能没有获取方式了，则不显示该技能
   }
 
-  // --- 新增：如果勾选了按未掌握人数排序，则将未掌握人数最多的技能排在最前面 ---
+  // --- 修改：支持双重排序逻辑（优先依据开车模式下的未掌握人数排序） ---
   if (props.orderByUnlearned) {
     filtered.sort((a, b) => {
       // 修复：加入 Number() 避免TS类型检查阻断及运行报错
       const countDiff = (props.unlearnedCountMap.get(Number(b.no)) || 0) - (props.unlearnedCountMap.get(Number(a.no)) || 0);
-      // 若未掌握人数相等，则按编号从小到大排序作为备选规则
-      return countDiff !== 0 ? countDiff : (Number(a.no) - Number(b.no));
+      if (countDiff !== 0) {
+        return countDiff;
+      }
+      // --- 新增：如果未掌握人数相等，且同时勾选了按等级排序，则再按等级排序（从小到大） ---
+      if (props.orderByLevel && a.level !== b.level) {
+        return a.level - b.level;
+      }
+      // 作为最后的兜底，按照技能编号排序
+      return Number(a.no) - Number(b.no);
+    });
+  } else if (props.orderByLevel) {
+    // --- 新增：仅仅勾选了按等级排序时的逻辑 ---
+    filtered.sort((a, b) => {
+      if (a.level !== b.level) {
+        return a.level - b.level;
+      }
+      return Number(a.no) - Number(b.no);
     });
   }
 
