@@ -48,7 +48,7 @@ const user1Spells = computed({
       .filter((_, i) => spellStatus.value[i] !== 1) // !== 1 表示未掌握
       .map((s: any) => Number(s.no))
       .sort((a: number, b: number) => a - b)
-      .join(", ");
+      .join(" ");
   },
   set(val: string) {
     // 解析输入的未掌握技能编号
@@ -193,7 +193,7 @@ const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
         }
         
         // 重新转回字符串写回框内
-        newPartyData[i] = Array.from(numSet).sort((a, b) => a - b).join(", ");
+        newPartyData[i] = Array.from(numSet).sort((a, b) => a - b).join(" ");
       }
     }
     partyData.value = newPartyData;
@@ -301,11 +301,11 @@ const handleTypeChange = (type: any, checked: boolean) => {
             <div class="party-grid">
               <div class="party-user">
                 <label>用户 1 (我)</label>
-                <textarea v-model="user1Spells" title="在此编辑或复制你未掌握的技能数据" placeholder="填入未掌握技能编号..."></textarea>
+                <textarea v-model.lazy="user1Spells" title="在此编辑或复制你未掌握的技能数据" placeholder="填入未掌握技能编号..."></textarea>
               </div>
               <div class="party-user" v-for="i in 7" :key="i">
                 <input class="name-input" v-model="partyNames[i-1]" :placeholder="'用户 ' + (i + 1)" />
-                <textarea v-model="partyData[i-1]" placeholder="请粘贴其他用户分享的未掌握技能编号..."></textarea>
+                <textarea v-model.lazy="partyData[i-1]" placeholder="请粘贴其他用户分享的未掌握技能编号..."></textarea>
               </div>
             </div>
             
