@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { SpellStatusArray } from "@/lib/interface";
 import { spells } from "@/lib/spell";
-import { computed } from "vue";
+// --- 修改：引入 ref 用于控制折叠状态 ---
+import { computed, ref } from "vue"; 
 import PatchVersion from "./PatchVersion.vue";
 import Title from "./Title.vue";
 
@@ -11,6 +12,9 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
 }>();
+
+// --- 新增：控制进度面板是否展开的状态，默认设为 true (展开) ---
+const isProgressExpanded = ref(true);
 
 class Counter {
   total = 0;
@@ -66,8 +70,16 @@ const width = (learned: number, total: number) => {
 
 <template>
   <div class="wrap">
-    <Title>进度</Title>
-    <div v-for="(counter, patch) in progress" :key="patch" class="item">
+    <Title @click="isProgressExpanded = !isProgressExpanded" class="collapsible-title">
+      <span class="collapse-icon">{{ isProgressExpanded ? '▼' : '▶' }}</span> 进度
+    </Title>
+    
+    <div 
+      v-for="(counter, patch) in progress" 
+      :key="patch" 
+      class="item"
+      v-show="patch === 'all' || isProgressExpanded"
+    >
       <span>
         <patch-version v-if="patch !== 'all'" :version="patch" />
         <template v-else>总体</template>
@@ -94,6 +106,22 @@ const width = (learned: number, total: number) => {
   margin-bottom: 20px;
   flex-shrink: 0;
   background: #2b2b2b;
+}
+
+/* --- 新增：折叠标题和箭头的专属样式 --- */
+.collapsible-title {
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%; /* 确保标题占满整行 */
+}
+.collapsible-title:hover {
+  opacity: 0.8;
+}
+.collapse-icon {
+  display: inline-block;
+  width: 16px;
+  font-size: 0.8rem;
+  color: #ffbe31;
 }
 
 .item {
