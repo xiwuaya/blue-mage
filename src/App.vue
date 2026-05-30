@@ -358,6 +358,22 @@ body {
     position: fixed;
     top: 20px;
     left: 20px;
+    /* --- 新增：限制最大高度为屏幕高度减去上下20px的边距 --- */
+    max-height: calc(100vh - 40px);
+    /* --- 新增：内容超出高度时开启纵向滚动 --- */
+    overflow-y: auto;
+  }
+
+  /* --- 新增：美化侧边栏滚动条，适配暗色主题 --- */
+  #app aside::-webkit-scrollbar {
+    width: 6px;
+  }
+  #app aside::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 3px;
+  }
+  #app aside::-webkit-scrollbar-track {
+    background-color: transparent;
   }
 }
 
