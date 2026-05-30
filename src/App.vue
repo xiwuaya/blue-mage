@@ -274,7 +274,7 @@ const handleTypeChange = (type: any, checked: boolean) => {
               <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
             </ul>
             <p>
-              本网页内容最近一次更新于<strong>2026年5月29日</strong>（7.50版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+              本网页内容最近一次更新于<strong>2026年5月30日</strong>（7.50版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
                 rel="noopener noreferrer">点此提出</a>
             </p>
             <p>
@@ -298,7 +298,10 @@ const handleTypeChange = (type: any, checked: boolean) => {
           <div class="help-text">
             <p style="margin-bottom: 20px;">
               在此配置队伍成员<strong>未掌握</strong>的技能编号以开启共同学习。<strong>用户 1</strong> 默认为当前使用者，请直接复制框内数据分享给其他队员。<br/>
-              在其他用户的框中粘贴他人分享的编号数据（按逗号或空格分隔均可），系统会自动计算各个技能的未掌握人数，并允许依据未掌握人数在列表中过滤与排序。
+              在其他用户的框中粘贴他人分享的编号数据（按逗号或空格分隔均可），系统会自动计算各个技能的未掌握人数，并允许依据未掌握人数在列表中过滤与排序。<br/>
+              当用户2-8文本框非空时，自动进入多人模式，恢复到单人模式仅需要清空其他用户文本框中的内容即可<br/>
+            （注：此功能尚在测试阶段，如果遇到问题可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+                rel="noopener noreferrer">点此反馈</a>）
             </p>
             
             <div class="party-grid">

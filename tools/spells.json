@@ -1579,6 +1579,18 @@
         "level": 46
       },
       {
+        "type": "map",
+        "map": "珂露西亚岛",
+        "rank": null,
+        "position": [
+          24.2,
+          18.3,
+          0
+        ],
+        "mob": "山地鬣蜥",
+        "level": 78
+      },
+      {
         "type": "dungeon",
         "name": "骚乱坑道铜铃铜山",
         "mob": "铜铃夜蟾蜍",
@@ -2025,6 +2037,14 @@
         "level": 96,
         "mob": "砂砾巨钳虾",
         "color": "red"
+      },
+      {
+        "type": "treasure",
+        "name": "陈旧的瞪羚革地图",
+        "mob": "领峭壁巨钳虾",
+        "note": "寻宝：陈旧的瞪羚革地图（G10），地表小怪",
+        "color": "red",
+        "level": 70
       }
     ]
   },
