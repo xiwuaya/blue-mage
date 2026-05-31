@@ -3034,6 +3034,14 @@
         "color": "red"
       },
       {
+        "type": "treasure",
+        "name": "运河宝物库深层",
+        "mob": "运河长颈驼",
+        "level": 70,
+        "note": "寻宝：深层传送魔纹的地图（深绿）",
+        "color": "red"
+      },
+      {
         "type": "fate",
         "map": "基拉巴尼亚山区",
         "name": "复仇鳏夫——涅那乌尼尔",
@@ -3704,6 +3712,14 @@
         "position": [],
         "mob": "泥人",
         "level": 80
+      },
+      {
+        "type": "fate",
+        "map": "迷津",
+        "name": "来自雪国的刺客",
+        "mob": "极地雪藻",
+        "level": 80,
+        "color": "grey"
       }
     ]
   },
@@ -3966,6 +3982,14 @@
         "mob": "运河陀鲁婆",
         "level": 70,
         "note": "寻宝：陈旧的瞪羚革地图（G10）",
+        "color": "red"
+      },
+      {
+        "type": "treasure",
+        "name": "运河宝物库深层",
+        "mob": "运河陀鲁婆",
+        "level": 70,
+        "note": "寻宝：深层传送魔纹的地图（深绿）",
         "color": "red"
       }
     ]
