@@ -3,6 +3,7 @@ import Book from "./components/Book.vue";
 import SpellList from "./components/SpellList.vue";
 import Filter from "./components/Filter.vue";
 import TypeFilter from "./components/TypeFilter.vue";
+import PartyModal from "./components/PartyModal.vue"; // <-- 新增组件引入
 import spells from "../tools/spells.json";
 import { loadSetting, saveSetting } from "./lib/setting";
 import { onBeforeMount, ref, computed, watch } from "vue";
@@ -64,12 +65,6 @@ const user1Spells = computed({
     spellStatus.value = statusArr;
   }
 });
-
-// --- 新增：一键重置队友数据和名称的函数 (仅重置用户2-8) ---
-const resetParty = () => {
-  partyData.value = Array(7).fill("");
-  partyNames.value = Array(7).fill("");
-};
 
 // --- 修改：解析有效的队伍用户，返回一个包含所“未掌握”技能Set的数组 ---
 const validUsers = computed(() => {
@@ -289,41 +284,14 @@ const handleTypeChange = (type: any, checked: boolean) => {
     </Transition>
   </Teleport>
 
-  <Teleport to="body">
-    <Transition name="fade">
-      <div v-if="showPartyModal" class="modal-backdrop" @click.self="showPartyModal = false">
-        <div class="modal-content party-modal">
-          <button class="close-btn" @click="showPartyModal = false">&times;</button>
-          <h3>多人模式配置</h3>
-          <div class="help-text">
-            <p style="margin-bottom: 20px;">
-              在此配置队伍成员<strong>未掌握</strong>的技能编号以开启共同学习。<strong>用户 1</strong> 默认为当前使用者，请直接复制框内数据分享给其他队员。<br/>
-              在其他用户的框中粘贴他人分享的编号数据（按逗号或空格分隔均可），系统会自动计算各个技能的未掌握人数，并允许依据未掌握人数在列表中过滤与排序。<br/>
-              当用户2-8文本框非空时，自动进入多人模式，恢复到单人模式仅需要清空其他用户文本框中的内容即可<br/>
-            （注：此功能尚在测试阶段，如果遇到问题可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
-                rel="noopener noreferrer">点此反馈</a>）
-            </p>
-            
-            <div class="party-grid">
-              <div class="party-user">
-                <label>用户 1 (我)</label>
-                <textarea v-model.lazy="user1Spells" title="在此编辑或复制你未掌握的技能数据" placeholder="填入未掌握技能编号..."></textarea>
-              </div>
-              <div class="party-user" v-for="i in 7" :key="i">
-                <input class="name-input" v-model="partyNames[i-1]" :placeholder="'用户 ' + (i + 1)" />
-                <textarea v-model.lazy="partyData[i-1]" placeholder="请粘贴其他用户分享的未掌握技能编号..."></textarea>
-              </div>
-            </div>
-            
-            <div class="reset-wrap">
-              <button class="reset-btn" @click="resetParty">一键重置队友数据</button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
+  <PartyModal 
+    v-model:user1Spells="user1Spells" 
+    v-model:partyData="partyData" 
+    v-model:partyNames="partyNames" 
+    :show="showPartyModal" 
+    @close="showPartyModal = false" 
+  />
+  
 </template>
 
 <style>
@@ -560,91 +528,4 @@ input[type="number"]::-webkit-inner-spin-button {
   opacity: 0;
 }
 
-/* --- 新增：组队配置弹窗独有样式 --- */
-.party-modal {
-  max-width: 800px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-.party-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-}
-.party-user {
-  display: flex;
-  flex-direction: column;
-}
-.party-user label {
-  margin-bottom: 5px;
-  color: #ffbe31;
-  font-size: 0.9rem;
-  font-weight: bold;
-  /* --- 新增行高对齐以和右侧的可编辑名字输入框平齐 --- */
-  line-height: 28px; 
-}
-
-/* --- 新增：可编辑玩家名字的样式 --- */
-.name-input {
-  margin-bottom: 5px;
-  background: transparent;
-  border: 1px dashed transparent;
-  color: #ffbe31;
-  font-size: 0.9rem;
-  font-weight: bold;
-  padding: 0 4px;
-  border-radius: 4px;
-  height: 28px;
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color 0.2s;
-}
-
-.name-input:hover, .name-input:focus {
-  border-color: #ffbe31;
-  outline: none;
-  background: #2b2b2b; /* 悬浮或聚焦时展现可输入框的底色 */
-}
-
-.party-user textarea {
-  background: #1a1a1a;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 8px;
-  resize: vertical;
-  min-height: 60px;
-  font-family: monospace;
-  font-size: 0.85rem;
-}
-
-.party-user textarea:focus {
-  outline: none;
-  border-color: #ffbe31;
-}
-
-/* --- 新增：一键重置按钮外层容器 --- */
-.reset-wrap {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* --- 新增：一键重置按钮样式 --- */
-.reset-btn {
-  background-color: transparent;
-  color: #ffbe31;
-  border: 1px solid #ffbe31;
-  border-radius: 4px;
-  padding: 6px 16px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.reset-btn:hover {
-  background-color: #ffbe31;
-  color: #1a1a1a;
-}
 </style>
