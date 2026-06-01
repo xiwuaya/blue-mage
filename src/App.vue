@@ -39,8 +39,10 @@ const showHelpModal = ref(false);
 
 // --- 新增：队伍数据管理 ---
 const partyData = ref<string[]>(Array(7).fill("")); // 保存用户2至用户8的字符串数据
-// --- 新增：保存用户2至用户8的自定义名称 ---
-const partyNames = ref<string[]>(Array(7).fill("")); 
+// --- 新增：保存用户1至用户8的自定义名称 ---
+const partyNames = ref<string[]>(Array(7).fill(""));
+const user1Name = ref<string>(""); 
+
 const showPartyModal = ref(false);
 
 // --- 修改：将用户1的数据改为可读写的计算属性，实现未掌握技能数据的导入和导出 ---
@@ -113,6 +115,7 @@ watch(orderByUnlearned, val => saveSetting("order-by-unlearned", val));
 watch(partyData, val => saveSetting("party-data", val), { deep: true });
 // --- 新增：监听队友名称配置并自动保存 ---
 watch(partyNames, val => saveSetting("party-names", val), { deep: true });
+watch(user1Name, val => saveSetting("user1-name", val));
 
 onBeforeMount(() => {
   // --- 新增：首次加载自动弹出帮助 ---
@@ -157,7 +160,12 @@ onBeforeMount(() => {
   if (Array.isArray(savedNames) && savedNames.length === 7) {
     partyNames.value = savedNames;
   }
+  const savedUser1Name = loadSetting<string>("user1-name");
+  if (savedUser1Name) {
+    user1Name.value = savedUser1Name;
+  }
 });
+
 
 const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
   // 1. 更新当前用户（用户1）的状态
@@ -286,6 +294,7 @@ const handleTypeChange = (type: any, checked: boolean) => {
 
   <PartyModal 
     v-model:user1Spells="user1Spells" 
+    v-model:user1Name="user1Name"
     v-model:partyData="partyData" 
     v-model:partyNames="partyNames" 
     :show="showPartyModal" 
