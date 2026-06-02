@@ -22,6 +22,7 @@ const emit = defineEmits<{
   (e: 'update:user1Name', val: string): void;         // 双向绑定更新用户1的名字
   (e: 'update:partyData', val: string[]): void;       // 双向绑定更新队友的技能数据
   (e: 'update:partyNames', val: string[]): void;      // 双向绑定更新队友的名字
+  (e: 'resetMinUnlearned'): void; // <-- 新增这一行：用于通知父组件重置人数
 }>();
 
 // ==========================================
@@ -41,10 +42,23 @@ const localPartyData = ref([...props.partyData]);
 const localPartyNames = ref([...props.partyNames]);
 
 // 监听本地数据的变化，一旦用户在输入框打字修改，立刻通过 emit 通知父组件更新（触发父组件的保存逻辑）
-watch(localUser1Spells, (val) => emit('update:user1Spells', val));
-watch(localUser1Name, (val) => emit('update:user1Name', val));
-watch(localPartyData, (val) => emit('update:partyData', val), { deep: true });
-watch(localPartyNames, (val) => emit('update:partyNames', val), { deep: true });
+// 替换原本的这 4 行 watch：
+watch(localUser1Spells, (val) => {
+  if (val !== props.user1Spells) emit('update:user1Spells', val);
+});
+watch(localUser1Name, (val) => {
+  if (val !== props.user1Name) emit('update:user1Name', val);
+});
+watch(localPartyData, (val) => {
+  if (JSON.stringify(val) !== JSON.stringify(props.partyData)) {
+    emit('update:partyData', val);
+  }
+}, { deep: true });
+watch(localPartyNames, (val) => {
+  if (JSON.stringify(val) !== JSON.stringify(props.partyNames)) {
+    emit('update:partyNames', val);
+  }
+}, { deep: true });
 
 // 监听父组件的数据变化，同步到本地
 // 目的：如果在弹窗外(如侧边栏)勾选了技能，弹窗内的数据也能实时响应更新
@@ -90,6 +104,7 @@ const copyUser1Data = async () => {
 const resetParty = () => {
   localPartyData.value = Array(7).fill("");
   localPartyNames.value = Array(7).fill("");
+  emit('resetMinUnlearned'); // <-- 新增这一行：触发重置人数事件
 };
 
 // --- 新增：辅助函数，将技能底层的获取途径分类映射为 filterTypes 的 key ---
@@ -224,7 +239,10 @@ const bestParty = computed(() => {
           <div class="help-text">
             <p style="margin-bottom: 20px;">
               在此配置队伍成员<strong>未掌握</strong>的技能编号以开启共同学习。<strong>用户 1</strong> 默认为当前使用者，请直接复制框内数据分享给其他队员。<br/>
-              在其他用户的框中粘贴他人分享的编号数据（按逗号或空格分隔均可），系统会自动计算各个技能的未掌握人数，并允许依据未掌握人数在列表中过滤与排序。
+              在其他用户的框中粘贴他人分享的编号数据（按逗号或空格分隔均可），系统会自动计算各个技能的未掌握人数，并允许依据未掌握人数在列表中过滤与排序。<br/>
+              当用户2-8文本框非空时，自动进入多人模式，恢复到单人模式仅需要清空其他用户文本框中的内容即可<br/>
+            （注：此功能尚在测试阶段，如果遇到问题可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+                rel="noopener noreferrer">点此反馈</a>）
             </p>
 
             <div @click="isAlgoExpanded = !isAlgoExpanded" class="filter-header">
@@ -232,7 +250,7 @@ const bestParty = computed(() => {
             </div>
 
             <div v-show="isAlgoExpanded" class="algo-content">
-              
+              <p>注：本功能用于连续学多人副本技能时，仅部分队员缺失的技能有重合的情况。会推荐重合范围最大的队员组合。</p>
               <div class="m-input-row">
                 <label>队伍人数：</label>
                 <input 
@@ -297,7 +315,7 @@ const bestParty = computed(() => {
             </div>
             
             <div class="reset-wrap">
-              <button class="reset-btn" @click="resetParty" title="清空用户2至8的所有名称和数据">一键重置队友数据</button>
+              <button class="reset-btn" @click="resetParty" title="清空用户2至8的所有名称和数据">清除多人数据</button>
             </div>
 
           </div>
@@ -344,6 +362,11 @@ const bestParty = computed(() => {
 .help-text p { 
   line-height: 1.6; 
   margin: 15px 0; 
+}
+
+.help-text a {
+  color: #ffbe31;
+  text-decoration: underline;
 }
 
 /* 关闭按钮样式 */
@@ -430,7 +453,7 @@ const bestParty = computed(() => {
 
 /* 队伍人数配置行 */
 .m-input-row { display: flex; align-items: center; }
-.m-input-row label { font-weight: bold; color: #ccc; margin-right: 10px; font-size: 0.9rem; }
+.m-input-row label { font-weight: bold; color: #ffbe31; margin-right: 10px; font-size: 0.9rem; }
 .m-input { width: 150px; margin-bottom: 0; background: #2b2b2b; border: 1px solid #444; }
 
 /* 最优结果信息块 */

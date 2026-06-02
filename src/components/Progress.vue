@@ -13,6 +13,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
   (e: "update:isExpanded", val: boolean): void; // --- 新增：向父组件汇报折叠状态的更改 ---
+  (e: "batchChange", patch: string, status: boolean): void; // --- 新增批量事件 ---
 }>();
 
 
@@ -57,10 +58,8 @@ const setSpell = (i: number, status: boolean) => {
 };
 
 const batchSetSpell = (status: boolean, patch: string) => {
-  for (let i = 0; i < spells.length; i++) {
-    if (patch !== "all" && spells[i].patch !== patch) continue;
-    setSpell(i, status);
-  }
+  // 不再循环 130 次，而是直接发一条总指令给父组件
+  emit("batchChange", patch, status);
 };
 
 const width = (learned: number, total: number) => {

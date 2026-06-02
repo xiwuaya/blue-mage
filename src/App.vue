@@ -213,6 +213,42 @@ const handleTypeChange = (type: any, checked: boolean) => {
   filterTypes.value[type as keyof FilterTypes] = checked;
   saveSetting("filter-types", filterTypes.value);
 };
+
+// --- 新增：专门处理批量更新，避免引发瞬间卡死 ---
+const handleBatchStatusChange = (patch: string, learned: boolean) => {
+  // 1. 一次性生成全新的状态数组
+  const statusArr: SpellStatusArray = spells.map((s, i) => {
+    if (patch === "all" || s.patch === patch) return learned ? 1 : 0;
+    return spellStatus.value[i];
+  });
+  
+  // 2. 仅执行 1 次本地存储写入
+  saveSetting("spell-status", statusArr);
+  spellStatus.value = statusArr;
+
+  // 3. 多人模式下，一次性更新所有的队伍技能
+  if (isPartyModeActive.value) {
+    const newPartyData = [...partyData.value];
+    for (let i = 0; i < 7; i++) {
+      const str = newPartyData[i] || "";
+      if (str.trim()) {
+        const nums = str.split(/[,，\s]+/).map(Number).filter(n => !isNaN(n));
+        const numSet = new Set(nums);
+
+        spells.forEach((s) => {
+          if (patch === "all" || s.patch === patch) {
+            const targetSpellNo = Number(s.no);
+            if (learned) numSet.delete(targetSpellNo);
+            else numSet.add(targetSpellNo);
+          }
+        });
+        newPartyData[i] = Array.from(numSet).sort((a, b) => a - b).join(", ");
+      }
+    }
+    partyData.value = newPartyData;
+  }
+};
+
 </script>
 
 <template>
@@ -235,6 +271,7 @@ const handleTypeChange = (type: any, checked: boolean) => {
         :spellStatus="spellStatus" 
         v-model:isExpanded="showPatchVersion" 
         @change="handleStatusChange" 
+        @batchChange="handleBatchStatusChange"
       />
             
       <Filter 
@@ -287,7 +324,7 @@ const handleTypeChange = (type: any, checked: boolean) => {
               <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
             </ul>
             <p>
-              本网页内容最近一次更新于<strong>2026年6月2日</strong>（7.50版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+              本网页内容最近一次更新于<strong>2026年6月3日</strong>（7.51版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
                 rel="noopener noreferrer">点此提出</a>
             </p>
             <p>
@@ -310,6 +347,7 @@ const handleTypeChange = (type: any, checked: boolean) => {
     :filterTypes="filterTypes"
     :show="showPartyModal" 
     @close="showPartyModal = false" 
+    @resetMinUnlearned="minUnlearned = 1"
   />
   
 </template>
