@@ -11,6 +11,7 @@ const props = defineProps<{
   learned: boolean;
   unlearnedCount?: number;
   showUnlearnedCount?: boolean;
+  showPatchVersion: boolean; // --- 新增这行 ---
 }>();
 const emit = defineEmits<{
   (e: "change", status: boolean): void;
@@ -28,7 +29,7 @@ const emit = defineEmits<{
     />
     <div class="content">
       <h4>
-        <patch-version :version="props.spell.patch" />
+        <patch-version v-show="props.showPatchVersion" :version="spell.patch" />
         <Tag
           color="#eee1c5"
           title="点击切换学习状态"

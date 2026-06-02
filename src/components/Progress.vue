@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import type { SpellStatusArray } from "@/lib/interface";
 import { spells } from "@/lib/spell";
-// --- 修改：引入 ref 用于控制折叠状态 ---
-import { computed, ref } from "vue"; 
+import { computed } from "vue"; 
 import PatchVersion from "./PatchVersion.vue";
 import Title from "./Title.vue";
 
+// 修改 props 和 emit 声明
 const props = defineProps<{
   spellStatus: SpellStatusArray;
+  isExpanded: boolean; // --- 新增：接收从 App.vue 传来的折叠状态 ---
 }>();
 const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
+  (e: "update:isExpanded", val: boolean): void; // --- 新增：向父组件汇报折叠状态的更改 ---
 }>();
 
-// --- 新增：控制进度面板是否展开的状态，默认设为 true (展开) ---
-const isProgressExpanded = ref(true);
 
 class Counter {
   total = 0;
@@ -70,15 +70,15 @@ const width = (learned: number, total: number) => {
 
 <template>
   <div class="wrap">
-    <Title @click="isProgressExpanded = !isProgressExpanded" class="collapsible-title">
-      <span class="collapse-icon">{{ isProgressExpanded ? '▼' : '▶' }}</span> 进度
+    <Title @click="emit('update:isExpanded', !isExpanded)" class="collapsible-title">
+      <span class="collapse-icon">{{ isExpanded ? '▼' : '▶' }}</span> 进度
     </Title>
     
     <div 
       v-for="(counter, patch) in progress" 
       :key="patch" 
       class="item"
-      v-show="patch === 'all' || isProgressExpanded"
+      v-show="patch === 'all' || isExpanded" 
     >
       <span>
         <patch-version v-if="patch !== 'all'" :version="patch" />

@@ -37,6 +37,10 @@ const orderByUnlearned = ref(true);
 
 const showHelpModal = ref(false);
 
+// --- 控制进度面板折叠与列表版本号显示的联动状态 ---
+const showPatchVersion = ref(loadSetting<boolean>("show-patch-version") ?? true);
+watch(showPatchVersion, val => saveSetting("show-patch-version", val));
+
 // --- 新增：队伍数据管理 ---
 const partyData = ref<string[]>(Array(7).fill("")); // 保存用户2至用户8的字符串数据
 // --- 新增：保存用户1至用户8的自定义名称 ---
@@ -226,8 +230,13 @@ const handleTypeChange = (type: any, checked: boolean) => {
       <TypeFilter :filterTypes="filterTypes" @typeChange="handleTypeChange" />
       
       <Book :spellStatus="spellStatus" @change="handleStatusChange" />
-      <Progress :spellStatus="spellStatus" @change="handleStatusChange" />
       
+      <Progress 
+        :spellStatus="spellStatus" 
+        v-model:isExpanded="showPatchVersion" 
+        @change="handleStatusChange" 
+      />
+            
       <Filter 
         :filterTypes="filterTypes" 
         :level="level" 
@@ -253,6 +262,7 @@ const handleTypeChange = (type: any, checked: boolean) => {
       :orderByUnlearned="orderByUnlearned" 
       :unlearnedCountMap="unlearnedCountMap" 
       :isPartyModeActive="isPartyModeActive"
+      :showPatchVersion="showPatchVersion"
       @change="handleStatusChange" 
       @clearFilter="filter = ''" 
       @search="filter = $event" 

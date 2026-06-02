@@ -26,6 +26,8 @@ const props = defineProps<{
   unlearnedCountMap: Map<number, number>;
   // --- 新增：接收是否处于开车模式（队伍人数 > 1）的状态 ---
   isPartyModeActive: boolean;
+  
+  showPatchVersion: boolean; // --- 新增这行 ---
 }>();
 const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
@@ -244,8 +246,9 @@ const allLearned = computed(() =>
       :learned="props.isPartyModeActive ? (props.unlearnedCountMap.get(Number(spell.no)) || 0) === 0 : learnedByNo(props.spellStatus, spell.no)" 
       :unlearnedCount="props.unlearnedCountMap.get(Number(spell.no))"
       :showUnlearnedCount="props.isPartyModeActive"
-      @change="emit('change', indexByNo(spell.no), $event)"
+      :showPatchVersion="props.showPatchVersion" @change="emit('change', indexByNo(spell.no), $event)"
       @search="emit('search', $event)" />
+
   </main>
 </template>
 
