@@ -23,6 +23,14 @@ const showSpells = computed(() =>
 const toggleSpell = (i: number) => {
   emit("change", i, !props.spellStatus[i]);
 };
+
+// --- 新增：计算总体进度 ---
+const total = computed(() => spells.length);
+const learned = computed(() => props.spellStatus.filter((s) => s === 1).length);
+const percent = computed(() => {
+  return total.value ? ((learned.value / total.value) * 100).toFixed(1) : "0.0";
+});
+
 </script>
 
 <template>
@@ -53,6 +61,17 @@ const toggleSpell = (i: number) => {
       <span>{{ s.no }}</span>
     </div>
   </div>
+  
+  <div class="total-progress">
+    <div class="progress-text">
+      <span>总体进度</span>
+      <span>{{ learned }} / {{ total }} ({{ percent }}%)</span>
+    </div>
+    <div class="progress-bar">
+      <div class="inner" :style="{ width: percent + '%' }"></div>
+    </div>
+  </div>
+
 </template>
 
 <style scoped>
@@ -143,4 +162,39 @@ const toggleSpell = (i: number) => {
   margin-bottom: 0;
   font-size: 0.875rem;
 }
+
+/* --- 修改：确保进度条宽度占满，并与侧边栏对齐 --- */
+.total-progress {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  margin-bottom: 20px; /* 与下方的更多设置保持一定间距 */
+  /* 如果你的进度条左右边缘没有和下方的菜单对齐，可以尝试把下面的 padding 注释掉或者修改 */
+  padding: 0 10px; 
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #ccc;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.progress-bar {
+  width: 100%; /* 确保进度条背景拉满 */
+  height: 12px;
+  background-color: #373737;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar .inner {
+  height: 100%;
+  background-color: #ffbe31;
+  transition: width 0.3s ease-in;
+}
+
+
 </style>

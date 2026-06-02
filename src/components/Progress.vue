@@ -78,7 +78,7 @@ const width = (learned: number, total: number) => {
       v-for="(counter, patch) in progress" 
       :key="patch" 
       class="item"
-      v-show="patch === 'all' || isExpanded" 
+      v-show="isExpanded" 
     >
       <span>
         <patch-version v-if="patch !== 'all'" :version="patch" />
