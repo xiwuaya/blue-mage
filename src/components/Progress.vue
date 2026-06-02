@@ -57,10 +57,21 @@ const setSpell = (i: number, status: boolean) => {
   emit("change", i, status);
 };
 
+// --- 修改：为批量操作增加二次确认弹窗 ---
 const batchSetSpell = (status: boolean, patch: string) => {
-  // 不再循环 130 次，而是直接发一条总指令给父组件
-  emit("batchChange", patch, status);
+  // 根据传入的状态和版本号，动态生成友好的提示文本
+  const actionText = status ? "全选" : "清空";
+  const targetText = patch === "all" ? "总体" : `Patch ${patch}`;
+  
+  // 唤起浏览器原生确认框
+  const isConfirmed = window.confirm(`危险操作确认：\n\n您确定要【${actionText}】【${targetText}】的所有技能进度吗？`);
+  
+  // 只有用户点击了“确定”，才向父组件发送修改指令
+  if (isConfirmed) {
+    emit("batchChange", patch, status);
+  }
 };
+
 
 const width = (learned: number, total: number) => {
   return `${total ? (learned / total) * 100 : 0}%`;
