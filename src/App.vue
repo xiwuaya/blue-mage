@@ -297,6 +297,7 @@ const handleTypeChange = (type: any, checked: boolean) => {
     v-model:user1Name="user1Name"
     v-model:partyData="partyData" 
     v-model:partyNames="partyNames" 
+    :filterTypes="filterTypes"
     :show="showPartyModal" 
     @close="showPartyModal = false" 
   />
