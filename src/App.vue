@@ -274,7 +274,8 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
         @batchChange="handleBatchStatusChange"
       />
             
-      <Filter 
+      <Filter
+        v-show="showPatchVersion"
         :filterTypes="filterTypes" 
         :level="level" 
         :orderByLevel="orderByLevel"

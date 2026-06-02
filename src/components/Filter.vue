@@ -22,9 +22,6 @@ const emit = defineEmits<{
   (e: "openConfig"): void;
 }>();
 
-// --- 新增：控制“等级与多人模式”整个面板是否折叠的状态，默认为 false (收起) ---
-const isSettingsExpanded = ref(false);
-
 // --- 新增：处理角色等级输入框的值变化 ---
 const handleLevelInput = (e: Event) => {
   let val = +(e?.target as any).value;
@@ -54,11 +51,7 @@ const handleOrder = (order: boolean) => {
 
 <template>
   <div class="wrap">
-    <div @click="isSettingsExpanded = !isSettingsExpanded" class="filter-header">
-      <span class="collapse-icon">{{ isSettingsExpanded ? '▼' : '▶' }}</span> ----过滤器----
-    </div>
-    
-    <div v-show="isSettingsExpanded" class="collapse-content">
+    <div class="collapse-content">
       <div class="large-title">角色等级</div>
       <div class="level row-spacing">
         <input
@@ -122,19 +115,6 @@ const handleOrder = (order: boolean) => {
   border-radius: 16px;
 }
 
-/* --- 新增：小字过滤器折叠头的样式 --- */
-.filter-header {
-  font-size: 0.8rem;
-  color: #999;
-  cursor: pointer;
-  margin-bottom: 10px;
-  transition: color 0.2s;
-  display: flex;
-  align-items: center;
-}
-.filter-header:hover {
-  color: #ddd;
-}
 .collapse-icon {
   display: inline-block;
   width: 16px;

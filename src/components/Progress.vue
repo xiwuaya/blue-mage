@@ -70,8 +70,9 @@ const width = (learned: number, total: number) => {
 <template>
   <div class="wrap">
     <Title @click="emit('update:isExpanded', !isExpanded)" class="collapsible-title">
-      <span class="collapse-icon">{{ isExpanded ? '▼' : '▶' }}</span> 进度
+      <span class="collapse-icon">{{ isExpanded ? '▼' : '▶' }}</span> 更多设置
     </Title>
+
     
     <div 
       v-for="(counter, patch) in progress" 
