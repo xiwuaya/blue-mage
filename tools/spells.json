@@ -167,6 +167,13 @@
         "note": "BOSS#2召唤的小怪"
       },
       {
+        "type": "dungeon",
+        "name": "解放决战多玛王城",
+        "mob": "多玛魔导先锋 ",
+        "level": 67,
+        "note": "BOSS #1后小怪"
+      },
+      {
         "type": "fate",
         "map": "北萨纳兰",
         "name": "逆向工程",
