@@ -131,14 +131,14 @@ const bestParty = computed(() => {
   const usersSets: Set<number>[] = [];
 
   // 解析并存入 用户 1 的未掌握技能集合
-  const u1Nums = localUser1Spells.value.split(/[,，\s]+/).map(Number).filter(x => !isNaN(x));
+  const u1Nums = localUser1Spells.value.split(/[,，\.、\s]+/).map(Number).filter(x => !isNaN(x));
   usersSets.push(new Set(u1Nums));
 
   // 解析并存入 用户 2-8 的未掌握技能集合
   for (let i = 0; i < 7; i++) {
     const str = localPartyData.value[i] || "";
     if (str.trim()) {
-      const nums = str.split(/[,，\s]+/).map(Number).filter(x => !isNaN(x));
+      const nums = str.split(/[,，\.、\s]+/).map(Number).filter(x => !isNaN(x));
       usersSets.push(new Set(nums));
     } else {
       usersSets.push(new Set()); // 如果该队友框内为空，视作没有未掌握技能，存入空集合

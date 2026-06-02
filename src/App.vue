@@ -60,7 +60,7 @@ const user1Spells = computed({
   },
   set(val: string) {
     // 解析输入的未掌握技能编号
-    const nums = val.split(/[,，\s]+/).map(Number).filter(n => !isNaN(n));
+    const nums = val.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
     const unlearnedSet = new Set(nums);
     
     // 如果在输入框的未掌握集合中，状态设为 0 (未掌握)，否则设为 1 (已掌握)
@@ -82,7 +82,7 @@ const validUsers = computed(() => {
     const str = partyData.value[i] || "";
     if (str.trim()) {
       // 队友：存放输入的未掌握技能
-      const nums = str.split(/[,，\s]+/).map(Number).filter(n => !isNaN(n));
+      const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
       users.push(new Set(nums));
     }
   }
@@ -232,7 +232,7 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
     for (let i = 0; i < 7; i++) {
       const str = newPartyData[i] || "";
       if (str.trim()) {
-        const nums = str.split(/[,，\s]+/).map(Number).filter(n => !isNaN(n));
+        const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
         const numSet = new Set(nums);
 
         spells.forEach((s) => {
@@ -242,7 +242,7 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
             else numSet.add(targetSpellNo);
           }
         });
-        newPartyData[i] = Array.from(numSet).sort((a, b) => a - b).join(", ");
+        newPartyData[i] = Array.from(numSet).sort((a, b) => a - b).join(" ");
       }
     }
     partyData.value = newPartyData;
