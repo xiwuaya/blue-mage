@@ -50,8 +50,19 @@ watch(localPartyNames, (val) => emit('update:partyNames', val), { deep: true });
 // 目的：如果在弹窗外(如侧边栏)勾选了技能，弹窗内的数据也能实时响应更新
 watch(() => props.user1Spells, (val) => localUser1Spells.value = val);
 watch(() => props.user1Name, (val) => localUser1Name.value = val);
-watch(() => props.partyData, (val) => localPartyData.value = [...val], { deep: true });
-watch(() => props.partyNames, (val) => localPartyNames.value = [...val], { deep: true });
+// --- 修复恶性死循环 ---
+watch(() => props.partyData, (val) => {
+  // 如果转成字符串后发现内容一模一样，就说明是自己 emit 触发的，拒绝重新赋值
+  if (JSON.stringify(val) !== JSON.stringify(localPartyData.value)) {
+    localPartyData.value = [...val];
+  }
+}, { deep: true });
+
+watch(() => props.partyNames, (val) => {
+  if (JSON.stringify(val) !== JSON.stringify(localPartyNames.value)) {
+    localPartyNames.value = [...val];
+  }
+}, { deep: true });
 
 // ==========================================
 // 3. 核心功能函数
