@@ -2541,6 +2541,14 @@
         "note": "BOSS#2",
         "level": 50,
         "color": "red"
+      },
+      {
+        "type": "treasure",
+        "name": "运河宝物库深层",
+        "mob": "运河大脚雪人",
+        "level": 70,
+        "note": "寻宝：深层传送魔纹的地图（深绿）",
+        "color": "red"
       }
     ]
   },
