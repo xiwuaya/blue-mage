@@ -82,12 +82,25 @@ watch(() => props.partyNames, (val) => {
 // 3. 核心功能函数
 // ==========================================
 
+// --- 1. 新增：轻提示的显示状态和定时器引用 ---
+const showCopyToast = ref(false);
+let toastTimer: ReturnType<typeof setTimeout> | null = null;
+
+// --- 新增：触发轻提示的函数 ---
+const triggerToast = () => {
+  showCopyToast.value = true;
+  if (toastTimer) clearTimeout(toastTimer); // 防抖：如果连续点击，重新计时
+  toastTimer = setTimeout(() => {
+    showCopyToast.value = false;
+  }, 2000); // 2秒后自动消失
+};
+
 // 一键复制用户 1 的未掌握技能数据到系统剪贴板
 const copyUser1Data = async () => {
   try {
     // 优先尝试使用现代浏览器的 Clipboard API
     await navigator.clipboard.writeText(localUser1Spells.value);
-    alert("已成功复制！");
+    triggerToast();
   } catch (err) {
     // 降级处理：兼容不支持 Clipboard API 的浏览器环境 (如非 HTTPS 站点或旧版浏览器)
     const textArea = document.createElement("textarea");
@@ -96,7 +109,7 @@ const copyUser1Data = async () => {
     textArea.select();
     document.execCommand("copy");
     document.body.removeChild(textArea);
-    alert("已成功复制！");
+    triggerToast(); 
   }
 };
 
@@ -302,6 +315,9 @@ const bestParty = computed(() => {
                     placeholder="填入未掌握技能编号..."
                   ></textarea>
                   <button class="copy-btn" @click="copyUser1Data" title="复制文本框内容">复制</button>
+                  <Transition name="fade">
+                    <div v-if="showCopyToast" class="copy-toast">复制成功！</div>
+                  </Transition>
                 </div>
               </div>
 
@@ -429,6 +445,21 @@ const bestParty = computed(() => {
   border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer; opacity: 0.7; transition: all 0.2s;
 }
 .copy-btn:hover { opacity: 1; background: #ffbe31; color: #1a1a1a; border-color: #ffbe31; }
+/* --- 新增：复制成功轻提示的样式 --- */
+.copy-toast {
+  position: absolute;
+  top: 36px; /* 悬浮在复制按钮下方 */
+  right: 6px;
+  background-color: #ffbe31;
+  color: #1a1a1a;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  pointer-events: none; /* 穿透鼠标事件，不阻挡下方文本框的点击 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
 
 /* 底部重置按钮容器与按钮自身 */
 .reset-wrap { margin-top: 20px; display: flex; justify-content: flex-end; }
