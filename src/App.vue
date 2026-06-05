@@ -38,7 +38,7 @@ const orderByUnlearned = ref(true);
 const showHelpModal = ref(false);
 
 // --- 控制进度面板折叠与列表版本号显示的联动状态 ---
-const showPatchVersion = ref(loadSetting<boolean>("show-patch-version") ?? true);
+const showPatchVersion = ref(loadSetting<boolean>("show-patch-version") ?? false);
 watch(showPatchVersion, val => saveSetting("show-patch-version", val));
 
 // --- 新增：队伍数据管理 ---
@@ -325,7 +325,7 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
               <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
             </ul>
             <p>
-              本网页内容最近一次更新于<strong>2026年6月3日</strong>（7.51版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+              本网页内容最近一次更新于<strong>2026年6月6日</strong>（7.51版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
                 rel="noopener noreferrer">点此提出</a>
             </p>
             <p>

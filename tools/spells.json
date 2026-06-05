@@ -2711,12 +2711,17 @@
         "type": "hunt",
         "map": "龙堡内陆低地",
         "rank": "A",
-        "position": [
-          24,
-          23,
-          0
-        ],
+        "position": null,
         "mob": "斯特拉斯",
+        "level": 60,
+        "color": "red"
+      },
+      {
+        "type": "hunt",
+        "map": "阿巴拉提亚云海",
+        "rank": "B",
+        "position": null,
+        "mob": "斯奎克",
         "level": 60,
         "color": "red"
       },
@@ -3090,7 +3095,7 @@
         "name": "圣教中枢伊修加德教皇厅",
         "mob": "白骑士",
         "level": 57,
-        "note": "BOSS #2前后各有两只",
+        "note": "BOSS #2前后各有一只",
         "color": "yellow"
       }
     ]
@@ -3111,7 +3116,7 @@
         "name": "圣教中枢伊修加德教皇厅",
         "mob": "黑骑士",
         "level": 57,
-        "note": "BOSS #2前后各有两只",
+        "note": "BOSS #2前后各有一只",
         "color": "yellow"
       }
     ]
@@ -3169,6 +3174,15 @@
         "mob": "致命武器",
         "note": "同步摸一下仇恨后解除同步等危命失败也有相同概率学会",
         "level": 68
+      },
+      {
+        "type": "hunt",
+        "map": "延夏",
+        "rank": "S",
+        "position": null,
+        "mob": "伽马",
+        "level": 70,
+        "color": "red"
       }
     ]
   },
@@ -3354,7 +3368,7 @@
         "type": "raid",
         "name": "巴哈姆特大迷宫 邂逅之章1",
         "mob": "神杖巨蛇",
-        "note": "最终BOSS",
+        "note": "最终BOSS。场地闪烁蓝光时，里面有人会产生暗物质粘液怪，神杖巨蛇与暗物质粘液怪接触后发动。",
         "level": 50
       },
       {
@@ -4095,6 +4109,19 @@
         "position": [
           34.7,
           28.8,
+          0
+        ],
+        "mob": "追猎种陆行鸟",
+        "level": 53,
+        "color": "yellow"
+      },
+      {
+        "type": "map",
+        "map": "龙堡参天高地",
+        "rank": null,
+        "position": [
+          37.4,
+          23.6,
           0
         ],
         "mob": "追猎种陆行鸟",

@@ -234,7 +234,7 @@ const allLearned = computed(() =>
       <template v-else>
         展示包含“{{ props.filter }}”的技能（{{ showSpells.length }} 个），
         <a href="javascript:void(0)" @click="emit('clearFilter')">
-          清空搜索条件
+          清空搜索框文本
         </a>，
         <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
           {{ hideSpecialColor ? '○隐藏了糟糕的学习途径' : '●显示了糟糕的学习途径' }}
