@@ -61,7 +61,7 @@ watch(spellStatus, (newStatus) => {
 
 // 监听用户1在弹窗中手动修改文本框：反向同步回主界面的 spellStatus 勾选状态
 watch(user1Spells, (val) => {
-  const nums = val.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+  const nums = (val.match(/\d+/g) || []).map(Number);
   const unlearnedSet = new Set(nums);
   
   const statusArr: SpellStatusArray = spells.map((s: any) =>
@@ -90,7 +90,7 @@ const validUsers = computed(() => {
   
   // 用户1：非隐藏状态才加入未掌握计数池
   if (user1VisibilityState.value !== 2) {
-    const nums = user1Spells.value.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+    const nums = (user1Spells.value.match(/\d+/g) || []).map(Number);
     users.push(new Set(nums));
   }
   
@@ -99,7 +99,7 @@ const validUsers = computed(() => {
     if (partyVisibilityStates.value[i] !== 2) {
       const str = partyData.value[i] || "";
       if (str.trim()) {
-        const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+        const nums = (str.match(/\d+/g) || []).map(Number);
         users.push(new Set(nums));
       }
     }
@@ -211,7 +211,7 @@ const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
     
     const str = newPartyData[i] || "";
     if (str.trim()) {
-      const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+      const nums = (str.match(/\d+/g) || []).map(Number);
       const numSet = new Set(nums);
       
       if (learned) {
@@ -250,7 +250,7 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
     
     const str = newPartyData[i] || "";
     if (str.trim()) {
-      const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+      const nums = (str.match(/\d+/g) || []).map(Number);
       const numSet = new Set(nums);
 
       spells.forEach((s) => {

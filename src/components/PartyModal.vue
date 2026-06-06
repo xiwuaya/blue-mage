@@ -168,7 +168,9 @@ const bestParty = computed(() => {
 
   // 1. 处理用户1（不等于 2 隐蔽状态时加入计算池）
   if (localUser1VisibilityState.value !== 2) {
-    const u1Nums = localUser1Spells.value.split(/[,，\s]+/).map(Number).filter(x => !isNaN(x));
+    // 修改后：直接匹配字符串中所有的连续数字序列
+    const u1Nums = (localUser1Spells.value.match(/\d+/g) || []).map(Number);
+
     activeUsers.push({ originalIndex: 0, spellSet: new Set(u1Nums) });
     if (localUser1VisibilityState.value === 1) {
       mustIncludeMask |= (1 << activeIndex);
@@ -181,7 +183,7 @@ const bestParty = computed(() => {
     if (localPartyVisibilityStates.value[i] !== 2) {
       const str = localPartyData.value[i] || "";
       if (str.trim()) {
-        const nums = str.split(/[,，\s]+/).map(Number).filter(x => !isNaN(x));
+        const nums = (str.match(/\d+/g) || []).map(Number);
         activeUsers.push({ originalIndex: i + 1, spellSet: new Set(nums) });
       } else {
         activeUsers.push({ originalIndex: i + 1, spellSet: new Set() });
