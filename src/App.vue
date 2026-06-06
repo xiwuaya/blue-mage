@@ -78,7 +78,7 @@ const validUsers = computed(() => {
   // 用户1：存放未掌握的技能
   const u1 = new Set(spells.filter((_, i) => spellStatus.value[i] !== 1).map((s: any) => Number(s.no)));
   users.push(u1);
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < partyData.value.length; i++) {
     const str = partyData.value[i] || "";
     if (str.trim()) {
       // 队友：存放输入的未掌握技能
@@ -184,7 +184,7 @@ const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
     const targetSpellNo = Number(spells[index].no);
     const newPartyData = [...partyData.value];
     
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < newPartyData.length; i++) {
       const str = newPartyData[i] || "";
       if (str.trim()) {
         // 解析该队友目前的【未掌握】技能集合
