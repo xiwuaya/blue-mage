@@ -437,7 +437,7 @@ const bestParty = computed(() => {
 .icon-invisible { -webkit-mask: url('/icons/Invisible.svg') no-repeat center / contain; mask: url('/icons/Invisible.svg') no-repeat center / contain; }
 .inline-icon { vertical-align: middle; margin: 0 4px; position: relative; top: -2px; color: #ccc; }
 .visibility-btn { background: transparent; border: none; cursor: pointer; padding: 4px; color: #ccc; opacity: 0.8; transition: all 0.2s; outline: none; display: flex; align-items: center; justify-content: center; }
-.visibility-btn:hover { opacity: 1; transform: scale(1.1); color: #ffbe31; }
+.visibility-btn:hover { opacity: 1; transform: scale(1.1); color: #ccc; }
 .visibility-btn.is-must-include { color: #ffbe31; opacity: 1; }
 .layer-hidden { opacity: 0.55; }
 .layer-hidden .name-input { color: #777 !important; }

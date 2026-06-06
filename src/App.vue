@@ -30,7 +30,7 @@ const filterTypes = ref<FilterTypes>({
 const level = ref(80);
 const orderByLevel = ref(false);
 const minUnlearned = ref(1);
-const orderByUnlearned = ref(false);
+const orderByUnlearned = ref(true);
 const showHelpModal = ref(false);
 const showPatchVersion = ref(loadSetting<boolean>("show-patch-version") ?? false);
 watch(showPatchVersion, val => saveSetting("show-patch-version", val));
@@ -84,7 +84,7 @@ watch(user1VisibilityState, (val) => {
   }
 });
 
-// --- 修改：解析有效的队伍用户（计算未掌握人数时，直接跳过被隐藏的用户） ---
+// 解析有效的队伍用户（计算未掌握人数时，直接跳过被隐藏的用户）
 const validUsers = computed(() => {
   const users = [];
   
@@ -186,6 +186,12 @@ onBeforeMount(() => {
   }
 });
 
+// --- 补回被遗漏的类型变更处理器 ---
+const handleTypeChange = (type: string, checked: boolean) => {
+  filterTypes.value[type as keyof FilterTypes] = checked;
+  saveSetting("filter-types", filterTypes.value);
+};
+
 // 单一状态改变同步处理器
 const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
   const statusArr: SpellStatusArray = spells.map((_, i) =>
@@ -200,7 +206,7 @@ const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
   let isChanged = false;
   
   for (let i = 0; i < newPartyData.length; i++) {
-    // 【核心改动】如果该用户被隐藏，直接跳过，不修改其文本框数据
+    // 如果该用户被隐藏，直接跳过，不修改其文本框数据
     if (partyVisibilityStates.value[i] === 2) continue;
     
     const str = newPartyData[i] || "";
@@ -239,7 +245,7 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
   let isChanged = false;
   
   for (let i = 0; i < newPartyData.length; i++) {
-    // 【核心改动】如果该用户被隐藏，直接跳过，不修改其文本框数据
+    // 如果该用户被隐藏，直接跳过，不修改其文本框数据
     if (partyVisibilityStates.value[i] === 2) continue;
     
     const str = newPartyData[i] || "";
