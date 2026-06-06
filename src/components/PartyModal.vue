@@ -38,9 +38,12 @@ const localUser1Name = ref(props.user1Name);
 const localPartyData = ref([...props.partyData]);
 const localPartyNames = ref([...props.partyNames]);
 
-// --- 新增：记录每个用户的可见/不可见状态 (类似 PS 图层) ---
-const isUser1Visible = ref(true);
-const partyVisibilities = ref<boolean[]>(Array(localPartyData.value.length).fill(true));
+// --- 修改：将原本的 Boolean 类型变为 0, 1, 2 三种状态 ---
+// 0: 默认可见 (参与计算，无限制)
+// 1: 高亮可见 (必定包含在最优队伍中)
+// 2: 不可见 (隐藏跳过，完全不计算该用户)
+const user1VisibilityState = ref<number>(0);
+const partyVisibilityStates = ref<number[]>(Array(localPartyData.value.length).fill(0));
 
 watch(localUser1Spells, (val) => {
   if (val !== props.user1Spells) emit('update:user1Spells', val);
@@ -106,7 +109,7 @@ const resetParty = () => {
   const len = localPartyData.value.length;
   localPartyData.value = Array(len).fill("");
   localPartyNames.value = Array(len).fill("");
-  partyVisibilities.value = Array(len).fill(true); // --- 修改：重置时恢复所有人可见 ---
+  partyVisibilityStates.value = Array(len).fill(0); // 重置为默认可见
   emit('resetMinUnlearned');
 };
 
@@ -117,14 +120,14 @@ const addTeammate = () => {
   }
   localPartyData.value.push("");
   localPartyNames.value.push("");
-  partyVisibilities.value.push(true); // --- 修改：新加队友默认可见 ---
+  partyVisibilityStates.value.push(0); // 新加队友默认可见
 };
 
 const removeTeammate = () => {
   if (localPartyData.value.length > 0) {
     localPartyData.value.pop();
     localPartyNames.value.pop();
-    partyVisibilities.value.pop(); // --- 修改：移除队友时同步弹出图层状态 ---
+    partyVisibilityStates.value.pop(); 
   }
 };
 
@@ -135,22 +138,29 @@ const getFilterKey = (type: string): keyof FilterTypes => {
 };
 
 // ==========================================
-// 4. 最优组队算法 (结合过滤、动态人数与图层可见性)
+// 4. 最优组队算法 (结合过滤、动态人数与图层可见性及强制要求)
 // ==========================================
 const bestParty = computed(() => {
   const targetM = typeof m.value === 'string' ? parseInt(m.value) : m.value;
   if (isNaN(targetM) || targetM <= 0 || targetM > 8) return null;
 
-  // --- 新增：1. 构建活跃用户池，直接跳过不可见的用户 ---
+  // --- 修改：构建活跃用户池，同时记录必定包含的掩码位 ---
   const activeUsers: { originalIndex: number, spellSet: Set<number> }[] = [];
+  let mustIncludeMask = 0;
+  let activeIndex = 0;
 
-  if (isUser1Visible.value) {
+  if (user1VisibilityState.value !== 2) {
     const u1Nums = localUser1Spells.value.split(/[,，\s]+/).map(Number).filter(x => !isNaN(x));
     activeUsers.push({ originalIndex: 0, spellSet: new Set(u1Nums) });
+    // 如果状态为 1（必带），记录掩码位
+    if (user1VisibilityState.value === 1) {
+      mustIncludeMask |= (1 << activeIndex);
+    }
+    activeIndex++;
   }
 
   for (let i = 0; i < localPartyData.value.length; i++) {
-    if (partyVisibilities.value[i]) {
+    if (partyVisibilityStates.value[i] !== 2) {
       const str = localPartyData.value[i] || "";
       if (str.trim()) {
         const nums = str.split(/[,，\s]+/).map(Number).filter(x => !isNaN(x));
@@ -158,12 +168,27 @@ const bestParty = computed(() => {
       } else {
         activeUsers.push({ originalIndex: i + 1, spellSet: new Set() });
       }
+      
+      // 如果状态为 1（必带），记录掩码位
+      if (partyVisibilityStates.value[i] === 1) {
+        mustIncludeMask |= (1 << activeIndex);
+      }
+      activeIndex++;
     }
   }
 
   const n = activeUsers.length; 
-  // 如果当前选为可见的总人数，连队伍期望人数 m 都凑不够，直接不计算
-  if (n < targetM) return null; 
+  
+  // 计算当前“必须包含”的总人数
+  let tempMask = mustIncludeMask;
+  let mustIncludeCount = 0;
+  while (tempMask > 0) {
+    mustIncludeCount += tempMask & 1;
+    tempMask >>= 1;
+  }
+
+  // 如果当前选为可见的总人数不够，或要求必带的人数大于期望队伍人数，直接跳过计算
+  if (n < targetM || mustIncludeCount > targetM) return null; 
 
   const validSpellNos = new Set<number>();
   for (const spell of spells) {
@@ -183,13 +208,17 @@ const bestParty = computed(() => {
 
   const partyMasks = [];
   
-  // 使用 Gosper's Hack 直接生成组合掩码
+  // 使用 Gosper's Hack 生成组合掩码
   if (targetM <= n) {
     let state = (1 << targetM) - 1; 
     const limit = 1 << n;     
 
     while (state < limit) {
-      partyMasks.push(state);
+      // --- 核心限制逻辑：只有在这个组合位掩码 完美包含 必须包含掩码位 时，才是合格的组合 ---
+      if ((state & mustIncludeMask) === mustIncludeMask) {
+        partyMasks.push(state);
+      }
+      
       const c = state & -state;
       const r = state + c;
       state = (((state ^ r) >>> 2) / c) | r; 
@@ -220,7 +249,6 @@ const bestParty = computed(() => {
     const indices = [];
     for (let i = 0; i < n; i++) {
       if ((mask & (1 << i)) !== 0) {
-        // --- 修改：还原为队伍构成时，通过 originalIndex 映射回真实的界面位置索引 ---
         indices.push(activeUsers[i].originalIndex);
       }
     }
@@ -242,9 +270,10 @@ const bestParty = computed(() => {
           <div class="help-text">
             <p style="margin-bottom: 20px;">
               在此配置队伍成员<strong>未掌握</strong>的技能编号以开启共同学习。<strong>用户 1</strong> 默认为当前使用者，请直接复制框内数据分享给其他队员。<br/>
-              如果需要临时剔除某人不参与组队计算，可以点击其名字右侧的 
+              如果想指定某人<strong>必须参与</strong>最优组合计算，或<strong>临时剔除</strong>某人计算，点击其名字右侧的 
               <span class="eye-icon icon-visible inline-icon"></span> 
-              按钮隐藏该用户。<br/>
+              按钮切换状态。<br/>
+              （默认：可见参与计算；点一次：高亮且必定包含此人；再点一次：完全隐藏不计算）<br/>
               当除用户1外文本框非空时，自动进入多人模式，恢复到单人模式仅需要清空其他用户文本框中的内容即可<br/>
             （注：此功能尚在测试阶段，如果遇到问题可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
                 rel="noopener noreferrer">点此反馈</a>）
@@ -286,24 +315,24 @@ const bestParty = computed(() => {
                   </div>
                 </template>
                 <template v-else>
-                  <div class="no-skills-tips">当前可见分类下暂无可共同学习技能</div>
+                  <div class="no-skills-tips">当前可见分类下暂无可共同学习技能 (或强制人数大于上限)</div>
                 </template>
               </div>
             </div>
 
             <div class="party-grid">
               
-              <div class="party-user" :class="{ 'layer-hidden': !isUser1Visible }">
+              <div class="party-user" :class="{ 'layer-hidden': user1VisibilityState === 2 }">
                 <div class="name-row">
                   <input class="name-input" v-model="localUser1Name" placeholder="用户 1 (我)" />
                   <button 
                     class="visibility-btn" 
-                    @click="isUser1Visible = !isUser1Visible" 
-                    :title="isUser1Visible ? '该用户可见：参与计算' : '该用户隐藏：跳过计算'"
+                    :class="{ 'is-must-include': user1VisibilityState === 1 }"
+                    @click="user1VisibilityState = (user1VisibilityState + 1) % 3" 
+                    :title="['该用户可见：参与计算，无限制', '该用户必须包含：最优队伍必带此人', '该用户隐藏：跳过该用户计算'][user1VisibilityState]"
                   >
-                    <span class="eye-icon" :class="isUser1Visible ? 'icon-visible' : 'icon-invisible'"></span>
+                    <span class="eye-icon" :class="user1VisibilityState === 2 ? 'icon-invisible' : 'icon-visible'"></span>
                   </button>
-
                 </div>
                 
                 <div class="textarea-wrapper">
@@ -319,15 +348,16 @@ const bestParty = computed(() => {
                 </div>
               </div>
 
-              <div class="party-user" :class="{ 'layer-hidden': !partyVisibilities[index] }" v-for="(data, index) in localPartyData" :key="index">
+              <div class="party-user" :class="{ 'layer-hidden': partyVisibilityStates[index] === 2 }" v-for="(data, index) in localPartyData" :key="index">
                 <div class="name-row">
                   <input class="name-input" v-model="localPartyNames[index]" :placeholder="'用户 ' + (index + 2)" />
                   <button 
                     class="visibility-btn" 
-                    @click="partyVisibilities[index] = !partyVisibilities[index]" 
-                    :title="partyVisibilities[index] ? '该用户可见：参与计算' : '该用户隐藏：跳过计算'"
+                    :class="{ 'is-must-include': partyVisibilityStates[index] === 1 }"
+                    @click="partyVisibilityStates[index] = (partyVisibilityStates[index] + 1) % 3" 
+                    :title="['该用户可见：参与计算，无限制', '该用户必须包含：最优队伍必带此人', '该用户隐藏：跳过该用户计算'][partyVisibilityStates[index]]"
                   >
-                    <span class="eye-icon" :class="partyVisibilities[index] ? 'icon-visible' : 'icon-invisible'"></span>
+                    <span class="eye-icon" :class="partyVisibilityStates[index] === 2 ? 'icon-invisible' : 'icon-visible'"></span>
                   </button>
                 </div>
                 
@@ -349,7 +379,7 @@ const bestParty = computed(() => {
             </div>
             
             <div class="reset-wrap">
-              <button class="reset-btn" @click="resetParty" title="清空用户2至8的所有名称和数据，并恢复所有人可见">一键重置队友数据</button>
+              <button class="reset-btn" @click="resetParty" title="清空用户2至8的所有名称和数据，并恢复所有人默认可见">一键重置队友数据</button>
             </div>
 
           </div>
@@ -388,7 +418,6 @@ const bestParty = computed(() => {
 .party-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
 .party-user { display: flex; flex-direction: column; transition: all 0.3s ease; }
 
-/* === 新增：同行布局包裹与图层可见性按钮 === */
 .name-row {
   display: flex;
   align-items: center;
@@ -402,12 +431,10 @@ const bestParty = computed(() => {
 .visibility-btn:hover { opacity: 1; transform: scale(1.1); }
 
 .name-input {
-  /* margin-bottom 移除了，交给外层 row 去管 */
-  flex: 1; /* 撑满左侧空间 */
+  flex: 1; 
   background: transparent; border: 1px dashed transparent; color: #ffbe31; font-size: 0.9rem; font-weight: bold;
   padding: 0 4px; border-radius: 4px; height: 28px; width: 100%; box-sizing: border-box; transition: color 0.2s, border-color 0.2s; outline: none;
 }
-/* Placeholder 保持默认的偏白/浅灰色，输入后高亮 */
 .name-input::placeholder { color: #aaa; font-weight: normal; }
 .name-input:hover, .name-input:focus { border-color: #ffbe31; background: #2b2b2b; }
 
@@ -418,7 +445,6 @@ const bestParty = computed(() => {
 }
 .party-user textarea:focus { outline: none; border-color: #ffbe31; }
 
-/* === 同行布局包裹与图层可见性按钮 (SVG 版本) === */
 .name-row {
   display: flex;
   align-items: center;
@@ -426,44 +452,37 @@ const bestParty = computed(() => {
   gap: 5px;
 }
 
-/* 控制 SVG 图标本身的尺寸 */
-/* === 控制 SVG 蒙版的尺寸与颜色继承 === */
 .eye-icon {
   width: 18px;
   height: 18px;
   display: inline-block;
-  /* 核心魔法：背景颜色跟随父级按钮变化，由于有蒙版，只会显示图标形状的部分 */
   background-color: currentColor; 
 }
 
-/* 读取 public 目录下的 Visible.svg 作为蒙版 */
 .icon-visible {
   -webkit-mask: url('/icons/Visible.svg') no-repeat center / contain;
   mask: url('/icons/Visible.svg') no-repeat center / contain;
 }
 
-/* 读取 public 目录下的 Invisible.svg 作为蒙版 */
 .icon-invisible {
   -webkit-mask: url('/icons/Invisible.svg') no-repeat center / contain;
   mask: url('/icons/Invisible.svg') no-repeat center / contain;
 }
 
-
-/* === 2. 新增：用于说明文字中的内联图标样式 === */
 .inline-icon {
-  vertical-align: middle; /* 让图标和文字垂直居中对齐 */
-  margin: 0 4px; /* 图标左右留一点空隙 */
+  vertical-align: middle; 
+  margin: 0 4px; 
   position: relative;
-  top: -2px; /* 视觉微调，让它看起来更居中 */
-  color: #ccc; /* 让说明文字里的图标显示为高亮的金黄色 */
+  top: -2px; 
+  color: #ccc; 
 }
 
 .visibility-btn {
   background: transparent; 
   border: none; 
   cursor: pointer; 
-  padding: 4px; /* 为图标留一点点击判定区域 */
-  color: #ccc; /* 默认未高亮状态颜色，SVG的 currentColor 会继承这个颜色 */
+  padding: 4px; 
+  color: #ccc; 
   opacity: 0.8; 
   transition: opacity 0.2s, transform 0.2s, color 0.2s; 
   outline: none;
@@ -474,25 +493,28 @@ const bestParty = computed(() => {
 .visibility-btn:hover { 
   opacity: 1; 
   transform: scale(1.1); 
-  color: #ffbe31; /* 鼠标悬浮时，SVG颜色会优雅地随按钮变为金黄色 */
+  color: #ffbe31; 
 }
 
-/* === 被隐藏图层的整体变暗与文字置灰覆盖样式 === */
+/* --- 新增：持久的高亮状态，表示该名队员必带 --- */
+.visibility-btn.is-must-include {
+  color: #ffbe31;
+  opacity: 1;
+}
+
 .layer-hidden {
   opacity: 0.55; 
 }
 .layer-hidden .name-input {
-  color: #777 !important; /* 强制覆盖文字高亮颜色，变为灰色 */
+  color: #777 !important; 
 }
 .layer-hidden textarea {
   color: #777 !important;
   border-color: #333 !important;
 }
-/* 隐藏状态下，确保图标也跟着变灰 */
 .layer-hidden .visibility-btn {
   color: #777; 
 }
-
 
 .copy-btn {
   position: absolute; top: 6px; right: 6px; background: #2b2b2b; color: #ffbe31; border: 1px solid #444;
