@@ -3,7 +3,7 @@ import Book from "./components/Book.vue";
 import SpellList from "./components/SpellList.vue";
 import Filter from "./components/Filter.vue";
 import TypeFilter from "./components/TypeFilter.vue";
-import PartyModal from "./components/PartyModal.vue"; // <-- 新增组件引入
+import PartyModal from "./components/PartyModal.vue";
 import spells from "../tools/spells.json";
 import { loadSetting, saveSetting } from "./lib/setting";
 import { onBeforeMount, ref, computed, watch } from "vue";
@@ -24,79 +24,95 @@ const filterTypes = ref<FilterTypes>({
   dungeon: true,
   trail: true,
   raid: true,
-  other: true, // 新增 other，删掉 fate, treasure, guildhests 
+  other: true,
 });
 
-// --- 新增：恢复角色等级和等级排序的数据状态 ---
 const level = ref(80);
 const orderByLevel = ref(false);
-
-// --- 新增：多人模式的过滤与排序状态 ---
 const minUnlearned = ref(1);
-const orderByUnlearned = ref(true);
-
+const orderByUnlearned = ref(false);
 const showHelpModal = ref(false);
-
-// --- 控制进度面板折叠与列表版本号显示的联动状态 ---
 const showPatchVersion = ref(loadSetting<boolean>("show-patch-version") ?? false);
 watch(showPatchVersion, val => saveSetting("show-patch-version", val));
 
-// --- 新增：队伍数据管理 ---
-const partyData = ref<string[]>(Array(7).fill("")); // 保存用户2至用户8的字符串数据
-// --- 新增：保存用户1至用户8的自定义名称 ---
+// --- 核心新增与重构：队伍数据与显隐三态管理 ---
+const partyData = ref<string[]>(Array(7).fill("")); 
 const partyNames = ref<string[]>(Array(7).fill(""));
 const user1Name = ref<string>(""); 
-
 const showPartyModal = ref(false);
 
-// --- 修改：将用户1的数据改为可读写的计算属性，实现未掌握技能数据的导入和导出 ---
-const user1Spells = computed({
-  get() {
-    return spells
-      .filter((_, i) => spellStatus.value[i] !== 1) // !== 1 表示未掌握
+// 将状态从子组件提升至父组件管理 (0: 默认可见, 1: 必带高亮, 2: 隐藏不计)
+const user1VisibilityState = ref<number>(0);
+const partyVisibilityStates = ref<number[]>(Array(7).fill(0));
+
+// 将用户1的技能数据改为 ref 存储，以便更精准地控制同步阻断
+const user1Spells = ref<string>("");
+
+// 监听主界面技能状态变更：当用户1处于非隐藏状态时，同步更新其文本框
+watch(spellStatus, (newStatus) => {
+  if (user1VisibilityState.value !== 2) {
+    user1Spells.value = spells
+      .filter((_, i) => newStatus[i] !== 1)
       .map((s: any) => Number(s.no))
       .sort((a: number, b: number) => a - b)
       .join(" ");
-  },
-  set(val: string) {
-    // 解析输入的未掌握技能编号
-    const nums = val.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
-    const unlearnedSet = new Set(nums);
-    
-    // 如果在输入框的未掌握集合中，状态设为 0 (未掌握)，否则设为 1 (已掌握)
-    const statusArr: SpellStatusArray = spells.map((s: any) =>
-      unlearnedSet.has(Number(s.no)) ? 0 : 1
-    );
+  }
+}, { deep: true });
+
+// 监听用户1在弹窗中手动修改文本框：反向同步回主界面的 spellStatus 勾选状态
+watch(user1Spells, (val) => {
+  const nums = val.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+  const unlearnedSet = new Set(nums);
+  
+  const statusArr: SpellStatusArray = spells.map((s: any) =>
+    unlearnedSet.has(Number(s.no)) ? 0 : 1
+  );
+  if (JSON.stringify(statusArr) !== JSON.stringify(spellStatus.value)) {
     saveSetting("spell-status", statusArr);
     spellStatus.value = statusArr;
   }
 });
 
-// --- 修改：解析有效的队伍用户，返回一个包含所“未掌握”技能Set的数组 ---
+// 当用户1从隐藏(2)切换回可见状态(0或1)时，立刻从当前的 spellStatus 刷新同步一次数据
+watch(user1VisibilityState, (val) => {
+  if (val !== 2) {
+    user1Spells.value = spells
+      .filter((_, i) => spellStatus.value[i] !== 1)
+      .map((s: any) => Number(s.no))
+      .sort((a: number, b: number) => a - b)
+      .join(" ");
+  }
+});
+
+// --- 修改：解析有效的队伍用户（计算未掌握人数时，直接跳过被隐藏的用户） ---
 const validUsers = computed(() => {
   const users = [];
-  // 用户1：存放未掌握的技能
-  const u1 = new Set(spells.filter((_, i) => spellStatus.value[i] !== 1).map((s: any) => Number(s.no)));
-  users.push(u1);
+  
+  // 用户1：非隐藏状态才加入未掌握计数池
+  if (user1VisibilityState.value !== 2) {
+    const nums = user1Spells.value.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+    users.push(new Set(nums));
+  }
+  
+  // 队友：非隐藏状态才加入未掌握计数池
   for (let i = 0; i < partyData.value.length; i++) {
-    const str = partyData.value[i] || "";
-    if (str.trim()) {
-      // 队友：存放输入的未掌握技能
-      const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
-      users.push(new Set(nums));
+    if (partyVisibilityStates.value[i] !== 2) {
+      const str = partyData.value[i] || "";
+      if (str.trim()) {
+        const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+        users.push(new Set(nums));
+      }
     }
   }
   return users;
 });
 
-// --- 修改：计算出每个技能有多少个有效用户尚未掌握 ---
+// 计算出每个技能有多少个有效且未隐藏的用户尚未掌握
 const unlearnedCountMap = computed(() => {
   const map = new Map<number, number>();
   spells.forEach((spell: any) => {
     let count = 0;
     validUsers.value.forEach(userSet => {
-      // 因为现在 userSet 里面存的是“未掌握”的技能编号，
-      // 所以如果 Set 里包含了这个技能，就代表他没掌握，count++
       if (userSet.has(Number(spell.no))) {
         count++;
       }
@@ -106,149 +122,148 @@ const unlearnedCountMap = computed(() => {
   return map;
 });
 
-// 是否处于多人模式（有除用户1之外的其他人存在）
-const isPartyModeActive = computed(() => validUsers.value.length > 1);
+// 是否处于多人模式（至少有一个未隐藏且非空的队友存在时，主界面才启用多人视图）
+const isPartyModeActive = computed(() => {
+  return partyData.value.some((str, i) => str.trim() && partyVisibilityStates.value[i] !== 2);
+});
 
-// --- 新增：监听等级过滤和排序变更并自动保存 ---
+// 监听持久化配置自动保存
 watch(level, val => saveSetting("level", val));
 watch(orderByLevel, val => saveSetting("order-by-level", val));
-
-// --- 新增：监听多人模式相关配置变化并自动保存 ---
 watch(minUnlearned, val => saveSetting("min-unlearned", val));
 watch(orderByUnlearned, val => saveSetting("order-by-unlearned", val));
 watch(partyData, val => saveSetting("party-data", val), { deep: true });
-// --- 新增：监听队友名称配置并自动保存 ---
 watch(partyNames, val => saveSetting("party-names", val), { deep: true });
 watch(user1Name, val => saveSetting("user1-name", val));
+watch(user1VisibilityState, val => saveSetting("user1-visibility-state", val));
+watch(partyVisibilityStates, val => saveSetting("party-visibility-states", val), { deep: true });
 
 onBeforeMount(() => {
-  // --- 新增：首次加载自动弹出帮助 ---
   const hasSeenHelp = loadSetting<boolean>("has-seen-help");
   if (!hasSeenHelp) {
     showHelpModal.value = true;
     saveSetting("has-seen-help", true);
   }
-  // ------------------------------
 
   let statusArr = loadSetting<SpellStatusArray>("spell-status") || [];
-  if (!Array.isArray(statusArr)) {
-    statusArr = [];
-  }
-
+  if (!Array.isArray(statusArr)) statusArr = [];
   spellStatus.value = statusArr;
-  filterTypes.value = {
-    ...filterTypes.value,
-    ...(loadSetting("filter-types") || {}),
-  };
-  // --- 新增：剔除旧版本遗留的分类 ---
+  
+  // 初始化用户1的文本框数据
+  user1Spells.value = spells
+    .filter((_, i) => spellStatus.value[i] !== 1)
+    .map((s: any) => Number(s.no))
+    .sort((a: number, b: number) => a - b)
+    .join(" ");
+
+  filterTypes.value = { ...filterTypes.value, ...(loadSetting("filter-types") || {}) };
   delete (filterTypes.value as any).special;
   delete (filterTypes.value as any).fate;
   delete (filterTypes.value as any).treasure;
-  delete (filterTypes.value as any).guildhests
-  // --------------------------------------------------------
+  delete (filterTypes.value as any).guildhests;
   
-  // --- 新增：读取保存的等级数据，如果没有则默认为80级 ---
   level.value = loadSetting("level") ?? 80;
   orderByLevel.value = loadSetting("order-by-level") ?? false;
-
-  // --- 新增：读取新的队伍与过滤配置 ---
   minUnlearned.value = loadSetting("min-unlearned") ?? 1;
   orderByUnlearned.value = loadSetting("order-by-unlearned") ?? false;
+  
   const savedParty = loadSetting<string[]>("party-data");
-  if (Array.isArray(savedParty)) {
-    partyData.value = savedParty;
-  }
+  if (Array.isArray(savedParty)) partyData.value = savedParty;
 
-  // --- 新增：读取保存的队友自定义名称 ---
   const savedNames = loadSetting<string[]>("party-names");
-  if (Array.isArray(savedNames)) {
-    partyNames.value = savedNames;
-  }
+  if (Array.isArray(savedNames)) partyNames.value = savedNames;
+  
   const savedUser1Name = loadSetting<string>("user1-name");
-  if (savedUser1Name) {
-    user1Name.value = savedUser1Name;
+  if (savedUser1Name) user1Name.value = savedUser1Name;
+
+  // 读取持久化的三态状态配置
+  user1VisibilityState.value = loadSetting<number>("user1-visibility-state") ?? 0;
+  const savedVisibilities = loadSetting<number[]>("party-visibility-states");
+  if (Array.isArray(savedVisibilities)) {
+    partyVisibilityStates.value = savedVisibilities;
+  } else {
+    partyVisibilityStates.value = Array(partyData.value.length).fill(0);
   }
 });
 
-
+// 单一状态改变同步处理器
 const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
-  // 1. 更新当前用户（用户1）的状态
   const statusArr: SpellStatusArray = spells.map((_, i) =>
     (i === index ? learned : spellStatus.value[i]) ? 1 : 0
   );
   saveSetting("spell-status", statusArr);
   spellStatus.value = statusArr;
 
-  // 2. 新增：如果在多人模式下操作，同步更新列表里其他组队成员的状态
-  if (isPartyModeActive.value) {
-    const targetSpellNo = Number(spells[index].no);
-    const newPartyData = [...partyData.value];
+  // 多人同步逻辑：仅修改未隐藏(state !== 2)的队友文本框
+  const targetSpellNo = Number(spells[index].no);
+  const newPartyData = [...partyData.value];
+  let isChanged = false;
+  
+  for (let i = 0; i < newPartyData.length; i++) {
+    // 【核心改动】如果该用户被隐藏，直接跳过，不修改其文本框数据
+    if (partyVisibilityStates.value[i] === 2) continue;
     
-    for (let i = 0; i < newPartyData.length; i++) {
-      const str = newPartyData[i] || "";
-      if (str.trim()) {
-        // 解析该队友目前的【未掌握】技能集合
-        const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
-        const numSet = new Set(nums);
-        
-        // --- 修改：逻辑翻转 ---
-        // 如果 learned === true (学会了)，说明不再是“未掌握”，要从集合中移除
-        // 如果 learned === false (忘了)，说明变成“未掌握”，要加入到集合中
-        if (learned) {
-          numSet.delete(targetSpellNo);
-        } else {
-          numSet.add(targetSpellNo);
-        }
-        
-        // 重新转回字符串写回框内
-        newPartyData[i] = Array.from(numSet).sort((a, b) => a - b).join(" ");
+    const str = newPartyData[i] || "";
+    if (str.trim()) {
+      const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+      const numSet = new Set(nums);
+      
+      if (learned) {
+        numSet.delete(targetSpellNo);
+      } else {
+        numSet.add(targetSpellNo);
+      }
+      
+      const newStr = Array.from(numSet).sort((a, b) => a - b).join(" ");
+      if (newStr !== str) {
+        newPartyData[i] = newStr;
+        isChanged = true;
       }
     }
-    partyData.value = newPartyData;
   }
+  if (isChanged) partyData.value = newPartyData;
 };
 
-// 2. 更新类型变更函数的入参类型
-const handleTypeChange = (type: any, checked: boolean) => {
-  filterTypes.value[type as keyof FilterTypes] = checked;
-  saveSetting("filter-types", filterTypes.value);
-};
-
-// --- 新增：专门处理批量更新，避免引发瞬间卡死 ---
+// 批量状态改变同步处理器
 const handleBatchStatusChange = (patch: string, learned: boolean) => {
-  // 1. 一次性生成全新的状态数组
   const statusArr: SpellStatusArray = spells.map((s, i) => {
     if (patch === "all" || s.patch === patch) return learned ? 1 : 0;
     return spellStatus.value[i];
   });
   
-  // 2. 仅执行 1 次本地存储写入
   saveSetting("spell-status", statusArr);
   spellStatus.value = statusArr;
 
-  // 3. 多人模式下，一次性更新所有的队伍技能
-  if (isPartyModeActive.value) {
-    const newPartyData = [...partyData.value];
-    for (let i = 0; i < newPartyData.length; i++) {
-      const str = newPartyData[i] || "";
-      if (str.trim()) {
-        const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
-        const numSet = new Set(nums);
+  // 批量同步：仅修改未隐藏(state !== 2)的队友文本框
+  const newPartyData = [...partyData.value];
+  let isChanged = false;
+  
+  for (let i = 0; i < newPartyData.length; i++) {
+    // 【核心改动】如果该用户被隐藏，直接跳过，不修改其文本框数据
+    if (partyVisibilityStates.value[i] === 2) continue;
+    
+    const str = newPartyData[i] || "";
+    if (str.trim()) {
+      const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
+      const numSet = new Set(nums);
 
-        spells.forEach((s) => {
-          if (patch === "all" || s.patch === patch) {
-            const targetSpellNo = Number(s.no);
-            if (learned) numSet.delete(targetSpellNo);
-            else numSet.add(targetSpellNo);
-          }
-        });
-        newPartyData[i] = Array.from(numSet).sort((a, b) => a - b).join(" ");
+      spells.forEach((s) => {
+        if (patch === "all" || s.patch === patch) {
+          const targetSpellNo = Number(s.no);
+          if (learned) numSet.delete(targetSpellNo);
+          else numSet.add(targetSpellNo);
+        }
+      });
+      
+      const newStr = Array.from(numSet).sort((a, b) => a - b).join(" ");
+      if (newStr !== str) {
+        newPartyData[i] = newStr;
+        isChanged = true;
       }
     }
-    partyData.value = newPartyData;
   }
+  if (isChanged) partyData.value = newPartyData;
 };
-
 </script>
 
 <template>
@@ -256,24 +271,17 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
     <aside>
       <div class="sponsor-banner" @click="showHelpModal = true">
         <span>首次使用请点此查看帮助</span>
-        <div class="help-icon" title="查看网页使用帮助">
-          ?
-        </div>
+        <div class="help-icon" title="查看网页使用帮助">?</div>
       </div>
-
       <input class="search" v-model="filter" placeholder="搜索技能编号、名称或获取方式" />
-      
       <TypeFilter :filterTypes="filterTypes" @typeChange="handleTypeChange" />
-      
       <Book :spellStatus="spellStatus" @change="handleStatusChange" />
-      
       <Progress 
         :spellStatus="spellStatus" 
         v-model:isExpanded="showPatchVersion" 
         @change="handleStatusChange" 
         @batchChange="handleBatchStatusChange"
       />
-            
       <Filter
         v-show="showPatchVersion"
         :filterTypes="filterTypes" 
@@ -289,7 +297,6 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
         @openConfig="showPartyModal = true" 
       />
     </aside>
-    
     <SpellList 
       :filter="filter" 
       :filterTypes="filterTypes" 
@@ -314,26 +321,8 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
           <button class="close-btn" @click="showHelpModal = false">&times;</button>
           <h3>帮助指南</h3>
           <div class="help-text">
-            <p>
-              进本前建议在本网页<strong>单击副本名</strong>（将自动填入搜索框），以检查副本中是否有其他专属技能可以学。另外，据称若解限打本时，高难本的习得概率大于普通版本。
-            </p>
-            <p><strong>获取途径颜色标识：</strong></p>
-            <ul>
-              <li><span class="color-def text-gold">金色代表最推荐的学习途径</span></li>
-              <li><span class="color-def text-white">白色代表其他可选途径</span></li>
-              <li><span class="color-def text-red">红色代表不建议考虑的途径</span></li>
-              <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
-            </ul>
-            <p>
-              本网页内容最近一次更新于<strong>2026年6月6日</strong>（7.51版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
-                rel="noopener noreferrer">点此提出</a>
-            </p>
-            <p>
-              数据来源于<a href="https://thewakingsands.github.io/blue-mage/" target="_blank"
-                rel="noopener noreferrer">青魔法师技能学习指南</a>和<a href="https://ff14.huijiwiki.com/" target="_blank"
-                rel="noopener noreferrer">最终幻想XIV中文维基</a>，同时参考了<a href="http://www.timelysnow.com.cn/bluemagicebook/"
-                target="_blank" rel="noopener noreferrer">青魔法电子书</a>
-            </p>
+            <p>进本前建议在本网页<strong>单击副本名</strong>以检查是否有其他专属技能可以学。</p>
+            <p>本网页内容最近一次更新于<strong>2026年6月6日</strong>（7.51版本）。</p>
           </div>
         </div>
       </div>
@@ -345,246 +334,39 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
     v-model:user1Name="user1Name"
     v-model:partyData="partyData" 
     v-model:partyNames="partyNames" 
+    v-model:user1VisibilityState="user1VisibilityState"
+    v-model:partyVisibilityStates="partyVisibilityStates"
     :filterTypes="filterTypes"
     :show="showPartyModal" 
     @close="showPartyModal = false" 
     @resetMinUnlearned="minUnlearned = 1"
   />
-  
 </template>
 
 <style>
-html {
-  font-size: 16px;
-}
-
-body {
-  background: #2b2b2b;
-  color: #fff;
-  margin: 0;
-}
-
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  padding: 20px;
-}
-
-#app aside {
-  width: 320px;
-}
-
+html { font-size: 16px; }
+body { background: #2b2b2b; color: #fff; margin: 0; }
+#app { font-family: "Avenir", Helvetica, Arial, sans-serif; padding: 20px; }
+#app aside { width: 320px; }
 @media (min-width: 1000px) {
-  #app {
-    padding-left: 360px;
-  }
-
-  #app aside {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    /* --- 新增：限制最大高度为屏幕高度减去上下20px的边距 --- */
-    max-height: calc(100vh - 40px);
-    /* --- 新增：内容超出高度时开启纵向滚动 --- */
-    overflow-y: auto;
-  }
-
-  /* --- 新增：美化侧边栏滚动条，适配暗色主题 --- */
-  #app aside::-webkit-scrollbar {
-    width: 6px;
-  }
-  #app aside::-webkit-scrollbar-thumb {
-    background-color: #555;
-    border-radius: 3px;
-  }
-  #app aside::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
+  #app { padding-left: 360px; }
+  #app aside { position: fixed; top: 20px; left: 20px; max-height: calc(100vh - 40px); overflow-y: auto; }
+  #app aside::-webkit-scrollbar { width: 6px; }
+  #app aside::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; }
 }
-
-input {
-  padding: 0 10px;
-  border: 0;
-  outline: 0;
-  line-height: 32px;
-  background: #333;
-  color: #fff;
-  border-radius: 16px;
-  box-sizing: border-box;
-}
-
-input:focus {
-  box-shadow: 0 0 2px #ffbe31;
-}
-
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-</style>
-
-<style scoped>
-.search {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-/* --- 修改：使用 Flex 布局让问号靠右 --- */
-.sponsor-banner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding: 8px 12px;
-  background: rgba(255, 190, 49, 0.1);
-  border-left: 4px solid #ffbe31;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.sponsor-info span {
-  color: #ccc;
-}
-
-.sponsor-info a {
-  color: #ffbe31;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.sponsor-info a:hover {
-  opacity: 0.8;
-  text-decoration: underline;
-}
-
-/* --- 修改：移除绝对定位，适应 Flex --- */
-/* --- 新增：问号图标样式 --- */
-.help-icon {
-  width: 22px;
-  height: 22px;
-  background-color: #ffbe31;
-  color: #1a1a1a;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 22px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
-  flex-shrink: 0;
-}
-
-.help-icon:hover {
-  opacity: 0.9;
-  transform: scale(1.1);
-}
-
-/* --- 弹窗背景（全局覆盖） --- */
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-/* --- 弹窗内容样式 --- */
-.modal-content {
-  background-color: #2c2c2c;
-  padding: 30px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  position: relative;
-  color: #e0e0e0;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  border: 1px solid #444;
-}
-
-.modal-content h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #ffbe31;
-  padding-bottom: 10px;
-  color: #ffbe31;
-}
-
-.help-text p {
-  line-height: 1.6;
-  margin: 15px 0;
-}
-
-.help-text ul {
-  list-style: none;
-  padding-left: 5px;
-  margin: 15px 0;
-}
-
-.help-text li {
-  margin-bottom: 12px;
-}
-
-.help-text a {
-  color: #ffbe31;
-  text-decoration: underline;
-}
-
-/* --- 特定颜色文字定义 --- */
-.color-def {
-  font-weight: bold;
-  padding: 1px 4px;
-  border-radius: 3px;
-}
-
-.text-gold {
-  color: #ffff00;
-}
-
-.text-white {
-  color: #ffffff;
-}
-
-.text-red {
-  color: #ca3a3a;
-}
-
-.text-grey {
-  color: #666;
-}
-
-/* --- 关闭按钮 --- */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  color: #ccc;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.close-btn:hover {
-  color: #ffbe31;
-}
-
-/* --- 新增：弹窗淡入淡出动画 --- */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
+input { padding: 0 10px; border: 0; outline: 0; line-height: 32px; background: #333; color: #fff; border-radius: 16px; box-sizing: border-box; }
+input:focus { box-shadow: 0 0 2px #ffbe31; }
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+.search { width: 100%; margin-bottom: 20px; }
+.sponsor-banner { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 8px 12px; background: rgba(255, 190, 49, 0.1); border-left: 4px solid #ffbe31; border-radius: 4px; font-size: 0.9rem; }
+.help-icon { width: 22px; height: 22px; background-color: #ffbe31; color: #1a1a1a; border-radius: 50%; text-align: center; line-height: 22px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+.help-icon:hover { transform: scale(1.1); }
+.modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background-color: #2c2c2c; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; color: #e0e0e0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); border: 1px solid #444; }
+.modal-content h3 { margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid #ffbe31; padding-bottom: 10px; color: #ffbe31; }
+.help-text p { line-height: 1.6; margin: 15px 0; }
+.close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; color: #ccc; font-size: 1.5rem; cursor: pointer; }
+.close-btn:hover { color: #ffbe31; }
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
