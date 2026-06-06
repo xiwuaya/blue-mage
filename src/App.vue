@@ -327,8 +327,26 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
           <button class="close-btn" @click="showHelpModal = false">&times;</button>
           <h3>帮助指南</h3>
           <div class="help-text">
-            <p>进本前建议在本网页<strong>单击副本名</strong>以检查是否有其他专属技能可以学。</p>
-            <p>本网页内容最近一次更新于<strong>2026年6月6日</strong>（7.51版本）。</p>
+            <p>
+              进本前建议在本网页<strong>单击副本名</strong>（将自动填入搜索框），以检查副本中是否有其他专属技能可以学。另外，据称若解限打本时，高难本的习得概率大于普通版本。
+            </p>
+            <p><strong>获取途径颜色标识：</strong></p>
+            <ul>
+              <li><span class="color-def text-gold">金色代表最推荐的学习途径</span></li>
+              <li><span class="color-def text-white">白色代表其他可选途径</span></li>
+              <li><span class="color-def text-red">红色代表不建议考虑的途径</span></li>
+              <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
+            </ul>
+            <p>
+              本网页内容最近一次更新于<strong>2026年6月6日</strong>（7.51版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+                rel="noopener noreferrer">点此提出</a>
+            </p>
+            <p>
+              数据来源于<a href="https://thewakingsands.github.io/blue-mage/" target="_blank"
+                rel="noopener noreferrer">青魔法师技能学习指南</a>和<a href="https://ff14.huijiwiki.com/" target="_blank"
+                rel="noopener noreferrer">最终幻想XIV中文维基</a>，同时参考了<a href="http://www.timelysnow.com.cn/bluemagicebook/"
+                target="_blank" rel="noopener noreferrer">青魔法电子书</a>
+            </p>
           </div>
         </div>
       </div>
@@ -369,8 +387,57 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
 .help-icon:hover { transform: scale(1.1); }
 .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; }
 .modal-content { background-color: #2c2c2c; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; color: #e0e0e0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); border: 1px solid #444; }
-.modal-content h3 { margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid #ffbe31; padding-bottom: 10px; color: #ffbe31; }
-.help-text p { line-height: 1.6; margin: 15px 0; }
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ffbe31;
+  padding-bottom: 10px;
+  color: #ffbe31;
+}
+
+
+.help-text p {
+  line-height: 1.6;
+  margin: 15px 0;
+}
+
+.help-text ul {
+  list-style: none;
+  padding-left: 5px;
+  margin: 15px 0;
+}
+
+.help-text li {
+  margin-bottom: 12px;
+}
+
+.help-text a {
+  color: #ffbe31;
+  text-decoration: underline;
+}
+
+/* --- 特定颜色文字定义 --- */
+.color-def {
+  font-weight: bold;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.text-gold {
+  color: #ffff00;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.text-red {
+  color: #ca3a3a;
+}
+
+.text-grey {
+  color: #666;
+}
 .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; color: #ccc; font-size: 1.5rem; cursor: pointer; }
 .close-btn:hover { color: #ffbe31; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
