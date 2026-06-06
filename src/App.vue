@@ -155,13 +155,13 @@ onBeforeMount(() => {
   minUnlearned.value = loadSetting("min-unlearned") ?? 1;
   orderByUnlearned.value = loadSetting("order-by-unlearned") ?? false;
   const savedParty = loadSetting<string[]>("party-data");
-  if (Array.isArray(savedParty) && savedParty.length === 7) {
+  if (Array.isArray(savedParty)) {
     partyData.value = savedParty;
   }
 
   // --- 新增：读取保存的队友自定义名称 ---
   const savedNames = loadSetting<string[]>("party-names");
-  if (Array.isArray(savedNames) && savedNames.length === 7) {
+  if (Array.isArray(savedNames)) {
     partyNames.value = savedNames;
   }
   const savedUser1Name = loadSetting<string>("user1-name");
@@ -229,7 +229,7 @@ const handleBatchStatusChange = (patch: string, learned: boolean) => {
   // 3. 多人模式下，一次性更新所有的队伍技能
   if (isPartyModeActive.value) {
     const newPartyData = [...partyData.value];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < newPartyData.length; i++) {
       const str = newPartyData[i] || "";
       if (str.trim()) {
         const nums = str.split(/[,，\.、\s]+/).map(Number).filter(n => !isNaN(n));
