@@ -341,9 +341,7 @@
         "rank": "S",
         "position": [],
         "mob": "阿格拉俄珀",
-        "level": 80,
-        "note": "未确定可习得",
-        "color": "red"
+        "level": 80
       }
     ]
   },
@@ -506,6 +504,13 @@
         "mob": "狂野疣猪",
         "level": 20,
         "color": "yellow"
+      },
+      {
+        "type": "guildhests",
+        "name": "行会令：突破所有关门，讨伐最深处的敌人！",
+        "mob": " 鲁莽野猪",
+        "level": 15,
+        "color": "red"
       }
     ]
   },
@@ -1066,6 +1071,13 @@
         "mob": "大井爆岩怪",
         "note": "BOSS#1后小怪4只，体力低于30%后使用",
         "level": 77
+      },
+      {
+        "type": "guildhests",
+        "name": "行会令：讨伐爆弹怪的女王！",
+        "mob": "爆弹随从、爆弹杂佣、爆弹准男爵",
+        "level": 25,
+        "color": "red"
       }
     ]
   },
@@ -1432,6 +1444,13 @@
         "mob": "人面树",
         "level": 70,
         "note": "BOSS #2前小怪"
+      },
+      {
+        "type": "guildhests",
+        "name": "行会令：讨伐污染源头魔界花！",
+        "mob": "剧毒魔花谭琳",
+        "level": 30,
+        "color": "red"
       }
     ]
   },
@@ -1631,13 +1650,6 @@
         "mob": "犀蜴饲料",
         "level": 50,
         "note": "2号boss后打完粘液怪1体"
-      },
-      {
-        "type": "guildhests",
-        "name": "行会令：突破所有关门，讨伐最深处的敌人！",
-        "mob": "越壁蟾蜍",
-        "level": 15,
-        "color": "red"
       }
     ]
   },
@@ -2208,7 +2220,7 @@
     "icon_book_hr1": "072245_hr1.png",
     "method": [
       {
-        "type": "trail",
+        "type": "dungeon",
         "name": "伊弗利特讨伐战",
         "mob": "伊弗利特",
         "level": 20,
@@ -3393,7 +3405,6 @@
         "position": [],
         "mob": "马希沙",
         "level": 70,
-        "note": "未确定可习得",
         "color": "red"
       },
       {
