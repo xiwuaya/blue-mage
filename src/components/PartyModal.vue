@@ -124,7 +124,8 @@ const copyUser1Data = async () => {
 };
 
 const resetParty = () => {
-  const len = localPartyData.value.length;
+  // const len = localPartyData.value.length;
+  const len = 3;
   localPartyData.value = Array(len).fill("");
   localPartyNames.value = Array(len).fill("");
   localPartyVisibilityStates.value = Array(len).fill(0); // 重置时恢复为默认可见状态
