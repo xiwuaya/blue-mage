@@ -10,6 +10,7 @@ const props = defineProps<{
   spell: Spell;
   learned: boolean;
   unlearnedCount?: number;
+  unlearnedNames?: string[];
   showUnlearnedCount?: boolean;
   showPatchVersion: boolean; // --- 新增这行 ---
 }>();
@@ -42,7 +43,7 @@ const emit = defineEmits<{
         {{ props.spell.spell }}
         <small>(Lv.{{ props.spell.level }})</small>
         <small v-if="props.showUnlearnedCount" class="unlearned-count text-gold">
-          (未掌握人数: {{ props.unlearnedCount }})
+          (未掌握: {{ props.unlearnedCount }}人<span v-if="props.unlearnedNames && props.unlearnedNames.length"> - {{ props.unlearnedNames.join(', ') }}</span>)
         </small>
       </h4>
       <ul class="methods">

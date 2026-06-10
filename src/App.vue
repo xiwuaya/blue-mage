@@ -20,6 +20,7 @@ const {
   user1VisibilityState,
   user1Spells,
   unlearnedCountMap,
+  unlearnedNamesMap,
   isPartyModeActive,
   handleStatusChange,
   handleBatchStatusChange
@@ -119,7 +120,8 @@ const handleTypeChange = (type: string, checked: boolean) => {
       :minUnlearned="minUnlearned" 
       :spellStatus="spellStatus"
       :orderByUnlearned="orderByUnlearned" 
-      :unlearnedCountMap="unlearnedCountMap" 
+      :unlearnedCountMap="unlearnedCountMap"
+      :unlearnedNamesMap="unlearnedNamesMap"
       :isPartyModeActive="isPartyModeActive"
       :showPatchVersion="showPatchVersion"
       @change="handleStatusChange" 

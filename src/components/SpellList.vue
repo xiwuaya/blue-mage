@@ -20,6 +20,7 @@ const props = defineProps<{
   orderByUnlearned: boolean;
   spellStatus: SpellStatusArray;
   unlearnedCountMap: Map<number, number>;
+  unlearnedNamesMap: Map<number, string[]>;
   isPartyModeActive: boolean;
   showPatchVersion: boolean;
 }>();
@@ -200,6 +201,7 @@ const allLearned = computed(() =>
     <spell-item v-for="spell in showSpells" :key="spell.no" :spell="spell"
       :learned="props.isPartyModeActive ? (props.unlearnedCountMap.get(Number(spell.no)) || 0) === 0 : learnedByNo(props.spellStatus, spell.no)" 
       :unlearnedCount="props.unlearnedCountMap.get(Number(spell.no))"
+      :unlearnedNames="props.unlearnedNamesMap.get(Number(spell.no))"
       :showUnlearnedCount="props.isPartyModeActive"
       :showPatchVersion="props.showPatchVersion" @change="emit('change', indexByNo(spell.no), $event)"
       @search="emit('search', $event)" />

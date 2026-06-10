@@ -108,6 +108,38 @@ export function useSpellSync() {
     return map;
   });
 
+  // 新增：附带用户名称的有效用户数据
+  const validUsersWithNames = computed(() => {
+    const users: { name: string, set: Set<number> }[] = [];
+    if (user1VisibilityState.value !== 2) {
+      const nums = (user1Spells.value.match(/\d+/g) || []).map(Number);
+      users.push({ name: user1Name.value || '用户 1 (我)', set: new Set(nums) });
+    }
+    for (let i = 0; i < partyData.value.length; i++) {
+      if (partyVisibilityStates.value[i] !== 2) {
+        const str = partyData.value[i] || "";
+        if (str.trim()) {
+          const nums = (str.match(/\d+/g) || []).map(Number);
+          users.push({ name: partyNames.value[i] || `用户 ${i + 2}`, set: new Set(nums) });
+        }
+      }
+    }
+    return users;
+  });
+
+  // 新增：计算出每个技能究竟被哪些人未掌握
+  const unlearnedNamesMap = computed(() => {
+    const map = new Map<number, string[]>();
+    spells.forEach((spell: any) => {
+      const names: string[] = [];
+      validUsersWithNames.value.forEach(user => {
+        if (user.set.has(Number(spell.no))) names.push(user.name);
+      });
+      map.set(Number(spell.no), names);
+    });
+    return map;
+  });
+
   // 是否处于多人模式（至少有一个未隐藏且非空的队友存在时，主界面才启用多人视图）
   const isPartyModeActive = computed(() => {
     return partyData.value.some((str, i) => str.trim() && partyVisibilityStates.value[i] !== 2);
@@ -195,6 +227,7 @@ export function useSpellSync() {
     user1VisibilityState,
     user1Spells,
     unlearnedCountMap,
+    unlearnedNamesMap,
     isPartyModeActive,
     handleStatusChange,
     handleBatchStatusChange
