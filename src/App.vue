@@ -7,17 +7,25 @@ import PartyModal from "./components/PartyModal.vue";
 import spells from "../tools/spells.json";
 import { loadSetting, saveSetting } from "./lib/setting";
 import { onBeforeMount, ref, computed, watch } from "vue";
-import type { SpellType } from "./lib/spell";
-import type {
-  FilterTypes,
-  FilterKey,
-  SpellStatus,
-  SpellStatusArray,
-} from "./lib/interface";
+import type { FilterTypes } from "./lib/interface";
 import Progress from "./components/Progress.vue";
+import { useSpellSync } from "./lib/useSpellSync";
+
+const {
+  spellStatus,
+  partyData,
+  partyNames,
+  partyVisibilityStates,
+  user1Name,
+  user1VisibilityState,
+  user1Spells,
+  unlearnedCountMap,
+  isPartyModeActive,
+  handleStatusChange,
+  handleBatchStatusChange
+} = useSpellSync();
 
 const filter = ref("");
-const spellStatus = ref<SpellStatusArray>([]);
 const filterTypes = ref<FilterTypes>({
   carnivale: true,
   map: true,
@@ -33,110 +41,15 @@ const minUnlearned = ref(1);
 const orderByUnlearned = ref(true);
 const showHelpModal = ref(false);
 const showPatchVersion = ref(loadSetting<boolean>("show-patch-version") ?? false);
-watch(showPatchVersion, val => saveSetting("show-patch-version", val));
-
-// --- 核心新增与重构：队伍数据与显隐三态管理 ---
-const partyData = ref<string[]>(Array(7).fill("")); 
-const partyNames = ref<string[]>(Array(7).fill(""));
-const user1Name = ref<string>(""); 
 const showPartyModal = ref(false);
 
-// 将状态从子组件提升至父组件管理 (0: 默认可见, 1: 必带高亮, 2: 隐藏不计)
-const user1VisibilityState = ref<number>(0);
-const partyVisibilityStates = ref<number[]>(Array(7).fill(0));
-
-// 将用户1的技能数据改为 ref 存储，以便更精准地控制同步阻断
-const user1Spells = ref<string>("");
-
-// 监听主界面技能状态变更：当用户1处于非隐藏状态时，同步更新其文本框
-watch(spellStatus, (newStatus) => {
-  if (user1VisibilityState.value !== 2) {
-    user1Spells.value = spells
-      .filter((_, i) => newStatus[i] !== 1)
-      .map((s: any) => Number(s.no))
-      .sort((a: number, b: number) => a - b)
-      .join(" ");
-  }
-}, { deep: true });
-
-// 监听用户1在弹窗中手动修改文本框：反向同步回主界面的 spellStatus 勾选状态
-watch(user1Spells, (val) => {
-  const nums = (val.match(/\d+/g) || []).map(Number);
-  const unlearnedSet = new Set(nums);
-  
-  const statusArr: SpellStatusArray = spells.map((s: any) =>
-    unlearnedSet.has(Number(s.no)) ? 0 : 1
-  );
-  if (JSON.stringify(statusArr) !== JSON.stringify(spellStatus.value)) {
-    saveSetting("spell-status", statusArr);
-    spellStatus.value = statusArr;
-  }
-});
-
-// 当用户1从隐藏(2)切换回可见状态(0或1)时，立刻从当前的 spellStatus 刷新同步一次数据
-watch(user1VisibilityState, (val) => {
-  if (val !== 2) {
-    user1Spells.value = spells
-      .filter((_, i) => spellStatus.value[i] !== 1)
-      .map((s: any) => Number(s.no))
-      .sort((a: number, b: number) => a - b)
-      .join(" ");
-  }
-});
-
-// 解析有效的队伍用户（计算未掌握人数时，直接跳过被隐藏的用户）
-const validUsers = computed(() => {
-  const users = [];
-  
-  // 用户1：非隐藏状态才加入未掌握计数池
-  if (user1VisibilityState.value !== 2) {
-    const nums = (user1Spells.value.match(/\d+/g) || []).map(Number);
-    users.push(new Set(nums));
-  }
-  
-  // 队友：非隐藏状态才加入未掌握计数池
-  for (let i = 0; i < partyData.value.length; i++) {
-    if (partyVisibilityStates.value[i] !== 2) {
-      const str = partyData.value[i] || "";
-      if (str.trim()) {
-        const nums = (str.match(/\d+/g) || []).map(Number);
-        users.push(new Set(nums));
-      }
-    }
-  }
-  return users;
-});
-
-// 计算出每个技能有多少个有效且未隐藏的用户尚未掌握
-const unlearnedCountMap = computed(() => {
-  const map = new Map<number, number>();
-  spells.forEach((spell: any) => {
-    let count = 0;
-    validUsers.value.forEach(userSet => {
-      if (userSet.has(Number(spell.no))) {
-        count++;
-      }
-    });
-    map.set(Number(spell.no), count);
-  });
-  return map;
-});
-
-// 是否处于多人模式（至少有一个未隐藏且非空的队友存在时，主界面才启用多人视图）
-const isPartyModeActive = computed(() => {
-  return partyData.value.some((str, i) => str.trim() && partyVisibilityStates.value[i] !== 2);
-});
 
 // 监听持久化配置自动保存
+watch(showPatchVersion, val => saveSetting("show-patch-version", val));
 watch(level, val => saveSetting("level", val));
 watch(orderByLevel, val => saveSetting("order-by-level", val));
 watch(minUnlearned, val => saveSetting("min-unlearned", val));
 watch(orderByUnlearned, val => saveSetting("order-by-unlearned", val));
-watch(partyData, val => saveSetting("party-data", val), { deep: true });
-watch(partyNames, val => saveSetting("party-names", val), { deep: true });
-watch(user1Name, val => saveSetting("user1-name", val));
-watch(user1VisibilityState, val => saveSetting("user1-visibility-state", val));
-watch(partyVisibilityStates, val => saveSetting("party-visibility-states", val), { deep: true });
 
 onBeforeMount(() => {
   const hasSeenHelp = loadSetting<boolean>("has-seen-help");
@@ -145,45 +58,18 @@ onBeforeMount(() => {
     saveSetting("has-seen-help", true);
   }
 
-  let statusArr = loadSetting<SpellStatusArray>("spell-status") || [];
-  if (!Array.isArray(statusArr)) statusArr = [];
-  spellStatus.value = statusArr;
-  
-  // 初始化用户1的文本框数据
-  user1Spells.value = spells
-    .filter((_, i) => spellStatus.value[i] !== 1)
-    .map((s: any) => Number(s.no))
-    .sort((a: number, b: number) => a - b)
-    .join(" ");
 
   filterTypes.value = { ...filterTypes.value, ...(loadSetting("filter-types") || {}) };
   delete (filterTypes.value as any).special;
   delete (filterTypes.value as any).fate;
   delete (filterTypes.value as any).treasure;
   delete (filterTypes.value as any).guildhests;
-  
+
   level.value = loadSetting("level") ?? 80;
   orderByLevel.value = loadSetting("order-by-level") ?? false;
   minUnlearned.value = loadSetting("min-unlearned") ?? 1;
   orderByUnlearned.value = loadSetting("order-by-unlearned") ?? false;
-  
-  const savedParty = loadSetting<string[]>("party-data");
-  if (Array.isArray(savedParty)) partyData.value = savedParty;
 
-  const savedNames = loadSetting<string[]>("party-names");
-  if (Array.isArray(savedNames)) partyNames.value = savedNames;
-  
-  const savedUser1Name = loadSetting<string>("user1-name");
-  if (savedUser1Name) user1Name.value = savedUser1Name;
-
-  // 读取持久化的三态状态配置
-  user1VisibilityState.value = loadSetting<number>("user1-visibility-state") ?? 0;
-  const savedVisibilities = loadSetting<number[]>("party-visibility-states");
-  if (Array.isArray(savedVisibilities)) {
-    partyVisibilityStates.value = savedVisibilities;
-  } else {
-    partyVisibilityStates.value = Array(partyData.value.length).fill(0);
-  }
 });
 
 // --- 补回被遗漏的类型变更处理器 ---
@@ -192,84 +78,6 @@ const handleTypeChange = (type: string, checked: boolean) => {
   saveSetting("filter-types", filterTypes.value);
 };
 
-// 单一状态改变同步处理器
-const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
-  const statusArr: SpellStatusArray = spells.map((_, i) =>
-    (i === index ? learned : spellStatus.value[i]) ? 1 : 0
-  );
-  saveSetting("spell-status", statusArr);
-  spellStatus.value = statusArr;
-
-  // 多人同步逻辑：仅修改未隐藏(state !== 2)的队友文本框
-  const targetSpellNo = Number(spells[index].no);
-  const newPartyData = [...partyData.value];
-  let isChanged = false;
-  
-  for (let i = 0; i < newPartyData.length; i++) {
-    // 如果该用户被隐藏，直接跳过，不修改其文本框数据
-    if (partyVisibilityStates.value[i] === 2) continue;
-    
-    const str = newPartyData[i] || "";
-    if (str.trim()) {
-      const nums = (str.match(/\d+/g) || []).map(Number);
-      const numSet = new Set(nums);
-      
-      if (learned) {
-        numSet.delete(targetSpellNo);
-      } else {
-        numSet.add(targetSpellNo);
-      }
-      
-      const newStr = Array.from(numSet).sort((a, b) => a - b).join(" ");
-      if (newStr !== str) {
-        newPartyData[i] = newStr;
-        isChanged = true;
-      }
-    }
-  }
-  if (isChanged) partyData.value = newPartyData;
-};
-
-// 批量状态改变同步处理器
-const handleBatchStatusChange = (patch: string, learned: boolean) => {
-  const statusArr: SpellStatusArray = spells.map((s, i) => {
-    if (patch === "all" || s.patch === patch) return learned ? 1 : 0;
-    return spellStatus.value[i];
-  });
-  
-  saveSetting("spell-status", statusArr);
-  spellStatus.value = statusArr;
-
-  // 批量同步：仅修改未隐藏(state !== 2)的队友文本框
-  const newPartyData = [...partyData.value];
-  let isChanged = false;
-  
-  for (let i = 0; i < newPartyData.length; i++) {
-    // 如果该用户被隐藏，直接跳过，不修改其文本框数据
-    if (partyVisibilityStates.value[i] === 2) continue;
-    
-    const str = newPartyData[i] || "";
-    if (str.trim()) {
-      const nums = (str.match(/\d+/g) || []).map(Number);
-      const numSet = new Set(nums);
-
-      spells.forEach((s) => {
-        if (patch === "all" || s.patch === patch) {
-          const targetSpellNo = Number(s.no);
-          if (learned) numSet.delete(targetSpellNo);
-          else numSet.add(targetSpellNo);
-        }
-      });
-      
-      const newStr = Array.from(numSet).sort((a, b) => a - b).join(" ");
-      if (newStr !== str) {
-        newPartyData[i] = newStr;
-        isChanged = true;
-      }
-    }
-  }
-  if (isChanged) partyData.value = newPartyData;
-};
 </script>
 
 <template>
