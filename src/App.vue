@@ -4,7 +4,6 @@ import SpellList from "./components/SpellList.vue";
 import Filter from "./components/Filter.vue";
 import TypeFilter from "./components/TypeFilter.vue";
 import PartyModal from "./components/PartyModal.vue";
-import spells from "../tools/spells.json";
 import { loadSetting, saveSetting } from "./lib/setting";
 import { onBeforeMount, ref, computed, watch } from "vue";
 import type { FilterTypes } from "./lib/interface";
@@ -44,8 +43,10 @@ const showHelpModal = ref(false);
 const showMoreConfig = ref(loadSetting<boolean>("show-more-config") ?? false);
 const showPartyModal = ref(false);
 const showPatchVersion = ref(false);
+const showUnlearnedUsers = ref(true)
 
 // 监听持久化配置自动保存
+watch(showUnlearnedUsers, val => saveSetting("show-unlearned-users", val));
 watch(showPatchVersion, val => saveSetting("show-patch-version", val));
 watch(showMoreConfig, val => saveSetting("show-more-config", val));
 watch(level, val => saveSetting("level", val));
@@ -106,6 +107,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
         :orderByLevel="orderByLevel"
         :minUnlearned="minUnlearned" 
         :orderByUnlearned="orderByUnlearned"
+        v-model:showUnlearnedUsers="showUnlearnedUsers"
         @typeChange="handleTypeChange" 
         @levelChange="val => level = val" 
         @orderLevelChange="val => orderByLevel = val"
@@ -126,6 +128,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
       :unlearnedNamesMap="unlearnedNamesMap"
       :isPartyModeActive="isPartyModeActive"
       :showPatchVersion="showPatchVersion"
+      :showUnlearnedUsers="showUnlearnedUsers"
       @change="handleStatusChange" 
       @clearFilter="filter = ''" 
       @search="filter = $event" 

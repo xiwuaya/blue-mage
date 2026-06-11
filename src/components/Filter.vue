@@ -9,6 +9,8 @@ const props = defineProps<{
   // --- 新增：接收从 App 传来的最少未掌握人数和是否按未掌握人数排序的状态 ---
   minUnlearned: number;
   orderByUnlearned: boolean;
+  // --- 新增：接收从 App 传来的“显示未掌握用户”状态 ---
+  showUnlearnedUsers: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -20,6 +22,8 @@ const emit = defineEmits<{
   (e: "orderChange", val: boolean): void;
   // --- 新增：点击配置按钮，通知父组件打开队伍配置弹窗 ---
   (e: "openConfig"): void;
+  // --- 新增：向上汇报状态改变 ---
+  (e: "update:showUnlearnedUsers", val: boolean): void;
 }>();
 
 // --- 新增：处理角色等级输入框的值变化 ---
@@ -96,6 +100,18 @@ const handleOrder = (order: boolean) => {
           按未掌握人数排序
         </div>
       </div>
+
+      <div class="level">
+        <div
+          class="order left-aligned"
+          :class="{ checked: props.showUnlearnedUsers }"
+          @click="emit('update:showUnlearnedUsers', !props.showUnlearnedUsers)"
+        >
+          <Indicator :checked="props.showUnlearnedUsers" bordered />
+          显示未掌握该技能的用户
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -190,6 +206,15 @@ const handleOrder = (order: boolean) => {
   margin-left: auto;
   cursor: pointer;
   font-size: 0.9rem;
+}
+
+.order .indicator {
+  margin-right: 6px;
+}
+
+/* --- 新增：左对齐按钮 --- */
+.left-aligned {
+  margin-left: 0; 
 }
 
 .order .indicator {

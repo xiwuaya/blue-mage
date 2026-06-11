@@ -23,6 +23,7 @@ const props = defineProps<{
   unlearnedNamesMap: Map<number, string[]>;
   isPartyModeActive: boolean;
   showPatchVersion: boolean;
+  showUnlearnedUsers: boolean;
 }>();
 const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
@@ -204,6 +205,7 @@ const allLearned = computed(() =>
       :unlearnedNames="props.unlearnedNamesMap.get(Number(spell.no))"
       :showUnlearnedCount="props.isPartyModeActive"
       :showPatchVersion="props.showPatchVersion"
+      :showUnlearnedUsers="showUnlearnedUsers"
       @change="emit('change', indexByNo(spell.no), $event)"
       @search="emit('search', $event)" />
 

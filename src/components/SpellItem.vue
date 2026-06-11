@@ -12,8 +12,10 @@ const props = defineProps<{
   unlearnedCount?: number;
   unlearnedNames?: string[];
   showUnlearnedCount?: boolean;
-  showPatchVersion: boolean; // --- 新增这行 ---
+  showPatchVersion: boolean;
+  showUnlearnedUsers: boolean;
 }>();
+
 const emit = defineEmits<{
   (e: "change", status: boolean): void;
   (e: "search", keyword: string): void;
@@ -43,7 +45,7 @@ const emit = defineEmits<{
         {{ props.spell.spell }}
         <small>(Lv.{{ props.spell.level }})</small>
         <small v-if="props.showUnlearnedCount" class="unlearned-count text-gold">
-          (未掌握: {{ props.unlearnedCount }}人<span v-if="props.unlearnedNames && props.unlearnedNames.length"> - {{ props.unlearnedNames.join(', ') }}</span>)
+          (未掌握: {{ props.unlearnedCount }}人<span v-if="props.unlearnedNames && props.unlearnedNames.length && props.showUnlearnedUsers"> - {{ props.unlearnedNames.join(', ') }}</span>)
         </small>
       </h4>
       <ul class="methods">
