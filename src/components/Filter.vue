@@ -103,7 +103,7 @@ const handleOrder = (order: boolean) => {
 
       <div class="level">
         <div
-          class="order left-aligned"
+          class="order right-aligned"
           :class="{ checked: props.showUnlearnedUsers }"
           @click="emit('update:showUnlearnedUsers', !props.showUnlearnedUsers)"
         >
@@ -212,12 +212,8 @@ const handleOrder = (order: boolean) => {
   margin-right: 6px;
 }
 
-/* --- 新增：左对齐按钮 --- */
-.left-aligned {
-  margin-left: 0; 
-}
-
-.order .indicator {
-  margin-right: 6px;
+/* --- 新增：右对齐按钮 --- */
+.right-aligned {
+  margin-right: 0; 
 }
 </style>
