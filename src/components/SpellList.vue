@@ -55,7 +55,7 @@ const mode = computed<Mode>(() => {
 const hiddenColors = ['red', '#ff0000', 'grey', '#666'];
 
 const getFilterKey = (type: string): keyof FilterTypes => {
-  if (type === 'fate' || type === 'hunt' || type === 'treasure' || type === 'guildhests' ) {
+  if (type === 'fate' || type === 'hunt' || type === 'treasure' || type === 'guildhests' || type === 'jobquest' ) {
     return 'other';
   }
   if (type === 'special') {

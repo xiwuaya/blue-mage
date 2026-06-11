@@ -149,7 +149,7 @@ const removeTeammate = (index: number) => {
 };
 
 const getFilterKey = (type: string): keyof FilterTypes => {
-  if (type === 'fate' || type === 'hunt' || type === 'treasure' || type === 'guildhests') return 'other';
+  if (type === 'fate' || type === 'hunt' || type === 'treasure' || type === 'guildhests' || type === 'jobquest' ) return 'other';
   if (type === 'special') return 'carnivale';
   return type as keyof FilterTypes;
 };

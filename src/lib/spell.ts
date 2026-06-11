@@ -13,7 +13,8 @@ export enum SpellType {
   Guildhests = "guildhests", //新增：行会令
   Hunt = "hunt", //新增：怪物狩猎
   Carnivale = "carnivale", //新增：假面狂欢
-  Levequests = "levequests",//新增：理符任务
+  Levequests = "levequests", //新增：理符任务
+  Jobquest = "jobquest", //新增：职业任务
 }
 
 export interface SpellMethodBase {
@@ -33,7 +34,7 @@ export interface SpellMethodMap extends SpellMethodBase {
 
 // 2.新增类型
 export interface SpellMethodInstance extends SpellMethodBase {
-  type: SpellType.Raid | SpellType.Dungeon | SpellType.Trail | SpellType.Carnivale | SpellType.Treasure | SpellType.Guildhests;
+  type: SpellType.Raid | SpellType.Dungeon | SpellType.Trail | SpellType.Carnivale | SpellType.Treasure | SpellType.Guildhests | SpellType.Jobquest;
   name: string;
   mob: string;
 }
@@ -95,7 +96,8 @@ export function renderSpellMethod(method: SpellMethod) {
     case SpellType.Trail:
     case SpellType.Treasure:
     case SpellType.Guildhests:
-    case SpellType.Carnivale: // 新增这一行复用渲染逻辑
+    case SpellType.Carnivale:
+    case SpellType.Jobquest: // 新增这一行复用渲染逻辑
       return `${method.name} - ${method.mob}`;
     case SpellType.FATE:
       return `${method.map} - ${method.name} - ${method.mob}`;

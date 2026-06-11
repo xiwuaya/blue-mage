@@ -472,6 +472,14 @@
         "level": 50
       },
       {
+        "type": "jobquest",
+        "name": "魔法城邦玛哈的阴谋",
+        "mob": "辉长岩巨像 ",
+        "level": 53,
+        "note": "学者53级职业任务，需与学者组队学习",
+        "color": "red"
+      },
+      {
         "type": "treasure",
         "name": "惊奇百宝城",
         "mob": "七彩巨像",
@@ -648,6 +656,14 @@
         "name": "假面狂欢25",
         "mob": "启示者",
         "level": 50
+      },
+      {
+        "type": "jobquest",
+        "name": "魔法城邦玛哈的阴谋",
+        "mob": "毕托所信徒",
+        "level": 53,
+        "note": "学者53级职业任务，需与学者组队学习",
+        "color": "red"
       },
       {
         "type": "fate",
