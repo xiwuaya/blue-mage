@@ -35,24 +35,27 @@ const filterTypes = ref<FilterTypes>({
   other: true,
 });
 
-const level = ref(80);
-const orderByLevel = ref(false);
-const minUnlearned = ref(1);
-const orderByUnlearned = ref(true);
-const showHelpModal = ref(false);
-const showMoreConfig = ref(loadSetting<boolean>("show-more-config") ?? false);
-const showPartyModal = ref(false);
-const showPatchVersion = ref(false);
-const showUnlearnedUsers = ref(true)
+const level = ref(loadSetting<number>("level") ?? 80);
+const orderByLevel = ref(loadSetting<boolean>("order-by-level") ?? false);
+const minUnlearned = ref(loadSetting<number>("min-unlearned") ?? 1);
+const orderByUnlearned = ref(loadSetting<boolean>("order-by-unlearned") ?? false);
 
+const showMoreConfig = ref(loadSetting<boolean>("show-more-config") ?? false);
+const showPatchVersion = ref(loadSetting<boolean>("show-patch-version") ?? false);
+const showUnlearnedUsers = ref(loadSetting<boolean>("show-unlearned-users") ?? false)
+
+const showHelpModal = ref(false);
+const showPartyModal = ref(false);
 // 监听持久化配置自动保存
-watch(showUnlearnedUsers, val => saveSetting("show-unlearned-users", val));
-watch(showPatchVersion, val => saveSetting("show-patch-version", val));
-watch(showMoreConfig, val => saveSetting("show-more-config", val));
+
 watch(level, val => saveSetting("level", val));
 watch(orderByLevel, val => saveSetting("order-by-level", val));
 watch(minUnlearned, val => saveSetting("min-unlearned", val));
 watch(orderByUnlearned, val => saveSetting("order-by-unlearned", val));
+
+watch(showMoreConfig, val => saveSetting("show-more-config", val));
+watch(showPatchVersion, val => saveSetting("show-patch-version", val));
+watch(showUnlearnedUsers, val => saveSetting("show-unlearned-users", val));
 
 onBeforeMount(() => {
   const hasSeenHelp = loadSetting<boolean>("has-seen-help");
@@ -67,11 +70,6 @@ onBeforeMount(() => {
   delete (filterTypes.value as any).fate;
   delete (filterTypes.value as any).treasure;
   delete (filterTypes.value as any).guildhests;
-
-  level.value = loadSetting("level") ?? 80;
-  orderByLevel.value = loadSetting("order-by-level") ?? false;
-  minUnlearned.value = loadSetting("min-unlearned") ?? 1;
-  orderByUnlearned.value = loadSetting("order-by-unlearned") ?? false;
 
 });
 
@@ -190,7 +188,7 @@ body { background: #2b2b2b; color: #fff; margin: 0; }
 @media (min-width: 1000px) {
   #app { padding-left: 360px; }
   #app aside { position: fixed; top: 20px; left: 20px; max-height: calc(100vh - 40px); overflow-y: auto; }
-  #app aside::-webkit-scrollbar { width: 6px; }
+  #app aside::-webkit-scrollbar { width: 6px; height: 6px; }
   #app aside::-webkit-scrollbar-thumb { background-color: #555; border-radius: 3px; }
 }
 input { padding: 0 10px; border: 0; outline: 0; line-height: 32px; background: #333; color: #fff; border-radius: 16px; box-sizing: border-box; }
