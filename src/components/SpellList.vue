@@ -203,7 +203,8 @@ const allLearned = computed(() =>
       :unlearnedCount="props.unlearnedCountMap.get(Number(spell.no))"
       :unlearnedNames="props.unlearnedNamesMap.get(Number(spell.no))"
       :showUnlearnedCount="props.isPartyModeActive"
-      :showPatchVersion="props.showPatchVersion" @change="emit('change', indexByNo(spell.no), $event)"
+      :showPatchVersion="props.showPatchVersion"
+      @change="emit('change', indexByNo(spell.no), $event)"
       @search="emit('search', $event)" />
 
   </main>

@@ -4,16 +4,20 @@ import { spells } from "@/lib/spell";
 import { computed } from "vue"; 
 import PatchVersion from "./PatchVersion.vue";
 import Title from "./Title.vue";
+import Indicator from "./Indicator.vue"; // --- 新增：引入 Indicator 保持 UI 一致 ---
 
 // 修改 props 和 emit 声明
 const props = defineProps<{
   spellStatus: SpellStatusArray;
   isExpanded: boolean; // --- 新增：接收从 App.vue 传来的折叠状态 ---
+  showPatchVersion: boolean;
 }>();
+
 const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
   (e: "update:isExpanded", val: boolean): void; // --- 新增：向父组件汇报折叠状态的更改 ---
   (e: "batchChange", patch: string, status: boolean): void; // --- 新增批量事件 ---
+  (e: "update:showPatchVersion", val: boolean): void;
 }>();
 
 
@@ -84,7 +88,6 @@ const width = (learned: number, total: number) => {
       <span class="collapse-icon">{{ isExpanded ? '▼' : '▶' }}</span> 更多设置
     </Title>
 
-    
     <div 
       v-for="(counter, patch) in progress" 
       :key="patch" 
@@ -103,6 +106,17 @@ const width = (learned: number, total: number) => {
           <div :style="{ width: width(counter.learned, counter.total) }"></div>
         </div>
         <button class="button" @click="batchSetSpell(true, patch)">全选</button>
+      </div>
+    </div>
+
+    <div class="extra-setting" v-show="isExpanded">
+      <div 
+        class="order" 
+        :class="{ checked: props.showPatchVersion }"
+        @click="emit('update:showPatchVersion', !props.showPatchVersion)"
+      >
+        <Indicator :checked="props.showPatchVersion" bordered />
+        在技能名前显示版本号
       </div>
     </div>
   </div>
@@ -171,5 +185,21 @@ const width = (learned: number, total: number) => {
   background-color: #ffbe31;
   border-radius: 6px;
   transition: width 0.2s ease-in;
+}
+
+/* --- 新增：底部选项的样式 --- */
+.extra-setting {
+  width: 100%;
+  margin-top: 15px;
+}
+.extra-setting .order {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.extra-setting .indicator {
+  margin-right: 6px;
 }
 </style>

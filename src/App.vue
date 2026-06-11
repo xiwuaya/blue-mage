@@ -41,12 +41,13 @@ const orderByLevel = ref(false);
 const minUnlearned = ref(1);
 const orderByUnlearned = ref(true);
 const showHelpModal = ref(false);
-const showPatchVersion = ref(loadSetting<boolean>("show-patch-version") ?? false);
+const showMoreConfig = ref(loadSetting<boolean>("show-more-config") ?? false);
 const showPartyModal = ref(false);
-
+const showPatchVersion = ref(false);
 
 // 监听持久化配置自动保存
 watch(showPatchVersion, val => saveSetting("show-patch-version", val));
+watch(showMoreConfig, val => saveSetting("show-more-config", val));
 watch(level, val => saveSetting("level", val));
 watch(orderByLevel, val => saveSetting("order-by-level", val));
 watch(minUnlearned, val => saveSetting("min-unlearned", val));
@@ -93,12 +94,13 @@ const handleTypeChange = (type: string, checked: boolean) => {
       <Book :spellStatus="spellStatus" @change="handleStatusChange" />
       <Progress 
         :spellStatus="spellStatus" 
-        v-model:isExpanded="showPatchVersion" 
+        v-model:isExpanded="showMoreConfig"
+        v-model:showPatchVersion="showPatchVersion"
         @change="handleStatusChange" 
         @batchChange="handleBatchStatusChange"
       />
       <Filter
-        v-show="showPatchVersion"
+        v-show="showMoreConfig"
         :filterTypes="filterTypes" 
         :level="level" 
         :orderByLevel="orderByLevel"
