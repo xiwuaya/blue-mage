@@ -1462,6 +1462,26 @@
         "note": "BOSS #2前小怪"
       },
       {
+        "type": "raid",
+        "name": "魔航船虚无方舟",
+        "mob": "方舟魔界花",
+        "level": 60,
+        "color": "red"
+      },
+      {
+        "type": "fate",
+        "map": "奥阔帕恰山",
+        "name": "黑水",
+        "position": [
+          8.3,
+          23.1,
+          0
+        ],
+        "mob": "污染魔界花",
+        "level": 93,
+        "color": "red"
+      },
+      {
         "type": "guildhests",
         "name": "行会令：讨伐污染源头魔界花！",
         "mob": "剧毒魔花谭琳",
@@ -2483,6 +2503,19 @@
         "mob": "弗克施泰因",
         "level": 70,
         "note": "无读条，未测试是否可学会",
+        "color": "red"
+      },
+      {
+        "type": "fate",
+        "map": "奥阔帕恰山",
+        "position": [
+          32,
+          21.1,
+          0
+        ],
+        "name": "飞天魔厨——佩鲁的天敌",
+        "mob": "佩鲁的天敌",
+        "level": 90,
         "color": "red"
       }
     ]
