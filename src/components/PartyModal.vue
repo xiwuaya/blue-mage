@@ -268,6 +268,32 @@ const bestParty = computed(() => {
 
   return { allBestUsersIndices, maxCommonCount };
 });
+
+
+// --- 新增：应用该队伍配置，隐藏其余未被选中的人 ---
+const applyConfiguration = (teamIndices: number[]) => {
+  // 1. 处理用户 1：如果在选中的队伍中(0)，设为可见(0)；否则设为隐藏(2)
+  if (teamIndices.includes(0)) {
+    if (localUser1VisibilityState.value === 2) {
+      localUser1VisibilityState.value = 0;
+    }
+  } else {
+    localUser1VisibilityState.value = 2;
+  }
+
+  // 2. 处理其他队员
+  for (let i = 0; i < localPartyData.value.length; i++) {
+    // 队员的索引是 i + 1
+    if (teamIndices.includes(i + 1)) {
+      if (localPartyVisibilityStates.value[i] === 2) {
+        localPartyVisibilityStates.value[i] = 0;
+      }
+    } else {
+      localPartyVisibilityStates.value[i] = 2; // 隐藏不在队伍中的人
+    }
+  }
+};
+
 </script>
 
 <template>
@@ -308,6 +334,9 @@ const bestParty = computed(() => {
                     <span v-if="teamIdx > 0" class="or-text">或</span>
                     <span v-for="idx in teamIndices" :key="idx" class="user-badge">
                       {{ idx === 0 ? (localUser1Name || '用户 1 (我)') : (localPartyNames[idx - 1] || `用户 ${idx + 1}`) }}
+                    </span>
+                    <span class="apply-text" @click="applyConfiguration(teamIndices)" title="点击后将隐藏不在该配置中的其他队员">
+                      应用该配置
                     </span>
                   </div>
                   <div class="spell-count-row">
@@ -799,4 +828,22 @@ const bestParty = computed(() => {
   position: relative;
   top: -1px;
 }
+
+/* --- 新增：应用该配置文字按钮样式 --- */
+.apply-text {
+  font-size: 0.8rem;
+  color: #ffbe31;
+  opacity: 0.7;
+  cursor: pointer;
+  margin-left: 8px;
+  text-decoration: underline;
+  transition: opacity 0.2s, color 0.2s;
+  user-select: none;
+}
+
+.apply-text:hover {
+  opacity: 1;
+  color: #ffffff;
+}
+
 </style>
