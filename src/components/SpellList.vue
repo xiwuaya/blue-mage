@@ -54,14 +54,20 @@ const mode = computed<Mode>(() => {
 
 const hiddenColors = ['red', '#ff0000', 'grey', '#666'];
 
-const getFilterKey = (type: string): keyof FilterTypes => {
-  if (type === 'fate' || type === 'hunt' || type === 'treasure' || type === 'guildhests' || type === 'jobquest' ) {
+// 将参数从 type: string 修改为 method: any (或具体的 SpellMethod 类型)
+const getFilterKey = (method: any): keyof FilterTypes => {
+  // 增加判断：如果是 hunt 分类且 rank 为 'B'，则归类到 map
+  if (method.type === 'hunt' && method.rank === 'B') {
+    return 'map';
+  }
+  
+  if (method.type === 'fate' || method.type === 'hunt' || method.type === 'treasure' || method.type === 'guildhests' || method.type === 'jobquest' ) {
     return 'other';
   }
-  if (type === 'special') {
+  if (method.type === 'special') {
     return 'carnivale';
   }
-  return type as keyof FilterTypes;
+  return method.type as keyof FilterTypes;
 };
 
 const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
@@ -91,7 +97,7 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
       spell.level <= props.level &&
       meetsCountThreshold &&
       spell.method.some((m) => {
-        if (!props.filterTypes[getFilterKey(m.type)]) return false;
+        if (!props.filterTypes[getFilterKey(m)]) return false;
         if (hideSpecialColor.value) {
           const c = ((m as any).color || '').toLowerCase();
           if (hiddenColors.includes(c)) return false;
@@ -104,7 +110,7 @@ const filters: Record<Mode, (spell: Spell, index: number) => boolean> = {
     return (
       spell.level <= props.level &&
       spell.method.some((m) => {
-        if (!props.filterTypes[getFilterKey(m.type)]) return false;
+        if (!props.filterTypes[getFilterKey(m)]) return false;
         if (hideSpecialColor.value) {
           const c = ((m as any).color || '').toLowerCase();
           if (hiddenColors.includes(c)) return false;

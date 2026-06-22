@@ -148,11 +148,22 @@ const removeTeammate = (index: number) => {
   localPartyVisibilityStates.value.splice(index, 1);
 };
 
-const getFilterKey = (type: string): keyof FilterTypes => {
-  if (type === 'fate' || type === 'hunt' || type === 'treasure' || type === 'guildhests' || type === 'jobquest' ) return 'other';
-  if (type === 'special') return 'carnivale';
-  return type as keyof FilterTypes;
+// 将参数从 type: string 修改为 method: any (或具体的 SpellMethod 类型)
+const getFilterKey = (method: any): keyof FilterTypes => {
+  // 增加判断：如果是 hunt 分类且 rank 为 'B'，则归类到 map
+  if (method.type === 'hunt' && method.rank === 'B') {
+    return 'map';
+  }
+  
+  if (method.type === 'fate' || method.type === 'hunt' || method.type === 'treasure' || method.type === 'guildhests' || method.type === 'jobquest' ) {
+    return 'other';
+  }
+  if (method.type === 'special') {
+    return 'carnivale';
+  }
+  return method.type as keyof FilterTypes;
 };
+
 
 // ==========================================
 // 4. 最优组队算法 (精准筛选三态组合)
@@ -208,7 +219,7 @@ const bestParty = computed(() => {
 
   const validSpellNos = new Set<number>();
   for (const spell of spells) {
-    const isValid = spell.method.some((m) => props.filterTypes[getFilterKey(m.type)]);
+    const isValid = spell.method.some((m) => props.filterTypes[getFilterKey(m)]);
     if (isValid) validSpellNos.add(Number(spell.no));
   }
 
