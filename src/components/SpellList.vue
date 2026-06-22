@@ -61,6 +61,10 @@ const getFilterKey = (method: any): keyof FilterTypes => {
     return 'map';
   }
   
+  if (method.type === 'levequests') {
+    return 'map';
+  }
+  
   if (method.type === 'fate' || method.type === 'hunt' || method.type === 'treasure' || method.type === 'guildhests' || method.type === 'jobquest' ) {
     return 'other';
   }
