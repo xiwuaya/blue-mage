@@ -379,7 +379,8 @@
         "rank": null,
         "position": [25,33,0],
         "mob": "孤眼巨人",
-        "level": 98
+        "level": 98,
+        "note": "必定学会"
       },
       {
         "type": "fate",
@@ -864,6 +865,14 @@
         "name": "邪念妖地无限城古堡",
         "mob": "多节树精",
         "level": 50,
+        "color": "red"
+      },
+      {
+        "type": "fate",
+        "map": "拉凯提卡大森林",
+        "name": "不燃怪树——蔷提可",
+        "mob": "蔷提可",
+        "level": 74,
         "color": "red"
       }
     ]
@@ -1800,7 +1809,8 @@
         "name": "巴哈姆特大迷宫 入侵之章2",
         "mob": "原型奇美拉",
         "note": "第三波小怪之一。即死效果与比例伤害有效，但冻结、石化、眩晕、睡眠、麻痹等效果无效",
-        "level": 50
+        "level": 50,
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -1817,6 +1827,29 @@
         "note": "寻宝：陈旧的瞪羚革地图（G10）",
         "color": "red",
         "level": 70
+      },
+      {
+        "type": "hunt",
+        "map": "雷克兰德",
+        "rank": "S",
+        "position": [],
+        "mob": "戾虫",
+        "level": 80,
+        "color": "red"
+      },
+      {
+        "type": "map",
+        "map": "魔大陆阿济兹拉",
+        "rank": null,
+        "position": [
+          30.5,
+          7.1,
+          0
+        ],
+        "mob": "亚拉戈奇美拉",
+        "level": 59,
+        "note": "确定不会使用",
+        "color": "grey"
       }
     ]
   },
@@ -1890,7 +1923,8 @@
         "name": "巴哈姆特大迷宫 入侵之章2",
         "mob": "原型奇美拉",
         "note": "第三波小怪之一。即死效果与比例伤害有效，但冻结、石化、眩晕、睡眠、麻痹等效果无效",
-        "level": 50
+        "level": 50,
+        "color": "yellow"
       },
       {
         "type": "raid",
@@ -1907,6 +1941,29 @@
         "note": "寻宝：陈旧的瞪羚革地图（G10）",
         "color": "red",
         "level": 70
+      },
+      {
+        "type": "hunt",
+        "map": "雷克兰德",
+        "rank": "S",
+        "position": [],
+        "mob": "戾虫",
+        "level": 80,
+        "color": "red"
+      },
+      {
+        "type": "map",
+        "map": "魔大陆阿济兹拉",
+        "rank": null,
+        "position": [
+          30.5,
+          7.1,
+          0
+        ],
+        "mob": "亚拉戈奇美拉",
+        "level": 59,
+        "note": "确定不会使用",
+        "color": "grey"
       }
     ]
   },
@@ -2442,6 +2499,13 @@
         "name": "冰雪废堡暮卫塔",
         "mob": "狮身巨鹰",
         "level": 51,
+        "color": "red"
+      },
+      {
+        "type": "raid",
+        "name": "魔航船虚无方舟",
+        "mob": "翻云狮鹫",
+        "level": 60,
         "color": "red"
       },
       {
@@ -3069,6 +3133,14 @@
         "level": 50
       },
       {
+        "type": "raid",
+        "name": "魔航船虚无方舟",
+        "mob": "方舟安祖",
+        "level": 60,
+        "note": "即死效果与比例伤害有效",
+        "color": "red"
+      },
+      {
         "type": "fate",
         "map": "奥阔帕恰山",
         "name": "图拉尔候鸟",
@@ -3445,6 +3517,13 @@
         "mob": "大王花",
         "note": "最终BOSS",
         "level": 50
+      },
+      {
+        "type": "raid",
+        "name": "水晶塔 暗之世界",
+        "mob": "刻耳柏洛斯",
+        "level": 50,
+        "color": "red"
       },
       {
         "type": "dungeon",
@@ -4423,6 +4502,7 @@
         "position": [17, 30, 0],
         "mob": "长尾犰狳",
         "level": 77,
+        "note": "体力降到25%时使用",
         "color": "yellow"
       },
       {
