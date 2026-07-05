@@ -2143,7 +2143,6 @@
           0
         ],
         "mob": "峭壁巨钳虾",
-        "note": "疑似高血量更容易施放",
         "level": 61,
         "color": "yellow"
       },
@@ -2521,7 +2520,8 @@
           1.5
         ],
         "mob": "狮鹫",
-        "level": 59
+        "level": 59,
+        "color": "yellow"
       },
       {
         "type": "dungeon",
