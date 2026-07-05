@@ -302,7 +302,7 @@
         "type": "dungeon",
         "name": "财宝传说破舰岛",
         "mob": "谢尔达莱黄蜂",
-        "level":50,
+        "level": 50,
         "note": "一定生命值以下",
         "color": "red"
       },
@@ -310,7 +310,7 @@
         "type": "dungeon",
         "name": "空中神域不获岛",
         "mob": "神域胡蜂",
-        "level":60,
+        "level": 60,
         "note": "BOSS#1后多只",
         "color": "red"
       }
@@ -377,7 +377,11 @@
         "type": "map",
         "map": "遗产之地",
         "rank": null,
-        "position": [25,33,0],
+        "position": [
+          25,
+          33,
+          0
+        ],
         "mob": "孤眼巨人",
         "level": 98,
         "note": "必定学会"
@@ -385,7 +389,11 @@
       {
         "type": "fate",
         "map": "遗产之地",
-        "position": [24,34.5,0],
+        "position": [
+          24,
+          34.5,
+          0
+        ],
         "name": "怨怼的独眼——复仇者",
         "mob": "复仇者",
         "level": 98,
@@ -2156,7 +2164,7 @@
         "type": "dungeon",
         "name": "漂流海域妖歌海",
         "mob": "倒影龙虾",
-        "level":61,
+        "level": 61,
         "note": "BOSS#1前精英怪1只，同步时可以考虑催眠整波怪后单独打醒",
         "color": "red"
       },
@@ -2695,7 +2703,11 @@
       {
         "type": "fate",
         "map": "库尔札斯西部高地",
-        "position":[20.4, 33.4, 0],
+        "position": [
+          20.4,
+          33.4,
+          0
+        ],
         "name": "吞噬牦牛的巨人——巨脚雪人",
         "mob": "巨脚雪人",
         "level": 51,
@@ -3242,7 +3254,7 @@
         "type": "dungeon",
         "name": "空中神域不获岛",
         "mob": "神域长颈驼",
-        "level":60,
+        "level": 60,
         "note": "无读条，BOSS#2后多只",
         "color": "red"
       }
@@ -4023,7 +4035,6 @@
         "mob": "高阶长须豹",
         "level": 24,
         "color": "yellow"
-        
       }
     ]
   },
@@ -4455,7 +4466,11 @@
         "type": "map",
         "map": "珂露西亚岛",
         "rank": null,
-        "position": [33, 33, 0],
+        "position": [
+          33,
+          33,
+          0
+        ],
         "mob": "大哥布林",
         "level": 70
       },
@@ -4463,7 +4478,11 @@
         "type": "map",
         "map": "珂露西亚岛",
         "rank": null,
-        "position": [37, 28, 0],
+        "position": [
+          37,
+          28,
+          0
+        ],
         "mob": "大哥布林",
         "level": 70
       },
@@ -4471,7 +4490,11 @@
         "type": "map",
         "map": "珂露西亚岛",
         "rank": null,
-        "position": [26, 10, 0],
+        "position": [
+          26,
+          10,
+          0
+        ],
         "mob": "大哥布林守卫",
         "level": 70
       },
@@ -4526,7 +4549,11 @@
         "type": "map",
         "map": "安穆·艾兰",
         "rank": null,
-        "position": [17, 30, 0],
+        "position": [
+          17,
+          30,
+          0
+        ],
         "mob": "硬鳞犰狳",
         "level": 77,
         "note": "疑似生命值达到50%时使用",
@@ -4536,7 +4563,11 @@
         "type": "map",
         "map": "安穆·艾兰",
         "rank": null,
-        "position": [17, 30, 0],
+        "position": [
+          17,
+          30,
+          0
+        ],
         "mob": "长尾犰狳",
         "level": 77,
         "note": "体力降到25%时使用",
@@ -4570,7 +4601,11 @@
         "type": "map",
         "map": "安穆·艾兰",
         "rank": null,
-        "position": [32, 9, 0],
+        "position": [
+          32,
+          9,
+          0
+        ],
         "mob": "滑溜犰狳",
         "level": 70,
         "color": "yellow"

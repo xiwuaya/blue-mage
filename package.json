@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node tools/update-date.js && node tools/update-methods.js", 
     "build": "vue-tsc --noEmit && vite build",
     "deploy": "gh-pages -d dist",
     "preview": "vite preview --port 5050",
