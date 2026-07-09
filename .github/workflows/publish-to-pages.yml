@@ -1,33 +1,33 @@
 name: Build and Deploy
 on: [push]
+
+# --- 新增：明确赋予 GITHUB_TOKEN 写入代码仓库的权限 ---
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
-        with:
-          persist-credentials: false
+        uses: actions/checkout@v3
+        # --- 注意：这里去掉了 persist-credentials: false ---
 
       - name: Install and Build 🔧
         run: |
           yarn install
           yarn build
 
-      # --- 新增：将脚本修改的文件提交并推送回仓库 ---
+      # --- 将你刚才新增的 Commit 步骤放在 Build 之后，Deploy 之前 ---
       - name: Commit and Push changes
         run: |
-          # 配置虚拟机的 git 机器人身份
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          # 将脚本修改的三个文件添加到暂存区
-          git add tools/spells.json
+          git add src/lib/spells.json
           git add tools/method_updates.csv
           git add src/App.vue
           
-          # 检查是否有文件变动，如果有，则提交并推送
-          # 注意：提交信息中带有 [skip ci] 是为了防止机器人推送代码后，再次触发 GitHub Action 导致无限循环
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: auto-update spells data and build date [skip ci]" && git push)
 
       - name: Deploy 🚀
@@ -36,4 +36,3 @@ jobs:
           branch: gh-pages
           folder: dist
           clean: true
-
