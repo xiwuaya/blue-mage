@@ -14,6 +14,22 @@ jobs:
           yarn install
           yarn build
 
+      # --- 新增：将脚本修改的文件提交并推送回仓库 ---
+      - name: Commit and Push changes
+        run: |
+          # 配置虚拟机的 git 机器人身份
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # 将脚本修改的三个文件添加到暂存区
+          git add tools/spells.json
+          git add tools/method_updates.csv
+          git add src/App.vue
+          
+          # 检查是否有文件变动，如果有，则提交并推送
+          # 注意：提交信息中带有 [skip ci] 是为了防止机器人推送代码后，再次触发 GitHub Action 导致无限循环
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: auto-update spells data and build date [skip ci]" && git push)
+
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
