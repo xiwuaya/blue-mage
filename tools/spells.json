@@ -3551,6 +3551,7 @@
         "name": "邪龙王座龙巢神殿",
         "mob": "雷雅克魔龙",
         "level": 55,
+        "note": "BOSS #1小怪",
         "color": "red"
       }
     ]
@@ -4993,8 +4994,8 @@
         "type": "dungeon",
         "name": "魔术工房玛托雅工作室",
         "mob": "水滴精",
-        "note": "BOSS #2",
         "level": 80,
+        "note": "BOSS #2转场技能",
         "color": "yellow"
       }
     ]
