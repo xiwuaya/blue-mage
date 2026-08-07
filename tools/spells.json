@@ -2755,6 +2755,15 @@
         "color": "red"
       },
       {
+        "type": "hunt",
+        "map": "库尔札斯西部高地",
+        "rank": "A",
+        "position": null,
+        "mob": "米勒卡",
+        "level": 60,
+        "color": "red"
+      },
+      {
         "type": "treasure",
         "name": "运河宝物库深层",
         "mob": "运河大脚雪人",
@@ -4228,6 +4237,7 @@
         ],
         "mob": "陀鲁婆",
         "level": 69,
+        "note": "必定学会。原因未知",
         "color": "yellow"
       },
       {
