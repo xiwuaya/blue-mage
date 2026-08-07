@@ -7,6 +7,27 @@ import type { SpellStatusArray, SpellStatus } from "./interface";
 const spellStatus = ref<SpellStatusArray>(loadSetting<SpellStatusArray>("spell-status") || []);
 const partyData = ref<string[]>(loadSetting<string[]>("party-data") || Array(7).fill(""));
 const partyNames = ref<string[]>(loadSetting<string[]>("party-names") || Array(7).fill(""));
+const DEFAULT_PARTY_COLORS = [
+  "#FF4D4D", "#4D8DFF", "#52D273", "#FFD43B", "#B86BFF", "#FF8C42",
+  "#24C6C8", "#FF5C93", "#7AA7FF", "#A8D83E", "#8E6CFF", "#E85D04",
+  "#00A878", "#D94F70", "#1E9BDE", "#C4E538", "#6C4DDC", "#F5A623",
+  "#008F8C", "#C73665", "#356AE6", "#7CB342", "#9B51E0", "#E76F51"
+];
+
+const getDefaultPartyColor = (index: number) =>
+  DEFAULT_PARTY_COLORS[index % DEFAULT_PARTY_COLORS.length];
+
+const normalizePartyColors = (colors: string[] | undefined, length: number) => {
+  const result = Array.from({ length }, (_, index) =>
+    colors?.[index] || getDefaultPartyColor(index)
+  );
+  return result;
+};
+
+const partyColors = ref<string[]>(normalizePartyColors(
+  loadSetting<string[]>("party-colors"),
+  (loadSetting<string[]>("party-data") || Array(7).fill("")).length + 1
+));
 const partyVisibilityStates = ref<number[]>(loadSetting<number[]>("party-visibility-states") || Array(7).fill(0));
 
 const user1Name = ref<string>(loadSetting<string>("user1-name") || "");
@@ -69,6 +90,7 @@ export function useSpellSync() {
     watch(user1Name, val => saveSetting("user1-name", val));
     watch(partyData, val => saveSetting("party-data", val), { deep: true });
     watch(partyNames, val => saveSetting("party-names", val), { deep: true });
+    watch(partyColors, val => saveSetting("party-colors", val), { deep: true });
     watch(partyVisibilityStates, val => saveSetting("party-visibility-states", val), { deep: true });
 
     isInitialized = true; // 上锁，确保后续任何组件再次调用也不会重复挂载监听器
@@ -110,17 +132,17 @@ export function useSpellSync() {
 
   // 新增：附带用户名称的有效用户数据
   const validUsersWithNames = computed(() => {
-    const users: { name: string, set: Set<number> }[] = [];
+    const users: { name: string, color: string, set: Set<number> }[] = [];
     if (user1VisibilityState.value !== 2) {
       const nums = (user1Spells.value.match(/\d+/g) || []).map(Number);
-      users.push({ name: user1Name.value || '用户 1 (我)', set: new Set(nums) });
+      users.push({ name: user1Name.value || '用户 1 (我)', color: partyColors.value[0] || getDefaultPartyColor(0), set: new Set(nums) });
     }
     for (let i = 0; i < partyData.value.length; i++) {
       if (partyVisibilityStates.value[i] !== 2) {
         const str = partyData.value[i] || "";
         if (str.trim()) {
           const nums = (str.match(/\d+/g) || []).map(Number);
-          users.push({ name: partyNames.value[i] || `用户 ${i + 2}`, set: new Set(nums) });
+          users.push({ name: partyNames.value[i] || `用户 ${i + 2}`, color: partyColors.value[i + 1] || getDefaultPartyColor(i + 1), set: new Set(nums) });
         }
       }
     }
@@ -136,6 +158,18 @@ export function useSpellSync() {
         if (user.set.has(Number(spell.no))) names.push(user.name);
       });
       map.set(Number(spell.no), names);
+    });
+    return map;
+  });
+
+  const unlearnedUsersMap = computed(() => {
+    const map = new Map<number, { name: string, color: string }[]>();
+    spells.forEach((spell: any) => {
+      const users: { name: string, color: string }[] = [];
+      validUsersWithNames.value.forEach(user => {
+        if (user.set.has(Number(spell.no))) users.push({ name: user.name, color: user.color });
+      });
+      map.set(Number(spell.no), users);
     });
     return map;
   });
@@ -222,12 +256,14 @@ export function useSpellSync() {
     spellStatus,
     partyData,
     partyNames,
+    partyColors,
     partyVisibilityStates,
     user1Name,
     user1VisibilityState,
     user1Spells,
     unlearnedCountMap,
     unlearnedNamesMap,
+    unlearnedUsersMap,
     isPartyModeActive,
     handleStatusChange,
     handleBatchStatusChange

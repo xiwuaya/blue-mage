@@ -12,6 +12,7 @@ const props = defineProps<{
   user1Name: string;
   partyData: string[];
   partyNames: string[];
+  partyColors: string[];
   filterTypes: FilterTypes;
   user1VisibilityState: number;
   partyVisibilityStates: number[];
@@ -23,6 +24,7 @@ const emit = defineEmits<{
   (e: 'update:user1Name', val: string): void;
   (e: 'update:partyData', val: string[]): void;
   (e: 'update:partyNames', val: string[]): void;
+  (e: 'update:partyColors', val: string[]): void;
   (e: 'update:user1VisibilityState', val: number): void;
   (e: 'update:partyVisibilityStates', val: number[]): void;
   (e: 'resetMinUnlearned'): void;
@@ -41,6 +43,7 @@ const localUser1Spells = ref(props.user1Spells);
 const localUser1Name = ref(props.user1Name);
 const localPartyData = ref([...props.partyData]);
 const localPartyNames = ref([...props.partyNames]);
+const localPartyColors = ref([...props.partyColors]);
 
 // 将父组件提升的显隐三态映射为本地变量
 const localUser1VisibilityState = ref(props.user1VisibilityState);
@@ -60,6 +63,11 @@ watch(localPartyData, (val) => {
 watch(localPartyNames, (val) => {
   if (JSON.stringify(val) !== JSON.stringify(props.partyNames)) {
     emit('update:partyNames', [...val]);
+  }
+}, { deep: true });
+watch(localPartyColors, (val) => {
+  if (JSON.stringify(val) !== JSON.stringify(props.partyColors)) {
+    emit('update:partyColors', [...val]);
   }
 }, { deep: true });
 
@@ -87,6 +95,11 @@ watch(() => props.partyData, (val) => {
 watch(() => props.partyNames, (val) => {
   if (JSON.stringify(val) !== JSON.stringify(localPartyNames.value)) {
     localPartyNames.value = [...val];
+  }
+}, { deep: true });
+watch(() => props.partyColors, (val) => {
+  if (JSON.stringify(val) !== JSON.stringify(localPartyColors.value)) {
+    localPartyColors.value = [...val];
   }
 }, { deep: true });
 
@@ -123,19 +136,34 @@ const copyUser1Data = async () => {
   }
 };
 
-const resetParty = () => {
-  // 唤起浏览器原生确认框
-  const isConfirmed = window.confirm("确定要重置所有队友数据吗？此操作无法撤销。");
+const DEFAULT_PARTY_COLORS = [
+  "#FF4D4D", "#4D8DFF", "#52D273", "#FFD43B", "#B86BFF", "#FF8C42",
+  "#24C6C8", "#FF5C93", "#7AA7FF", "#A8D83E", "#8E6CFF", "#E85D04",
+  "#00A878", "#D94F70", "#1E9BDE", "#C4E538", "#6C4DDC", "#F5A623",
+  "#008F8C", "#C73665", "#356AE6", "#7CB342", "#9B51E0", "#E76F51"
+];
+const getDefaultPartyColor = (index: number) => DEFAULT_PARTY_COLORS[index % DEFAULT_PARTY_COLORS.length];
 
-  // 只有用户点击了“确定”，才向父组件发送修改指令
-  if (isConfirmed) {
-    // const len = localPartyData.value.length;
-    const len = 3;
-    localPartyData.value = Array(len).fill("");
-    localPartyNames.value = Array(len).fill("");
-    localPartyVisibilityStates.value = Array(len).fill(0); // 重置时恢复为默认可见状态
-    emit('resetMinUnlearned');
-  }
+const ensurePartyColor = (index: number) => {
+  if (!localPartyColors.value[index]) localPartyColors.value[index] = getDefaultPartyColor(index);
+  return localPartyColors.value[index];
+};
+
+
+
+const setPartyColor = (index: number, event: Event) => {
+  const value = (event.target as HTMLInputElement).value;
+  localPartyColors.value[index] = value;
+};
+
+const resetParty = () => {
+  // const len = localPartyData.value.length;
+  const len = 3;
+  localPartyData.value = Array(len).fill("");
+  localPartyNames.value = Array(len).fill("");
+  localPartyColors.value = Array.from({ length: len + 1 }, (_, index) => getDefaultPartyColor(index));
+  localPartyVisibilityStates.value = Array(len).fill(0); // 重置时恢复为默认可见状态
+  emit('resetMinUnlearned');
 };
 
 const addTeammate = () => {
@@ -145,12 +173,16 @@ const addTeammate = () => {
   }
   localPartyData.value.push("");
   localPartyNames.value.push("");
+  const usedColors = new Set(localPartyColors.value);
+  const nextColor = DEFAULT_PARTY_COLORS.find(color => !usedColors.has(color)) || getDefaultPartyColor(localPartyColors.value.length);
+  localPartyColors.value.push(nextColor);
   localPartyVisibilityStates.value.push(0); // 新加队友默认是可见状态（0）
 };
 
 const removeTeammate = (index: number) => {
   localPartyData.value.splice(index, 1);
   localPartyNames.value.splice(index, 1);
+  localPartyColors.value.splice(index + 1, 1);
   localPartyVisibilityStates.value.splice(index, 1);
 };
 
@@ -375,7 +407,11 @@ const applyConfiguration = (teamIndices: number[]) => {
 
               <div class="party-user" :class="{ 'layer-hidden': localUser1VisibilityState === 2 }">
                 <div class="name-row">
-                  <input class="name-input" v-model="localUser1Name" placeholder="用户 1 (我)" />
+                  <input class="name-input" v-model="localUser1Name" :style="{ color: ensurePartyColor(0) }" placeholder="用户 1 (我)" />
+                  <label class="color-picker-btn" :style="{ color: ensurePartyColor(0) }" title="设置该用户名称颜色">
+                    <span class="palette-icon"><i></i><i></i><i></i><i></i></span>
+                    <input class="color-input" type="color" :value="ensurePartyColor(0)" @input="setPartyColor(0, $event)" />
+                  </label>
                   <button class="visibility-btn" :class="{ 'is-must-include': localUser1VisibilityState === 1 }"
                     @click="localUser1VisibilityState = (localUser1VisibilityState + 1) % 3"
                     :title="['该用户可见：参与计算，无限制', '该用户必须包含：最优队伍必带此人', '该用户隐藏：跳过该用户计算，主页改动不同步'][localUser1VisibilityState]">
@@ -397,7 +433,11 @@ const applyConfiguration = (teamIndices: number[]) => {
               <div class="party-user" :class="{ 'layer-hidden': localPartyVisibilityStates[index] === 2 }"
                 v-for="(data, index) in localPartyData" :key="index">
                 <div class="name-row">
-                  <input class="name-input" v-model="localPartyNames[index]" :placeholder="'用户 ' + (index + 2)" />
+                  <input class="name-input" v-model="localPartyNames[index]" :style="{ color: ensurePartyColor(index + 1) }" :placeholder="'用户 ' + (index + 2)" />
+                  <label class="color-picker-btn" :style="{ color: ensurePartyColor(index + 1) }" title="设置该用户名称颜色">
+                    <span class="palette-icon"><i></i><i></i><i></i><i></i></span>
+                    <input class="color-input" type="color" :value="ensurePartyColor(index + 1)" @input="setPartyColor(index + 1, $event)" />
+                  </label>
                   <button class="visibility-btn" :class="{ 'is-must-include': localPartyVisibilityStates[index] === 1 }"
                     @click="localPartyVisibilityStates[index] = (localPartyVisibilityStates[index] + 1) % 3"
                     :title="['该用户可见：参与计算，无限制', '该用户必须包含：最优队伍必带此人', '该用户隐藏：跳过该用户计算，主页改动不同步'][localPartyVisibilityStates[index]]">
@@ -600,6 +640,68 @@ const applyConfiguration = (teamIndices: number[]) => {
   color: #ccc;
 }
 
+/* 用户名称颜色选择器 */
+.color-picker-btn {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.color-picker-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.color-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.palette-icon {
+  width: 17px;
+  height: 17px;
+  position: relative;
+  display: block;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.palette-icon::before {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 7px 0 0 currentColor, 3.5px 7px 0 currentColor;
+}
+
+.palette-icon::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  right: -2px;
+  bottom: 1px;
+  border-radius: 50%;
+  background: #2c2c2c;
+}
+
 .visibility-btn {
   background: transparent;
   border: none;
@@ -638,7 +740,69 @@ const applyConfiguration = (teamIndices: number[]) => {
   border-color: #333 !important;
 }
 
-.layer-hidden .visibility-btn {
+.layer-hidden /* 用户名称颜色选择器 */
+.color-picker-btn {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.color-picker-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.color-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.palette-icon {
+  width: 17px;
+  height: 17px;
+  position: relative;
+  display: block;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.palette-icon::before {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 7px 0 0 currentColor, 3.5px 7px 0 currentColor;
+}
+
+.palette-icon::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  right: -2px;
+  bottom: 1px;
+  border-radius: 50%;
+  background: #2c2c2c;
+}
+
+.visibility-btn {
   color: #777;
 }
 

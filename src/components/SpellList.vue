@@ -21,6 +21,7 @@ const props = defineProps<{
   spellStatus: SpellStatusArray;
   unlearnedCountMap: Map<number, number>;
   unlearnedNamesMap: Map<number, string[]>;
+  unlearnedUsersMap: Map<number, { name: string; color: string }[]>;
   isPartyModeActive: boolean;
   showPatchVersion: boolean;
   showUnlearnedUsers: boolean;
@@ -213,6 +214,7 @@ const allLearned = computed(() =>
       :learned="props.isPartyModeActive ? (props.unlearnedCountMap.get(Number(spell.no)) || 0) === 0 : learnedByNo(props.spellStatus, spell.no)" 
       :unlearnedCount="props.unlearnedCountMap.get(Number(spell.no))"
       :unlearnedNames="props.unlearnedNamesMap.get(Number(spell.no))"
+      :unlearnedUsers="props.unlearnedUsersMap.get(Number(spell.no))"
       :showUnlearnedCount="props.isPartyModeActive"
       :showPatchVersion="props.showPatchVersion"
       :showUnlearnedUsers="showUnlearnedUsers"

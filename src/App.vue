@@ -14,12 +14,14 @@ const {
   spellStatus,
   partyData,
   partyNames,
+  partyColors,
   partyVisibilityStates,
   user1Name,
   user1VisibilityState,
   user1Spells,
   unlearnedCountMap,
   unlearnedNamesMap,
+  unlearnedUsersMap,
   isPartyModeActive,
   handleStatusChange,
   handleBatchStatusChange
@@ -124,6 +126,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
       :orderByUnlearned="orderByUnlearned" 
       :unlearnedCountMap="unlearnedCountMap"
       :unlearnedNamesMap="unlearnedNamesMap"
+      :unlearnedUsersMap="unlearnedUsersMap"
       :isPartyModeActive="isPartyModeActive"
       :showPatchVersion="showPatchVersion"
       :showUnlearnedUsers="showUnlearnedUsers"
@@ -151,7 +154,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
               <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
             </ul>
             <p>
-              本网页内容最近一次更新于<strong>2026年8月7日</strong>（7.55版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+              本网页内容最近一次更新于<strong>2026年7月29日</strong>（7.55版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
                 rel="noopener noreferrer">点此提出</a>
             </p>
             <p>
@@ -171,6 +174,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
     v-model:user1Name="user1Name"
     v-model:partyData="partyData" 
     v-model:partyNames="partyNames" 
+    v-model:partyColors="partyColors"
     v-model:user1VisibilityState="user1VisibilityState"
     v-model:partyVisibilityStates="partyVisibilityStates"
     :filterTypes="filterTypes"

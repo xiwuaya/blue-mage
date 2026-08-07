@@ -11,6 +11,7 @@ const props = defineProps<{
   learned: boolean;
   unlearnedCount?: number;
   unlearnedNames?: string[];
+  unlearnedUsers?: { name: string; color: string }[];
   showUnlearnedCount?: boolean;
   showPatchVersion: boolean;
   showUnlearnedUsers: boolean;
@@ -45,7 +46,7 @@ const emit = defineEmits<{
         {{ props.spell.spell }}
         <small>(Lv.{{ props.spell.level }})</small>
         <small v-if="props.showUnlearnedCount" class="unlearned-count text-gold">
-          (未掌握: {{ props.unlearnedCount }}人<span v-if="props.unlearnedNames && props.unlearnedNames.length && props.showUnlearnedUsers"> - {{ props.unlearnedNames.join(', ') }}</span>)
+          (未掌握: {{ props.unlearnedCount }}人<span v-if="props.showUnlearnedUsers && props.unlearnedUsers && props.unlearnedUsers.length"> - <span class="unlearned-users"><span v-for="(user, index) in props.unlearnedUsers" :key="`${user.name}-${index}`" class="unlearned-user" :style="{ color: user.color }">{{ user.name }}</span></span></span>)
         </small>
       </h4>
       <ul class="methods">
@@ -101,5 +102,14 @@ const emit = defineEmits<{
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.unlearned-users {
+  display: inline;
+}
+
+.unlearned-user + .unlearned-user::before {
+  content: ', ';
+  color: #aaa;
 }
 </style>
