@@ -124,12 +124,18 @@ const copyUser1Data = async () => {
 };
 
 const resetParty = () => {
-  // const len = localPartyData.value.length;
-  const len = 3;
-  localPartyData.value = Array(len).fill("");
-  localPartyNames.value = Array(len).fill("");
-  localPartyVisibilityStates.value = Array(len).fill(0); // 重置时恢复为默认可见状态
-  emit('resetMinUnlearned');
+  // 唤起浏览器原生确认框
+  const isConfirmed = window.confirm("确定要重置所有队友数据吗？此操作无法撤销。");
+
+  // 只有用户点击了“确定”，才向父组件发送修改指令
+  if (isConfirmed) {
+    // const len = localPartyData.value.length;
+    const len = 3;
+    localPartyData.value = Array(len).fill("");
+    localPartyNames.value = Array(len).fill("");
+    localPartyVisibilityStates.value = Array(len).fill(0); // 重置时恢复为默认可见状态
+    emit('resetMinUnlearned');
+  }
 };
 
 const addTeammate = () => {
