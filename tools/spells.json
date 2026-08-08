@@ -3464,7 +3464,7 @@
         "name": "苏醒遗迹喀恩埋没圣堂",
         "mob": "仙人刺守卫",
         "level": 50,
-        "note": "BOSS#2 召唤的小怪",
+        "note": "BOSS#2 召唤的小怪，即死效果与比例伤害有效",
         "color": "yellow"
       }
     ]
@@ -4729,7 +4729,7 @@
         "type": "dungeon",
         "name": "魔术工房玛托雅工作室",
         "mob": "土泥人",
-        "note": "BOSS #1",
+        "note": "BOSS #1，即死效果与比例伤害有效",
         "level": 80,
         "color": "yellow"
       }
