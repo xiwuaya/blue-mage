@@ -5,8 +5,8 @@ import type { SpellStatusArray, SpellStatus } from "./interface";
 
 // 1. 将所有状态定义在函数外部，使其成为全局单例 (类似 Pinia Store)
 const spellStatus = ref<SpellStatusArray>(loadSetting<SpellStatusArray>("spell-status") || []);
-const partyData = ref<string[]>(loadSetting<string[]>("party-data") || Array(7).fill(""));
-const partyNames = ref<string[]>(loadSetting<string[]>("party-names") || Array(7).fill(""));
+const partyData = ref<string[]>(loadSetting<string[]>("party-data") || Array(3).fill(""));
+const partyNames = ref<string[]>(loadSetting<string[]>("party-names") || Array(3).fill(""));
 const DEFAULT_PARTY_COLORS = [
   "#FF4D4D", "#4D8DFF", "#52D273", "#FFD43B", "#B86BFF", "#FF8C42",
   "#24C6C8", "#FF5C93", "#7AA7FF", "#A8D83E", "#8E6CFF", "#E85D04",
@@ -26,9 +26,9 @@ const normalizePartyColors = (colors: string[] | undefined, length: number) => {
 
 const partyColors = ref<string[]>(normalizePartyColors(
   loadSetting<string[]>("party-colors"),
-  (loadSetting<string[]>("party-data") || Array(7).fill("")).length + 1
+  (loadSetting<string[]>("party-data") || Array(3).fill("")).length + 1
 ));
-const partyVisibilityStates = ref<number[]>(loadSetting<number[]>("party-visibility-states") || Array(7).fill(0));
+const partyVisibilityStates = ref<number[]>(loadSetting<number[]>("party-visibility-states") || Array(3).fill(0));
 
 const user1Name = ref<string>(loadSetting<string>("user1-name") || "");
 const user1VisibilityState = ref<number>(loadSetting<number>("user1-visibility-state") ?? 0);

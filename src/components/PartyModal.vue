@@ -157,13 +157,18 @@ const setPartyColor = (index: number, event: Event) => {
 };
 
 const resetParty = () => {
-  // const len = localPartyData.value.length;
-  const len = 3;
-  localPartyData.value = Array(len).fill("");
-  localPartyNames.value = Array(len).fill("");
-  localPartyColors.value = Array.from({ length: len + 1 }, (_, index) => getDefaultPartyColor(index));
-  localPartyVisibilityStates.value = Array(len).fill(0); // 重置时恢复为默认可见状态
-  emit('resetMinUnlearned');
+  // 唤起浏览器原生确认框
+  const isConfirmed = window.confirm("确定要重置所有队友数据吗？此操作无法撤销。");
+  // 只有用户点击了“确定”，才向父组件发送修改指令
+  if (isConfirmed) {
+    // const len = localPartyData.value.length;
+    const len = 3;
+    localPartyData.value = Array(len).fill("");
+    localPartyNames.value = Array(len).fill("");
+    localPartyColors.value = Array.from({ length: len + 1 }, (_, index) => getDefaultPartyColor(index));
+    localPartyVisibilityStates.value = Array(len).fill(0); // 重置时恢复为默认可见状态
+    emit('resetMinUnlearned');
+  }
 };
 
 const addTeammate = () => {
@@ -409,7 +414,7 @@ const applyConfiguration = (teamIndices: number[]) => {
                 <div class="name-row">
                   <input class="name-input" v-model="localUser1Name" :style="{ color: ensurePartyColor(0) }" placeholder="用户 1 (我)" />
                   <label class="color-picker-btn" :style="{ color: ensurePartyColor(0) }" title="设置该用户名称颜色">
-                    <span class="palette-icon"><i></i><i></i><i></i><i></i></span>
+                    <span class="palette-icon icon-palette"></span>
                     <input class="color-input" type="color" :value="ensurePartyColor(0)" @input="setPartyColor(0, $event)" />
                   </label>
                   <button class="visibility-btn" :class="{ 'is-must-include': localUser1VisibilityState === 1 }"
@@ -435,7 +440,7 @@ const applyConfiguration = (teamIndices: number[]) => {
                 <div class="name-row">
                   <input class="name-input" v-model="localPartyNames[index]" :style="{ color: ensurePartyColor(index + 1) }" :placeholder="'用户 ' + (index + 2)" />
                   <label class="color-picker-btn" :style="{ color: ensurePartyColor(index + 1) }" title="设置该用户名称颜色">
-                    <span class="palette-icon"><i></i><i></i><i></i><i></i></span>
+                    <span class="palette-icon icon-palette"><i></i><i></i><i></i><i></i></span>
                     <input class="color-input" type="color" :value="ensurePartyColor(index + 1)" @input="setPartyColor(index + 1, $event)" />
                   </label>
                   <button class="visibility-btn" :class="{ 'is-must-include': localPartyVisibilityStates[index] === 1 }"
@@ -670,36 +675,15 @@ const applyConfiguration = (teamIndices: number[]) => {
 }
 
 .palette-icon {
-  width: 17px;
-  height: 17px;
-  position: relative;
-  display: block;
-  border: 2px solid currentColor;
-  border-radius: 50%;
-  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  background-color: currentColor;
 }
 
-.palette-icon::before {
-  content: '';
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  left: 2px;
-  top: 2px;
-  border-radius: 50%;
-  background: currentColor;
-  box-shadow: 7px 0 0 currentColor, 3.5px 7px 0 currentColor;
-}
-
-.palette-icon::after {
-  content: '';
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  right: -2px;
-  bottom: 1px;
-  border-radius: 50%;
-  background: #2c2c2c;
+.icon-palette {
+  -webkit-mask: url('/icons/palette.svg') no-repeat center / contain;
+  mask: url('/icons/palette.svg') no-repeat center / contain;
 }
 
 .visibility-btn {
@@ -770,36 +754,15 @@ const applyConfiguration = (teamIndices: number[]) => {
 }
 
 .palette-icon {
-  width: 17px;
-  height: 17px;
-  position: relative;
-  display: block;
-  border: 2px solid currentColor;
-  border-radius: 50%;
-  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  background-color: currentColor;
 }
 
-.palette-icon::before {
-  content: '';
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  left: 2px;
-  top: 2px;
-  border-radius: 50%;
-  background: currentColor;
-  box-shadow: 7px 0 0 currentColor, 3.5px 7px 0 currentColor;
-}
-
-.palette-icon::after {
-  content: '';
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  right: -2px;
-  bottom: 1px;
-  border-radius: 50%;
-  background: #2c2c2c;
+.icon-palette {
+  -webkit-mask: url('/icons/palette.svg') no-repeat center / contain;
+  mask: url('/icons/palette.svg') no-repeat center / contain;
 }
 
 .visibility-btn {
