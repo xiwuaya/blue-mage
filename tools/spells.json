@@ -705,6 +705,18 @@
     "icon_book": "072213.png",
     "icon_book_hr1": "072213_hr1.png",
     "method": [
+     {
+        "type": "map",
+        "map": "黑衣森林中央林区",
+        "rank": null,
+        "position": [
+          26.7,
+          20.9,
+          0
+        ],
+        "mob": "沙蚤",
+        "level": 5
+      },
       {
         "type": "map",
         "map": "拉诺西亚低地",
@@ -752,6 +764,18 @@
         ],
         "mob": "漆黑蝙蝠、血蚤",
         "level": 21
+      },
+      {
+        "type": "map",
+        "map": "黑衣森林东部林区",
+        "rank": null,
+        "position": [
+          16,
+          21,
+          0
+        ],
+        "mob": "血蚤",
+        "level": 24
       },
       {
         "type": "map",
