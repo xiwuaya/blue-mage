@@ -1754,7 +1754,7 @@
         "mob": "地底夜蟾蜍",
         "level": 47,
         "note": "BOSS #1前两只。副本已修改，待验证",
-        "color": red
+        "color": "red"
       },
       {
         "type": "dungeon",
