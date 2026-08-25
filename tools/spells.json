@@ -705,7 +705,7 @@
     "icon_book": "072213.png",
     "icon_book_hr1": "072213_hr1.png",
     "method": [
-     {
+      {
         "type": "map",
         "map": "黑衣森林中央林区",
         "rank": null,
@@ -1414,6 +1414,14 @@
         "level": 33,
         "note": "活动已结束",
         "color": "grey"
+      },
+      {
+        "type": "dungeon",
+        "name": "异界深渊月面地下溪谷",
+        "mob": "虚月扎哈克",
+        "level": 90,
+        "note": "无法挑战",
+        "color": "grey"
       }
     ]
   },
@@ -1562,6 +1570,22 @@
         "mob": "剧毒魔花谭琳",
         "level": 30,
         "color": "red"
+      },
+      {
+        "type": "dungeon",
+        "name": "近东秘宝阿尔扎达尔海底遗迹群",
+        "mob": "阿尔扎达尔阿输陀花",
+        "level": 90,
+        "note": "无法挑战",
+        "color": "grey"
+      },
+      {
+        "type": "dungeon",
+        "name": "异界深渊月面地下溪谷",
+        "mob": "狂乱魔界花 ",
+        "level": 90,
+        "note": "无法挑战",
+        "color": "grey"
       }
     ]
   },
@@ -2425,6 +2449,14 @@
       },
       {
         "type": "raid",
+        "name": "封闭圣塔黎铎拉纳大灯塔",
+        "mob": "魔人贝利亚斯 ",
+        "level": 70,
+        "note": "未确定可习得。注意只有开怪的小队可以学到",
+        "color": "grey"
+      },
+      {
+        "type": "raid",
         "name": "伊甸希望乐园 共鸣之章2",
         "mob": "赤翼罗羯坨博叉",
         "level": 80,
@@ -2446,6 +2478,14 @@
         "level": 90,
         "note": "未确定可习得",
         "color": "red"
+      },
+      {
+        "type": "trail",
+        "name": "艳翼蛇鸟歼灭战",
+        "mob": "艳翼蛇鸟",
+        "level": 93,
+        "note": "无法挑战",
+        "color": "grey"
       }
     ]
   },
@@ -3671,6 +3711,14 @@
         "color": "red"
       },
       {
+        "type": "raid",
+        "name": "零式万魔殿 炼净之狱1",
+        "mob": "原型宝石兽",
+        "level": 90,
+        "note": "无法挑战",
+        "color": "grey"
+      },
+      {
         "type": "fate",
         "map": "夏劳尼荒野",
         "name": "蛇王得酷热涅：荒野的死斗",
@@ -3919,7 +3967,7 @@
         "name": "死亡大地终末焦土",
         "mob": "雾龙",
         "level": 70,
-        "note": "BOSS #3，需故意留下三龙头之一或更多，否则咏唱会被打断，推荐携带73蜕皮来驱散冻伤，降低翻车率",
+        "note": "BOSS #3，需故意留下三龙头之一或更多，推荐携带73蜕皮来驱散冻伤，降低翻车率",
         "color": "yellow"
       }
     ]
@@ -4219,6 +4267,14 @@
         "name": "欧米茄零式时空狭缝 阿尔法幻境3",
         "mob": "欧米茄",
         "level": 70
+      },
+      {
+        "type": "raid",
+        "name": "阿卡狄亚零式登天斗技场 轻量级4 ",
+        "mob": "狡雷",
+        "level": 100,
+        "note": "无法挑战",
+        "color": "grey"
       }
     ]
   },
@@ -4300,6 +4356,14 @@
         "mob": "簇生陀鲁婆",
         "level": 85,
         "color": "red"
+      },
+      {
+        "type": "dungeon",
+        "name": "间歇灵泉哈姆岛",
+        "mob": "哈姆迷失者",
+        "level": 90,
+        "note": "无法挑战",
+        "color": "grey"
       }
     ]
   },
