@@ -4,7 +4,23 @@ import { loadSetting, saveSetting } from "./setting";
 import type { SpellStatusArray, SpellStatus } from "./interface";
 
 // 1. 将所有状态定义在函数外部，使其成为全局单例 (类似 Pinia Store)
-const spellStatus = ref<SpellStatusArray>(loadSetting<SpellStatusArray>("spell-status") || []);
+// const spellStatus = ref<SpellStatusArray>(loadSetting<SpellStatusArray>("spell-status") || []);
+const spellStatus = ref<SpellStatusArray>(
+  (() => {
+    const saved = loadSetting<SpellStatusArray>("spell-status");
+
+    if (saved) {
+      return saved;
+    }
+
+    const defaultStatus = Array(spells.length).fill(0) as SpellStatusArray;
+    defaultStatus[0] = 1;
+
+    saveSetting("spell-status", defaultStatus);
+
+    return defaultStatus;
+  })()
+);
 const partyData = ref<string[]>(loadSetting<string[]>("party-data") || Array(3).fill(""));
 const partyNames = ref<string[]>(loadSetting<string[]>("party-names") || Array(3).fill(""));
 const DEFAULT_PARTY_COLORS = [
