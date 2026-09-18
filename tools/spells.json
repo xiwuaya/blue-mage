@@ -2480,7 +2480,7 @@
         "color": "grey"
       },
       {
-        "type": "dungeon",
+        "type": "treasure",
         "name": "厄尔庇斯育体宝殿",
         "mob": "法厄同",
         "level": 90,
