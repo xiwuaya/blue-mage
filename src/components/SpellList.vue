@@ -5,6 +5,7 @@ import {
   learnedByNo,
   indexByNo,
   type Spell,
+  type SpellMethodMap,
   renderSpellMethod,
 } from "../lib/spell";
 import type { FilterTypes, SpellStatusArray } from "@/lib/interface";
@@ -30,6 +31,7 @@ const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
   (e: "clearFilter"): void;
   (e: "search", keyword: string): void;
+  (e: "openMap", payload: { spellName: string; method: SpellMethodMap }): void;
 }>();
 
 const notLearnedOnly = ref(loadSetting<boolean>("notLearnedOnly") ?? true);
@@ -219,7 +221,8 @@ const allLearned = computed(() =>
       :showPatchVersion="props.showPatchVersion"
       :showUnlearnedUsers="showUnlearnedUsers"
       @change="emit('change', indexByNo(spell.no), $event)"
-      @search="emit('search', $event)" />
+      @search="emit('search', $event)"
+      @openMap="emit('openMap', $event)" />
 
   </main>
 </template>

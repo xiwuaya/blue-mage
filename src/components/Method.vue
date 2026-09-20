@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { renderSpellMethod } from "../lib/spell";
-import type { SpellMethod } from "../lib/spell";
+import { renderSpellMethod, SpellType } from "../lib/spell";
+import type { SpellMethod, SpellMethodMap } from "../lib/spell";
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -8,6 +8,9 @@ const props = defineProps<{
 }>();
 
 const text = computed(() => renderSpellMethod(props.method));
+
+// 地图图标地址（用相对路径，由浏览器按当前页面地址解析，与 type 图标保持一致）
+const mapIcon = "icons/map.svg";
 
 //定义颜色别名映射表
 const colorAliasMap: Record<string, string> = {
@@ -34,7 +37,13 @@ const textColor = computed(() => {
 // 1. 定义向外抛出的 search 事件
 const emit = defineEmits<{
   (e: "search", keyword: string): void;
+  (e: "openMap", method: SpellMethodMap): void;
 }>();
+
+// 点击地图图标：把该途径抛给上层，由 MapModal 打开地图
+const handleOpenMap = () => {
+  emit("openMap", props.method as SpellMethodMap);
+};
 
 // 2. 提取地点或副本名称作为搜索关键词，过滤掉特殊途径（因为描述太长）
 const searchKeyword = computed(() => {
@@ -71,7 +80,17 @@ const handleSearch = () => {
     >
       {{ text }} <sup>Lv.{{ props.method.level }}</sup>
     </span>
-    
+
+    <!-- 地图类途径：在途径文本后单独显示地图图标 -->
+    <img
+      v-if="props.method.type === SpellType.Map"
+      class="map"
+      :src="mapIcon"
+      alt="在地图中查看"
+      title="在地图中查看"
+      @click.stop="handleOpenMap"
+    />
+
     <p v-if="!!props.method.note" class="note">{{ props.method.note }}</p>
   </div>
 </template>
@@ -94,6 +113,24 @@ const handleSearch = () => {
   font-size: 0.75rem;
   opacity: 0.75;
   margin-left: 20px;
+}
+
+.map {
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  vertical-align: middle;
+  /* 悬停高亮：提亮图标 + 金色辉光（金色取自项目强调色 #ffbe31）
+     这里用 filter 而不是项目其它图标用的 mask 方案：
+     map.svg 作为 mask 时整块不可见，实测无效。 */
+  filter: brightness(1);
+  transition: filter 0.2s;
+  cursor: pointer;
+}
+
+.map:hover {
+  filter: brightness(1.4) drop-shadow(0 0 2px rgba(255, 190, 49, 0.85));
+  transform: scale(1.1);
 }
 
 /* 5. 新增可点击元素的交互样式 */

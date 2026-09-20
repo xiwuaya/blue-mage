@@ -4,9 +4,11 @@ import SpellList from "./components/SpellList.vue";
 import Filter from "./components/Filter.vue";
 import TypeFilter from "./components/TypeFilter.vue";
 import PartyModal from "./components/PartyModal.vue";
+import MapModal from "./components/MapModal.vue";
 import { loadSetting, saveSetting } from "./lib/setting";
 import { onBeforeMount, ref, computed, watch } from "vue";
 import type { FilterTypes } from "./lib/interface";
+import type { SpellMethodMap } from "./lib/spell";
 import Progress from "./components/Progress.vue";
 import { useSpellSync } from "./lib/useSpellSync";
 
@@ -48,6 +50,9 @@ const showUnlearnedUsers = ref(loadSetting<boolean>("show-unlearned-users") ?? f
 
 const showHelpModal = ref(false);
 const showPartyModal = ref(false);
+
+// 当前要在地图中查看的途径；为 null 表示关闭地图弹窗
+const mapTarget = ref<{ spellName: string; method: SpellMethodMap } | null>(null);
 // 监听持久化配置自动保存
 
 watch(level, val => saveSetting("level", val));
@@ -130,9 +135,10 @@ const handleTypeChange = (type: string, checked: boolean) => {
       :isPartyModeActive="isPartyModeActive"
       :showPatchVersion="showPatchVersion"
       :showUnlearnedUsers="showUnlearnedUsers"
-      @change="handleStatusChange" 
-      @clearFilter="filter = ''" 
-      @search="filter = $event" 
+      @change="handleStatusChange"
+      @clearFilter="filter = ''"
+      @search="filter = $event"
+      @openMap="mapTarget = $event"
     />
   </section>
   
@@ -178,9 +184,17 @@ const handleTypeChange = (type: string, checked: boolean) => {
     v-model:user1VisibilityState="user1VisibilityState"
     v-model:partyVisibilityStates="partyVisibilityStates"
     :filterTypes="filterTypes"
-    :show="showPartyModal" 
-    @close="showPartyModal = false" 
+    :show="showPartyModal"
+    @close="showPartyModal = false"
     @resetMinUnlearned="minUnlearned = 1"
+  />
+
+  <MapModal
+    v-if="mapTarget"
+    :show="!!mapTarget"
+    :spellName="mapTarget.spellName"
+    :method="mapTarget.method"
+    @close="mapTarget = null"
   />
 </template>
 

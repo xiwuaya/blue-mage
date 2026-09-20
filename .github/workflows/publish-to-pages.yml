@@ -26,6 +26,7 @@ jobs:
           
           git add tools/spells.json
           git add tools/method_updates.csv
+          git add tools/map-keys.json
           git add src/App.vue
           
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: auto-update spells data and build date [skip ci]" && git push)

@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node tools/update-date.js && node tools/update-methods.js",
+    "prebuild": "node tools/update-date.js && node tools/update-methods.js && node tools/update-map-keys.js",
     "build": "vue-tsc --noEmit && vite build",
     "deploy": "gh-pages -d dist",
     "preview": "vite preview --port 5050",
@@ -12,7 +12,9 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@thewakingsands/eorzea-interactive-map": "^1.1.3",
     "@thewakingsands/kit-tooltip": "^0.4.0-beta.0",
+    "leaflet": "^1.9.4",
     "vue": "~3.2.29"
   },
   "devDependencies": {

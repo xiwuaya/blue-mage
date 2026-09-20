@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Spell } from "@/lib/spell";
+import type { Spell, SpellMethodMap } from "@/lib/spell";
 import { spellIcon, spellIconSrcset } from "../icon";
 import SpellMethod from "./Method.vue";
 import PatchVersion from "./PatchVersion.vue";
@@ -20,6 +20,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "change", status: boolean): void;
   (e: "search", keyword: string): void;
+  (e: "openMap", payload: { spellName: string; method: SpellMethodMap }): void;
 }>();
 </script>
 
@@ -51,7 +52,11 @@ const emit = defineEmits<{
       </h4>
       <ul class="methods">
         <li v-for="(m, mi) in props.spell.method" :key="mi">
-          <spell-method :method="m" @search="emit('search', $event)" />
+          <spell-method
+            :method="m"
+            @search="emit('search', $event)"
+            @openMap="emit('openMap', { spellName: props.spell.spell, method: $event })"
+          />
         </li>
       </ul>
     </div>
