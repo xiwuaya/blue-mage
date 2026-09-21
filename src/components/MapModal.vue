@@ -64,6 +64,11 @@ async function openMap() {
   const el = mapEl;
   if (!el) return;
 
+  /** 只有还属于当前这一轮时才收起遮罩 */
+  const done = () => {
+    if (token === runToken) loading.value = false;
+  };
+
   loading.value = true;
   error.value = "";
 
@@ -86,6 +91,7 @@ async function openMap() {
 
     if (key === null) {
       error.value = `未找到地图「${props.method.map}」（可能是地名有误）`;
+      done();
       return;
     }
 
@@ -96,13 +102,20 @@ async function openMap() {
     const iconUrl = eorzeaMap.loader.getIconUrl("ui/icon/060000/060561.tex");
     // position[0]/[1] 已经是游戏内显示坐标，直接使用，不做任何换算
     map.addMarker(eorzeaMap.simpleMarker(x(), y(), iconUrl, map.mapInfo));
-    map.setView(map.mapToLatLng2D(x(), y()), 0);
+
+    // animate: false —— 关掉平移动画。
+    //
+    // 库在 loadMapKey 内部会先 panTo 到地图中心，本项目的 setView 排在它之后才生效。
+    // 如果带平移动画，视图会有一段肉眼可见的"慢慢挪过去"的过程（实测单实例约 800ms，
+    // 网络拥塞时更长），用户就会看到标记先偏在一边、再飘到正确位置。
+    // 关掉动画后是一次到位，不存在那段中间状态，也就不必为了遮住它而把加载遮罩一直挂着。
+    map.setView(map.mapToLatLng2D(x(), y()), 0, { animate: false });
+    done();
   } catch (e) {
     if (token !== runToken) return;
     console.error("地图加载失败", e);
     error.value = "地图加载失败，请检查网络后重试";
-  } finally {
-    if (token === runToken) loading.value = false;
+    done();
   }
 }
 
@@ -156,8 +169,12 @@ watch(
 
 <style scoped>
 .map-modal {
-  max-width: 900px;
-  width: 90%;
+  /* box-sizing + calc(100% - 32px)：保证窄屏时左右各留 16px 边距。
+     实测原来在 360px 下是 left=0 right=360，弹窗贴满整屏没有留白。 */
+  box-sizing: border-box;
+  width: min(900px, calc(100% - 32px));
+  /* 覆盖全局 .modal-content 的 max-width: 500px */
+  max-width: none;
   padding: 20px;
 }
 
@@ -181,6 +198,9 @@ watch(
 .map-container {
   width: 100%;
   height: 60vh;
+  /* dvh：移动端地址栏收起/展开时不会让地图高度跳动。
+     不支持的浏览器会忽略这行，沿用上面的 60vh。 */
+  height: 60dvh;
   background: #1a1a1a;
   border: 1px solid #444;
   border-radius: 4px;

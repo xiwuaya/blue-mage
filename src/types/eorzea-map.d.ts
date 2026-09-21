@@ -50,12 +50,21 @@ declare module "@thewakingsands/eorzea-interactive-map" {
     addMarker(marker: EorzeaMapMarker): EorzeaMapMarker;
     /** loadMapKey 完成后才有值 */
     mapInfo: EorzeaMapInfo;
-    /** 把"显示坐标"换算为 Leaflet 坐标，配合 setView 使用 */
-    mapToLatLng2D(x: number, y: number): unknown;
-    setView(center: unknown, zoom?: number): EorzeaMapInstance;
+    /** 把"显示坐标"换算为 Leaflet 坐标，配合 setView 使用。返回 [lat, lng] */
+    mapToLatLng2D(x: number, y: number): [number, number];
+    /** 当前视图中心。返回 { lat, lng } */
+    getCenter(): { lat: number; lng: number };
+    /** options.animate=false 可关掉平移动画（Leaflet 原生选项） */
+    setView(
+      center: [number, number],
+      zoom?: number,
+      options?: { animate?: boolean }
+    ): EorzeaMapInstance;
     /** 继承自 Leaflet，关闭时必须调用以释放 window resize 监听等 */
     remove(): void;
+    /** 继承自 Leaflet 的事件接口（moveend / loadMapKey / updateInfo 等） */
     on(event: string, handler: (...args: unknown[]) => void): void;
+    once(event: string, handler: (...args: unknown[]) => void): void;
     off(event: string, handler?: (...args: unknown[]) => void): void;
   }
 
