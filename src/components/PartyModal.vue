@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onBeforeUnmount } from 'vue';
 import { spells } from '@/lib/spell';
 import type { FilterTypes } from '@/lib/interface';
+import PartyGroupingWorker from '@/lib/partyGrouping.worker?worker';
+import type { PartyGroupResult } from '@/lib/partyGrouping';
 
 // ==========================================
 // 1. 属性接收与事件定义 (增加了来自 App.vue 的三态状态同步)
@@ -212,13 +214,9 @@ const getFilterKey = (method: any): keyof FilterTypes => {
 };
 
 
-// ==========================================
-// 4. 最优组队算法 (精准筛选三态组合)
-// ==========================================
-const bestParty = computed(() => {
-  const targetM = typeof m.value === 'string' ? parseInt(m.value) : m.value;
-  if (isNaN(targetM) || targetM <= 0 || targetM > 8) return null;
-
+// 提取自原 bestParty：构建算法输入（activeUsers / mustIncludeMask / spellMasks），
+// 供「最优组队推荐」与「多队伍组合推荐」共用
+const buildAlgoInputData = () => {
   const activeUsers: { originalIndex: number, spellSet: Set<number> }[] = [];
   let mustIncludeMask = 0;
   let activeIndex = 0;
@@ -253,6 +251,32 @@ const bestParty = computed(() => {
     }
   }
 
+  const validSpellNos = new Set<number>();
+  for (const spell of spells) {
+    const isValid = spell.method.some((method) => props.filterTypes[getFilterKey(method)]);
+    if (isValid) validSpellNos.add(Number(spell.no));
+  }
+
+  const spellMasks = new Map<number, number>();
+  for (let i = 0; i < activeUsers.length; i++) {
+    for (const spellNo of activeUsers[i].spellSet) {
+      if (!validSpellNos.has(spellNo)) continue;
+      const currentMask = spellMasks.get(spellNo) || 0;
+      spellMasks.set(spellNo, currentMask | (1 << i));
+    }
+  }
+
+  return { activeUsers, mustIncludeMask, spellMasks };
+};
+
+// ==========================================
+// 4. 最优组队算法 (精准筛选三态组合)
+// ==========================================
+const bestParty = computed(() => {
+  const targetM = typeof m.value === 'string' ? parseInt(m.value) : m.value;
+  if (isNaN(targetM) || targetM <= 0 || targetM > 8) return null;
+
+  const { activeUsers, mustIncludeMask, spellMasks } = buildAlgoInputData();
   const n = activeUsers.length;
 
   let tempMask = mustIncludeMask;
@@ -263,21 +287,6 @@ const bestParty = computed(() => {
   }
 
   if (n < targetM || mustIncludeCount > targetM) return null;
-
-  const validSpellNos = new Set<number>();
-  for (const spell of spells) {
-    const isValid = spell.method.some((m) => props.filterTypes[getFilterKey(m)]);
-    if (isValid) validSpellNos.add(Number(spell.no));
-  }
-
-  const spellMasks = new Map<number, number>();
-  for (let i = 0; i < n; i++) {
-    for (const spellNo of activeUsers[i].spellSet) {
-      if (!validSpellNos.has(spellNo)) continue;
-      const currentMask = spellMasks.get(spellNo) || 0;
-      spellMasks.set(spellNo, currentMask | (1 << i));
-    }
-  }
 
   const partyMasks = [];
   if (targetM <= n) {
@@ -352,6 +361,109 @@ const applyConfiguration = (teamIndices: number[]) => {
   }
 };
 
+// ==========================================
+// 5. 多队伍组合推荐（点击触发，Web Worker 后台计算）
+// ==========================================
+const displayName = (originalIndex: number) => {
+  return originalIndex === 0
+    ? (localUser1Name.value || '用户 1 (我)')
+    : (localPartyNames.value[originalIndex - 1] || `用户 ${originalIndex + 1}`);
+};
+
+type MultiTeamStatus = 'idle' | 'computing' | 'done' | 'error';
+type MultiTeamWorkerMessage =
+  | { type: 'done'; result: PartyGroupResult | null }
+  | { type: 'error'; message: string };
+
+const multiTeamStatus = ref<MultiTeamStatus>('idle');
+const multiTeamResult = ref<PartyGroupResult | null>(null);
+const multiTeamError = ref('');
+const multiTeamElapsed = ref(0);
+let multiTeamWorker: Worker | null = null;
+let multiTeamTimer: ReturnType<typeof setInterval> | null = null;
+
+const resetMultiTeam = () => {
+  if (multiTeamWorker) {
+    multiTeamWorker.terminate();
+    multiTeamWorker = null;
+  }
+  if (multiTeamTimer) {
+    clearInterval(multiTeamTimer);
+    multiTeamTimer = null;
+  }
+  multiTeamStatus.value = 'idle';
+  multiTeamResult.value = null;
+  multiTeamError.value = '';
+  multiTeamElapsed.value = 0;
+};
+
+// 成员/技能数据、过滤分类或队伍人数变化后，旧结果作废，回到待计算状态
+const algoSourceSignature = computed(() =>
+  JSON.stringify([
+    localUser1Spells.value,
+    localUser1VisibilityState.value,
+    localPartyData.value,
+    localPartyVisibilityStates.value,
+    props.filterTypes,
+    m.value,
+  ]),
+);
+watch(algoSourceSignature, () => resetMultiTeam());
+
+const startMultiTeamCompute = () => {
+  // 计算中再次点击 = 取消本次搜索
+  if (multiTeamStatus.value === 'computing') {
+    resetMultiTeam();
+    return;
+  }
+
+  const targetM = typeof m.value === 'string' ? parseInt(m.value) : m.value;
+  if (isNaN(targetM) || targetM <= 0 || targetM > 8) return;
+
+  const { activeUsers, mustIncludeMask, spellMasks } = buildAlgoInputData();
+  const n = activeUsers.length;
+  if (n > 30) {
+    multiTeamStatus.value = 'error';
+    multiTeamError.value = '参与计算的用户超过 30 人，多队伍分组暂不支持（位掩码上限）。';
+    return;
+  }
+
+  resetMultiTeam();
+  multiTeamStatus.value = 'computing';
+  multiTeamTimer = setInterval(() => {
+    multiTeamElapsed.value += 0.1;
+  }, 100);
+
+  multiTeamWorker = new PartyGroupingWorker();
+  multiTeamWorker.onmessage = (e: MessageEvent) => {
+    const msg = e.data as MultiTeamWorkerMessage | undefined;
+    resetMultiTeam();
+    if (msg && msg.type === 'done') {
+      multiTeamResult.value = msg.result;
+      multiTeamStatus.value = 'done';
+    } else {
+      multiTeamStatus.value = 'error';
+      multiTeamError.value = (msg && msg.type === 'error' && msg.message) || '计算过程中出现未知错误。';
+    }
+  };
+  multiTeamWorker.onerror = () => {
+    resetMultiTeam();
+    multiTeamStatus.value = 'error';
+    multiTeamError.value = '计算线程启动失败，请刷新页面后重试。';
+  };
+  multiTeamWorker.postMessage({
+    userCount: n,
+    teamSize: targetM,
+    spellMasks,
+    mustIncludeMask,
+    originalIndices: activeUsers.map((u) => u.originalIndex),
+  });
+};
+
+onBeforeUnmount(() => {
+  resetMultiTeam();
+});
+
 </script>
 
 <template>
@@ -405,6 +517,39 @@ const applyConfiguration = (teamIndices: number[]) => {
                 <template v-else>
                   <div class="no-skills-tips">当前可见分类下暂无可共同学习技能 (或强制限制导致无解)</div>
                 </template>
+              </div>
+
+              <div class="multi-team-section">
+                <div class="multi-team-title">多队伍组合推荐</div>
+                <p class="multi-team-desc">
+                  将全部参与用户一次性划分为尽可能多的满员队伍（人数不能整除时排除部分普通用户），在共同技能总量与队伍均衡之间取最优。人数较多时计算较慢，点击按钮开始。
+                </p>
+                <div class="multi-team-toolbar">
+                  <button class="multi-team-btn" @click="startMultiTeamCompute" :disabled="m === ''">
+                    {{ multiTeamStatus === 'computing' ? '取消计算' : (multiTeamStatus === 'done' ? '重新计算' : '开始计算') }}
+                  </button>
+                  <span v-if="m === ''" class="multi-team-hint">请先在上方填入队伍人数</span>
+                  <span v-else-if="multiTeamStatus === 'computing'" class="multi-team-hint">
+                    正在搜索最优分组…已耗时 {{ multiTeamElapsed.toFixed(1) }} 秒（再次点击按钮可取消）
+                  </span>
+                </div>
+
+                <div v-if="multiTeamStatus === 'done' && multiTeamResult" class="multi-team-result">
+                  <div v-for="(team, teamIdx) in multiTeamResult.teams" :key="teamIdx" class="multi-team-row">
+                    <span class="multi-team-label">队伍{{ teamIdx + 1 }}</span>
+                    <span v-for="idx in team.userIndices" :key="idx" class="user-badge">{{ displayName(idx) }}</span>
+                    <span class="multi-team-colon">：</span>
+                    <span class="spell-count">共可学习<span class="highlight">{{ team.commonSkillCount }}</span>个技能</span>
+                  </div>
+                  <div v-if="multiTeamResult.excludedUserIndices.length" class="multi-team-excluded">
+                    排除：
+                    <span v-for="idx in multiTeamResult.excludedUserIndices" :key="idx" class="user-badge excluded">{{ displayName(idx) }}</span>
+                  </div>
+                </div>
+                <div v-else-if="multiTeamStatus === 'done' && !multiTeamResult" class="no-skills-tips">
+                  无法完成完整分组：参与人数不足，或「必须参加」用户数超过所有队伍的总席位。
+                </div>
+                <div v-else-if="multiTeamStatus === 'error'" class="no-skills-tips">{{ multiTeamError }}</div>
               </div>
             </div>
 
@@ -992,6 +1137,90 @@ const applyConfiguration = (teamIndices: number[]) => {
 .apply-text:hover {
   opacity: 1;
   color: #ffffff;
+}
+
+/* --- 新增：多队伍组合推荐 --- */
+.multi-team-section {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  line-height: 2;
+  border-top: 1px dashed rgba(255, 190, 49, 0.3);
+  padding-top: 10px;
+}
+
+.multi-team-title {
+  color: #ffbe31;
+  font-weight: bold;
+}
+
+.multi-team-desc {
+  color: #999;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 4px 0;
+}
+
+.multi-team-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.multi-team-btn {
+  background: transparent;
+  border: 1px solid #ffbe31;
+  color: #ffbe31;
+  border-radius: 4px;
+  padding: 4px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.multi-team-btn:hover:not(:disabled) {
+  background: rgba(255, 190, 49, 0.15);
+}
+
+.multi-team-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.multi-team-hint {
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.multi-team-result {
+  margin-top: 8px;
+}
+
+.multi-team-row {
+  margin-top: 6px;
+}
+
+.multi-team-label {
+  color: #ffbe31;
+  font-weight: bold;
+  margin-right: 6px;
+}
+
+.multi-team-colon {
+  color: #ccc;
+  margin: 0 4px;
+}
+
+.multi-team-excluded {
+  margin-top: 6px;
+  color: #ddd;
+}
+
+.user-badge.excluded {
+  background: #555;
+  color: #ccc;
 }
 
 </style>
