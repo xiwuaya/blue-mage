@@ -1,0 +1,69 @@
+/* 全局「细圆柱」滚动条样式：透明轨道 + 灰色拇指，悬停放大方便拖动。
+   .slim-scrollbar      标准版（12px 列，拇指视觉 4px → 悬停 8px），用于弹窗等大容器
+   .slim-scrollbar-sm   窄版（8px 列，拇指视觉 4px → 悬停 6px），用于文本框等小容器
+   html                 主页根滚动条（标准版尺寸）
+   注意：标准属性 scrollbar-width/color 与 ::-webkit-scrollbar 互斥
+   （Chromium 121+ 一旦设置标准属性即禁用 webkit 伪元素），故按能力分流。 */
+
+/* Firefox 等不支持 webkit 伪元素的浏览器：降级为细滚动条 + 灰色 */
+@supports not selector(::-webkit-scrollbar) {
+  .slim-scrollbar,
+  .slim-scrollbar-sm,
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #666 transparent;
+  }
+}
+
+/* Chrome / Edge / Safari：列宽固定，拇指视觉宽度靠透明 border 缩放，不产生布局位移 */
+@supports selector(::-webkit-scrollbar) {
+  .slim-scrollbar::-webkit-scrollbar,
+  html::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* 窄版：列宽 8px，拇指视觉 8-2×2=4px → 悬停 8-2×1=6px */
+  .slim-scrollbar-sm::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .slim-scrollbar::-webkit-scrollbar-track,
+  .slim-scrollbar-sm::-webkit-scrollbar-track,
+  html::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .slim-scrollbar::-webkit-scrollbar-thumb,
+  html::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 6px;
+    border: 4px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .slim-scrollbar-sm::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .slim-scrollbar::-webkit-scrollbar-thumb:hover,
+  html::-webkit-scrollbar-thumb:hover {
+    border-width: 2px;
+    background-color: #8a8a8a;
+  }
+
+  .slim-scrollbar-sm::-webkit-scrollbar-thumb:hover {
+    border-width: 1px;
+    background-color: #8a8a8a;
+  }
+
+  .slim-scrollbar::-webkit-scrollbar-corner,
+  .slim-scrollbar-sm::-webkit-scrollbar-corner,
+  html::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}

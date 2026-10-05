@@ -487,7 +487,7 @@ onBeforeUnmount(() => {
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="show" class="modal-backdrop" @click.self="emit('close')">
-        <div class="modal-content party-modal">
+        <div class="modal-content party-modal slim-scrollbar">
           <button class="close-btn" @click="emit('close')" title="关闭弹窗">&times;</button>
           <h3>多人模式配置</h3>
 
@@ -590,7 +590,7 @@ onBeforeUnmount(() => {
                 </div>
 
                 <div class="textarea-wrapper">
-                  <textarea v-model.lazy="localUser1Spells" title="在此编辑或复制你未掌握的技能数据"
+                  <textarea v-model.lazy="localUser1Spells" class="slim-scrollbar-sm" title="在此编辑或复制你未掌握的技能数据"
                     placeholder="填入未掌握技能编号..."></textarea>
                   <button class="copy-btn" @click="copyUser1Data" title="复制文本框内容">复制</button>
                   <Transition name="fade">
@@ -619,7 +619,7 @@ onBeforeUnmount(() => {
                   </button>
                 </div>
 
-                <textarea v-model.lazy="localPartyData[index]" placeholder="请粘贴其他用户分享的未掌握技能编号..."></textarea>
+                <textarea v-model.lazy="localPartyData[index]" class="slim-scrollbar-sm" placeholder="请粘贴其他用户分享的未掌握技能编号..."></textarea>
               </div>
 
               <div class="party-user action-buttons">
