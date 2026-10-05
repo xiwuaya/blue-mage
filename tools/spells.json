@@ -467,7 +467,19 @@
           0
         ],
         "mob": "陨坑巨像",
-        "level": 34
+        "level": 43
+      },
+      {
+        "type": "map",
+        "map": "翻云雾海",
+        "rank": null,
+        "position": [
+          7.3,
+          13.5,
+          0
+        ],
+        "mob": "石灰巨像",
+        "level": 55
       },
       {
         "type": "dungeon",
