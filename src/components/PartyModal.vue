@@ -397,7 +397,10 @@ const resetMultiTeam = () => {
   multiTeamElapsed.value = 0;
 };
 
-// 成员/技能数据、过滤分类或队伍人数变化后，旧结果作废，回到待计算状态
+// 成员/技能数据、过滤分类或队伍人数变化后，旧结果作废，回到待计算状态；
+// 「应用该配置」引起的三态变化除外：应用后保留结果（与「最优队伍构成」应用后
+// 面板继续展示的行为一致），便于继续切换应用其他队伍
+let applySignatureSnapshot: string | null = null;
 const algoSourceSignature = computed(() =>
   JSON.stringify([
     localUser1Spells.value,
@@ -408,7 +411,21 @@ const algoSourceSignature = computed(() =>
     m.value,
   ]),
 );
-watch(algoSourceSignature, () => resetMultiTeam());
+watch(algoSourceSignature, (val) => {
+  if (applySignatureSnapshot !== null && val === applySignatureSnapshot) {
+    applySignatureSnapshot = null;
+    return;
+  }
+  applySignatureSnapshot = null;
+  resetMultiTeam();
+});
+
+// 多队伍结果中的「应用该配置」：处理逻辑与「最优队伍构成」完全一致，
+// 仅额外记录应用后的输入签名，使本次三态变更不触发结果重置
+const applyMultiTeamConfiguration = (teamIndices: number[]) => {
+  applyConfiguration(teamIndices);
+  applySignatureSnapshot = algoSourceSignature.value;
+};
 
 const startMultiTeamCompute = () => {
   // 计算中再次点击 = 取消本次搜索
@@ -540,6 +557,8 @@ onBeforeUnmount(() => {
                     <span v-for="idx in team.userIndices" :key="idx" class="user-badge">{{ displayName(idx) }}</span>
                     <span class="multi-team-colon">：</span>
                     <span class="spell-count">共可学习<span class="highlight">{{ team.commonSkillCount }}</span>个技能</span>
+                    <span class="apply-text" @click="applyMultiTeamConfiguration(team.userIndices)"
+                      title="点击后将隐藏不在该配置中的其他队员">应用该配置</span>
                   </div>
                   <div v-if="multiTeamResult.excludedUserIndices.length" class="multi-team-excluded">
                     排除：
