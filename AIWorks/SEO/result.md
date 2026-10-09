@@ -299,13 +299,20 @@ h1 就跑到左边去了。`margin-left: auto` 无论单行还是折行都能把
 
 ### 5.2 分享图是生成的，不是手绘
 
-站点此前没有可用的图 —— `src/assets/logo.png` 是 96×96 的游戏内青魔法书图标，
-而且**全项目从未被引用过**。分享图用 Playwright 按站点自身配色
-（`#2b2b2b` 底、`#ffbe31` 金、`#eee1c5` 米白，取自 `src/App.vue:210`）渲染成 1200×630 卡片。
+分享图用 Playwright 按站点自身配色（`#2b2b2b` 底、`#ffbe31` 金、`#eee1c5` 米白，
+取自 `src/App.vue:210`）渲染成 1200×630 卡片。图标取自站点自己的
+`public/favicon.ico`（金色假面，呼应游戏内的「假面狂欢」）。
 
 生成脚本是 `tools/make-og-image.mjs`，**一次性资产生成，不参与构建**
 （CI 设了 `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`，跑不了），产出物直接提交进仓库。
 需要重新生成时：`npx playwright install chromium && node tools/make-og-image.mjs`。
+
+> **图标只有 48×48。** 该 .ico 里是 48 / 32 / 16 三档，且全是 BMP 帧（无 PNG 帧），
+> 最大 48×48 —— 所以卡片上的图标按 96px 显示（2×），再大就会明显发虚。
+> 若要提高分享图质感，得先补一档更大的 favicon。
+>
+> 早先版本用的是 `src/assets/logo.png`（96×96 的游戏内青魔法书图标），
+> 该文件**全项目从未被引用过**，已作为废弃资产删除。
 
 ### 5.3 新增一道防过期的构建断言
 
