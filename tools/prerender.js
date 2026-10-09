@@ -65,6 +65,23 @@ async function main() {
 
   let html = fs.readFileSync(indexPath, "utf-8");
 
+  // index.html 的标题/描述里写死了技能数量（"124 个青魔法"），而 tools/spells.json
+  // 由 prebuild 自动重新生成 —— 加了技能却忘记改标题，数字就会悄悄过期。
+  // 对不上就让构建失败，而不是让搜索结果里挂着一个错误数字。
+  // 必须校验**每一处**出现，不能只看第一个：title 和 description 里的数字
+  // 若互相不一致（改了一处忘了另一处），只取首个匹配会静默放行。
+  const totalSpells = require("../tools/spells.json").length;
+  const statedAll = [...html.matchAll(/(\d+)\s*个青魔法/g)].map((m) => Number(m[1]));
+  const wrong = [...new Set(statedAll.filter((n) => n !== totalSpells))];
+  if (wrong.length) {
+    throw new Error(
+      `index.html 里出现「${wrong.join("、")} 个青魔法」，但 tools/spells.json 里有 ${totalSpells} 个` +
+        `（共检查到 ${statedAll.length} 处）。` +
+        `请同步更新 index.html（title / description / og:* / twitter:*）` +
+        `以及 public/og-image.png（用 tools/make-og-image.mjs 重新生成）。`
+    );
+  }
+
   // Teleport 内容落在 renderToString 的第二个参数（SSR context）里，不进主 HTML。
   // 必须注入到 <body> 的第一个子节点位置：hydration 时 hydrateTeleport 从
   // `target._lpa || target.firstChild` 起步（即 document.body.firstChild），
