@@ -1,5 +1,4 @@
 import rawMapKeys from "../../tools/map-keys.json";
-import { getRegion } from "@thewakingsands/eorzea-interactive-map";
 import type { EorzeaMapRegionMap } from "@thewakingsands/eorzea-interactive-map";
 
 /**
@@ -34,6 +33,12 @@ function isMainMap(m: EorzeaMapRegionMap): boolean {
 
 async function buildRegionIndex(): Promise<Map<string, number>> {
   if (regionIndex) return regionIndex;
+
+  // 必须是函数内动态 import，不能提到模块顶层：
+  // 该包的 UMD 包装在模块顶层就访问 window，而预渲染的 SSR 构建会把
+  // 动态 import 内联进单文件产物，顶层静态 import 会变成急切求值的 require，
+  // 在 node 里加载即抛 "window is not defined"。
+  const { getRegion } = await import("@thewakingsands/eorzea-interactive-map");
 
   const index = new Map<string, number>();
   const regions = await getRegion();

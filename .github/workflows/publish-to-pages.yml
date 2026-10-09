@@ -8,6 +8,10 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      # playwright 是 hydration 回归测试（yarn verify:hydration）用的开发依赖，
+      # CI 不跑它。不加这个，每次 push 的 yarn install 都会多下载约 150 MB 浏览器。
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3

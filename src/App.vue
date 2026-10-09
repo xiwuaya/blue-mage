@@ -4,13 +4,18 @@ import SpellList from "./components/SpellList.vue";
 import Filter from "./components/Filter.vue";
 import TypeFilter from "./components/TypeFilter.vue";
 import PartyModal from "./components/PartyModal.vue";
-import MapModal from "./components/MapModal.vue";
 import { loadSetting, saveSetting } from "./lib/setting";
-import { onBeforeMount, ref, computed, watch } from "vue";
+import { defineAsyncComponent, onBeforeMount, onMounted, ref, computed, watch } from "vue";
 import type { FilterTypes } from "./lib/interface";
 import type { SpellMethodMap } from "./lib/spell";
 import Progress from "./components/Progress.vue";
 import { useSpellSync } from "./lib/useSpellSync";
+
+// 地图库（leaflet + eorzea-interactive-map，约 318 KB）的 UMD 包装在模块顶层
+// 就摸 window，必须整条切掉才能做预渲染。lib/map.ts 只被 MapModal 引用，
+// leaflet.css / map.css 也只在这里引，所以异步化这一处就断开了全部引用。
+// 改异步后它在客户端变成独立 chunk，首屏 JS 也从 420 KB 降到 243 KB。
+const MapModal = defineAsyncComponent(() => import("./components/MapModal.vue"));
 
 const {
   spellStatus,
@@ -65,19 +70,21 @@ watch(showPatchVersion, val => saveSetting("show-patch-version", val));
 watch(showUnlearnedUsers, val => saveSetting("show-unlearned-users", val));
 
 onBeforeMount(() => {
-  const hasSeenHelp = loadSetting<boolean>("has-seen-help");
-  if (!hasSeenHelp) {
-    showHelpModal.value = true;
-    saveSetting("has-seen-help", true);
-  }
-
-
   filterTypes.value = { ...filterTypes.value, ...(loadSetting("filter-types") || {}) };
   delete (filterTypes.value as any).special;
   delete (filterTypes.value as any).fate;
   delete (filterTypes.value as any).treasure;
   delete (filterTypes.value as any).guildhests;
+});
 
+// 帮助弹窗的判定挪到 onMounted：SSR 不执行生命周期钩子，服务端 HTML 里永远
+// 没有弹窗，留在 onBeforeMount 会让新访客首屏必然产生一次 hydration 不一致。
+onMounted(() => {
+  const hasSeenHelp = loadSetting<boolean>("has-seen-help");
+  if (!hasSeenHelp) {
+    showHelpModal.value = true;
+    saveSetting("has-seen-help", true);
+  }
 });
 
 // --- 补回被遗漏的类型变更处理器 ---
