@@ -4,7 +4,42 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--
+      每个 meta 保持单行：不少社交平台的 OG 抓取器是正则解析而非 HTML 解析，
+      跨行属性会让它们取不到值。
+
+      <title> 是刻意简短的（只给浏览器标签页看的品牌名），标签页和搜索结果里的标题
+      是同一个值、无法分开控制，所以描述性关键词挪到了三处：
+        - og:title / twitter:title   → 社交分享卡片（不影响搜索排名）
+        - src/components/SpellList.vue 里的 h1 标签 → Google 会综合它生成搜索结果的标题
+        - meta description → 搜索结果的摘要
+      不要为了"优化搜索"把 <title> 改长，那会同时弄脏标签页。
+
+      描述里的技能数量必须与 tools/spells.json 一致。该文件由 prebuild 自动更新，
+      写死的数字会悄悄过期，所以 tools/prerender.js 有一道断言会在对不上时让构建失败。
+      同步更新时别忘记 public/og-image.png 上的数字（由 tools/make-og-image.mjs 生成）。
+    -->
     <title>青魔法来源查询</title>
+    <meta name="description" content="最终幻想14 青魔法师全部 124 个青魔法的学习地点与获取途径。可按技能名、编号、副本或地图检索，标注野怪坐标与掉落怪物，支持标记已掌握技能与多人组队进度对比。" />
+
+    <!-- canonical 由 vite.config.ts 的 injectCanonical 插件注入（它承载三渠道分发的决策），
+         下面三个绝对 URL 必须与那里的 CANONICAL_URL 指向同一域名。 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="青魔法来源查询" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:title" content="FF14青魔法师技能学习地点查询｜124个青魔法获取途径" />
+    <meta property="og:description" content="最终幻想14 青魔法师全部 124 个青魔法的学习地点与获取途径。可按技能名、编号、副本或地图检索，标注野怪坐标与掉落怪物，支持标记已掌握技能与多人组队进度对比。" />
+    <meta property="og:url" content="https://bluemagic.badend.cn/" />
+    <meta property="og:image" content="https://bluemagic.badend.cn/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="青魔法师技能学习地点查询" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FF14青魔法师技能学习地点查询｜124个青魔法获取途径" />
+    <meta name="twitter:description" content="最终幻想14 青魔法师全部 124 个青魔法的学习地点与获取途径。可按技能名、编号、副本或地图检索，标注野怪坐标与掉落怪物，支持标记已掌握技能与多人组队进度对比。" />
+    <meta name="twitter:image" content="https://bluemagic.badend.cn/og-image.png" />
   </head>
   <body><!--teleport-html--><div id="app"><!--app-html--></div>
     <script type="module" src="/src/entry-client.ts"></script>

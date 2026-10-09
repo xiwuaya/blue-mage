@@ -173,45 +173,56 @@ const allLearned = computed(() =>
 
 <template>
   <main class="relative">
-    <div class="notice">
-      <template v-if="mode === 'notLearned'">
-        {{
-          showSpells.length
-            ? "当前状态"
-            : allLearned && !props.isPartyModeActive
-              ? "恭喜，您已经掌会了当前版本的所有技能"
-              : "当前条件下暂无可学习的技能"
-        }}：
-        <a href="javascript:void(0)" @click="notLearnedOnly = false">
-          <i class="eye-icon icon-invisible inline-icon"></i>隐藏了已掌握技能
-        </a>；
-        <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
-          <i class="eye-icon inline-icon" :class="hideSpecialColor ? 'icon-invisible' : 'icon-visible'"></i>{{ hideSpecialColor ? '隐藏了糟糕的学习途径' : '显示了糟糕的学习途径' }}
-        </a>
-      </template>
-      <template v-else-if="mode === 'all'">
-        当前状态：
-        <a href="javascript:void(0)" @click="notLearnedOnly = true">
-          <i class="eye-icon icon-visible inline-icon"></i>显示了已掌握技能
-        </a>；
-        <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
-          <i class="eye-icon inline-icon" :class="hideSpecialColor ? 'icon-invisible' : 'icon-visible'"></i>{{ hideSpecialColor ? '隐藏了糟糕的学习途径' : '显示了糟糕的学习途径' }}
-        </a>
-        <span v-if="props.orderByUnlearned" class="sort-hint">
-          (注：开启人数排序时，已掌握技能会沉降至列表最底部)
-        </span>
-      </template>
-      <template v-else>
-        展示包含“{{ props.filter }}”的技能（{{ showSpells.length }} 个），
-        <a href="javascript:void(0)" @click="emit('clearFilter')">
-          清空搜索框
-        </a>，
-        <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
-          <i class="eye-icon inline-icon" :class="hideSpecialColor ? 'icon-invisible' : 'icon-visible'"></i>{{ hideSpecialColor ? '隐藏了糟糕的学习途径' : '显示了糟糕的学习途径' }}
-        </a>
-      </template>
+    <!-- 状态行靠左、h1 靠右，同处一行，共用一条金色下划线 -->
+    <div class="list-header">
+      <div class="notice">
+        <template v-if="mode === 'notLearned'">
+          {{
+            showSpells.length
+              ? "当前状态"
+              : allLearned && !props.isPartyModeActive
+                ? "恭喜，您已经掌会了当前版本的所有技能"
+                : "当前条件下暂无可学习的技能"
+          }}：
+          <a href="javascript:void(0)" @click="notLearnedOnly = false">
+            <i class="eye-icon icon-invisible inline-icon"></i>隐藏了已掌握技能
+          </a>；
+          <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
+            <i class="eye-icon inline-icon" :class="hideSpecialColor ? 'icon-invisible' : 'icon-visible'"></i>{{ hideSpecialColor ? '隐藏了糟糕的学习途径' : '显示了糟糕的学习途径' }}
+          </a>
+        </template>
+        <template v-else-if="mode === 'all'">
+          当前状态：
+          <a href="javascript:void(0)" @click="notLearnedOnly = true">
+            <i class="eye-icon icon-visible inline-icon"></i>显示了已掌握技能
+          </a>；
+          <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
+            <i class="eye-icon inline-icon" :class="hideSpecialColor ? 'icon-invisible' : 'icon-visible'"></i>{{ hideSpecialColor ? '隐藏了糟糕的学习途径' : '显示了糟糕的学习途径' }}
+          </a>
+          <span v-if="props.orderByUnlearned" class="sort-hint">
+            (注：开启人数排序时，已掌握技能会沉降至列表最底部)
+          </span>
+        </template>
+        <template v-else>
+          展示包含“{{ props.filter }}”的技能（{{ showSpells.length }} 个），
+          <a href="javascript:void(0)" @click="emit('clearFilter')">
+            清空搜索框
+          </a>，
+          <a href="javascript:void(0)" @click="hideSpecialColor = !hideSpecialColor">
+            <i class="eye-icon inline-icon" :class="hideSpecialColor ? 'icon-invisible' : 'icon-visible'"></i>{{ hideSpecialColor ? '隐藏了糟糕的学习途径' : '显示了糟糕的学习途径' }}
+          </a>
+        </template>
+      </div>
+      <!--
+        全站唯一的 h1。改前站点一个 h1 都没有（层级从 h3 起跳），
+        而搜索结果里的标题 Google 会综合 <title> 与 <h1> 生成 ——
+        现在 <title> 是短的「青魔法来源查询」，描述性关键词由这里承载。
+        必须是可见文本：CSS 隐藏的 h1 属于「隐藏文本」，和 cloaking 同类，
+        是搜索引擎明确禁止的做法。
+      -->
+      <h1 class="page-title">FF14 青魔法师技能学习地点查询</h1>
     </div>
-    
+
     <spell-item v-for="spell in showSpells" :key="spell.no" :spell="spell"
       :learned="props.isPartyModeActive ? (props.unlearnedCountMap.get(Number(spell.no)) || 0) === 0 : learnedByNo(props.spellStatus, spell.no)" 
       :unlearnedCount="props.unlearnedCountMap.get(Number(spell.no))"
@@ -228,11 +239,53 @@ const allLearned = computed(() =>
 </template>
 
 <style scoped>
-.notice {
+/* 「当前状态」靠左、h1 靠右，同一行。
+   原来挂在 .notice 上的金色下划线挪到这里，让整条横条共享它。
+
+   h1 用 margin-left: auto 推向右端，而不是 justify-content: space-between ——
+   620px 以下折行时，单元素行上的 space-between 会退化成左对齐，auto 外边距则
+   仍能把 h1 留在行尾。
+
+   nowrap 是刻意的：1000–1150px 窗口下 main 只有约 620px 宽（减去固定侧栏 360px
+   和内边距），两者放不下一行 —— 若允许换行，h1 会被挤到上一行、又变回"标题独占
+   一行"。改成让「当前状态」自己折行（见 .notice 的 min-width: 0），h1 留在同一行。 */
+.list-header {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 4px 18px;
   border-bottom: 2px solid #ffbe31;
   padding-bottom: 10px;
   margin-bottom: 10px;
+}
+
+.page-title {
+  /* 推到自己那一行的行尾 = 浏览器窗口最右侧（#app 有 20px 内边距） */
+  margin: 0 0 0 auto;
+  flex-shrink: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #eee1c5;
+  letter-spacing: 0.5px;
+}
+
+.notice {
+  /* 允许收缩到比内容更窄，从而在自身内部折行而不是把 h1 顶下去 */
+  min-width: 0;
   line-height: 32px;
+}
+
+/* 每个链接整体不拆行，折行点就会落在「；」这种自然边界，
+   而不是断在词中间（曾出现「…隐藏了糟 / 糕的学习途径」）。 */
+.notice a {
+  white-space: nowrap;
+}
+
+/* 手机宽度下连「当前状态」也放不下了，这时才退回上下堆叠 */
+@media (max-width: 620px) {
+  .list-header {
+    flex-wrap: wrap;
+  }
 }
 
 .notice a {

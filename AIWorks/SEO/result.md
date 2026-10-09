@@ -2,8 +2,9 @@
 
 > 记录人：AI Agent
 > 完成日期：2026-10-10
-> 提交：`50f21b0` —「三渠道分发，base 按渠道传入并注入 canonical」（第一轮，已推送）
-> 　　　第二轮（预渲染）待提交
+> 提交：`50f21b0` —「三渠道分发，base 按渠道传入并注入 canonical」（第一轮，已部署）
+> 　　　`3f2921b` —「构建时预渲染填充 HTML 空壳，并新增 hydration 回归测试」（第二轮，已部署）
+> 　　　第三轮（标题 / 描述 / 社交分享卡）待提交
 > 配套文档：`docs/adr/0002-base-root-path.md`、`0003-multi-channel-distribution.md`、
 > 　　　　　`0004-build-time-prerender.md`
 
@@ -26,7 +27,7 @@
 
 ---
 
-## 1. 第一轮：分发层（提交 `50f21b0`，已推送）
+## 1. 第一轮：分发层（提交 `50f21b0`，已部署）
 
 ### 1.1 做了什么
 
@@ -70,7 +71,7 @@
 
 ---
 
-## 2. 第二轮：预渲染（待提交）
+## 2. 第二轮：预渲染（提交 `3f2921b`，已部署）
 
 ### 2.1 做了什么
 
@@ -175,37 +176,196 @@ Vite 2.9 在 `vite build --ssr <entry>` 时设 `inlineDynamicImports: true`，
 | hydration 正确性 | ✅ 真实浏览器 20 项通过 |
 | 两种 base 构建 | ✅ 通过 |
 
-**部署后需要复核**（三个域名都要查）：
-
-```bash
-curl -s https://bluemagic.badend.cn/ | grep -c 'class="methods"'      # ≈123
-curl -s https://blog.badend.cn/blue-mage/ | grep -c 'class="methods"' # ≈123
-curl -sI -H "Accept-Encoding: gzip" https://bluemagic.badend.cn/ | grep -i content-encoding
-```
-
-最后一条别省略：HTML 从 507 字节涨到 222 KB raw，**三个渠道都必须开 compress**，
-否则首屏字节量涨约 440 倍。EdgeOne / Cloudflare / GitHub Pages 默认都开，但要实测确认。
+此处的"待部署生效"已于 2026-10-10 全部复核完毕，结果见下一节。
 
 ---
 
-## 4. 遗留问题与下一步
+## 4. 上线验证（2026-10-10）
+
+用户手动完成 push 与三渠道部署后的复核结果。
+
+| 渠道 | 页面大小 | 技能条目 | lang | canonical | Teleport | 资源 | 压缩 |
+| --- | ---: | ---: | --- | --- | --- | --- | --- |
+| **主** EdgeOne `bluemagic.badend.cn` | 222,480 B | **123** | zh-CN | ✅ | ✅ | 3/3 200 | br → 15.1 KB |
+| **备用** Cloudflare `blue-mage.badend.cn` | 222,480 B | **123** | zh-CN | ✅ | ✅ | 5/5 200 | br → 15.1 KB |
+| **备用** GitHub Pages `blog.badend.cn/blue-mage/` | 222,510 B | **123** | zh-CN | ✅ | ✅ | 3/3 200 | gzip → 18.4 KB |
+
+**结论：三个渠道全部生效。**
+
+- **预渲染生效**：三个渠道的 HTML 里都有 123 个技能条目、11,937 个中文字符
+  （改前是 507 字节空壳、零技能条目）。第二轮的验收标准全部达成。
+- **R3（压缩）风险解除**：222 KB 的页面实际只传输 15–18 KB，约 93% 压缩率。
+- `lang="zh-CN"` 与 canonical（指向主渠道）三处一致。
+- **Teleport 紧贴 `<body>`，三处均正确** —— 线上 hydration 的关键前提成立。
+- `robots.txt`：三个渠道的应用路径都返回真实的 73 字节文件（不再是 SPA 回退的 HTML）。
+- `sitemap.xml`：真实 XML，`<loc>https://bluemagic.badend.cn/</loc>`。
+- GitHub Pages 比另外两个大 30 字节，正好是子路径前缀 `/blue-mage` 在两个资源引用上的
+  长度差，符合预期。
+
+### 4.1 发现的问题：`blue-mage.badend.cn` 的 DNS 解析
+
+**服务端是好的，但这台机器解析该域名得到的结果是坏的。**
+
+```
+本机解析 → CNAME staticdelivery.nexusmods.com → 103.73.220.138
+8.8.8.8  → CNAME staticdelivery.nexusmods.com → 104.18.42.54
+                        ↑ 两个解析器给的 IP 不一致
+```
+
+- 连 `103.73.220.138` 时 TLS 握手直接失败（`schannel: SEC_E_UNTRUSTED_ROOT`，
+  证书链根不受信任），加 `-k` 忽略证书也取不到任何内容。
+- 用 `--resolve` 固定到 Cloudflare 的 `104.18.42.54` 后，返回 HTTP 200 / 222,480 字节，
+  **内容与主渠道完全一致** → **Cloudflare 侧部署无问题**。
+- 但该域名在本会话早先能从此机器正常 HTTPS 访问，所以不是"一直如此"。
+
+**无法确定归因**：本机的 DoH 端点（`dns.google`、`cloudflare-dns.com`）均访问不通，
+做不了权威查询。两种可能：本地 DNS 污染（CNAME 指向无关域名是典型特征），
+或 DNS 记录本身被改动。
+
+**待办：到 DNS 服务商控制台确认 `blue-mage.badend.cn` 的 CNAME 记录。**
+若记录正常，则是所在网络的解析问题，换网络即可区分。
+
+### 4.2 本次未复核
+
+- **EdgeOne 软 404**：任意不存在的路径返回 200 + 首页。需要时按 4.3 的命令重测。
+
+### 4.3 可复用的复核命令
+
+```bash
+curl -s https://bluemagic.badend.cn/ | grep -o 'class="methods"' | wc -l   # 期望 123
+curl -s https://blog.badend.cn/blue-mage/ | grep -o 'class="methods"' | wc -l
+curl -sD - -o /dev/null -H "Accept-Encoding: gzip, br" https://bluemagic.badend.cn/ | grep -i content-encoding
+```
+
+注意 `grep -c` 数的是**行数**不是匹配数（整页在一行），必须用 `grep -o | wc -l`。
+
+---
+
+## 5. 第三轮：标题、描述与社交分享卡
+
+首轮审计里列出但当时漏做的一项（`index.html` 的 `lang` / canonical / sitemap / robots 做了，
+`description` 和 OG 没做）。补上。
+
+| 项 | 改前 | 改后 |
+| --- | --- | --- |
+| `<title>` | 青魔法来源查询 | **保持不变**（描述性关键词改由 og:title / h1 / description 承载，见 5.1） |
+| `meta description` | 无 | 有（含 FF14 / 青魔法师 / 学习地点 / 获取途径等检索词） |
+| OG | 无 | `og:type/site_name/locale/title/description/url/image(+width/height/alt)`，`og:title` 为长版本 |
+| Twitter Card | 无 | `summary_large_image`，`twitter:title` 为长版本 |
+| `<h1>` | **不存在**（层级从 h3 起跳） | `FF14 青魔法师技能学习地点查询`，与「当前状态」同处一行：状态行靠左、h1 靠右（`SpellList.vue` 的 `.list-header`） |
+| 分享图 | 无 | `public/og-image.png`（1200×630） |
+
+**改前实测**（对着线上主渠道产物）：`description` / `og:*` / `twitter:*` / JSON-LD / h1
+全部缺失；`<title>` 只有 7 个字。
+
+### 5.1 `<title>` 为什么最终没有改长
+
+一度改成了 `FF14青魔法师技能学习地点查询｜124个青魔法获取途径`，随后按使用者要求改回
+「青魔法来源查询」—— 标签页要简洁。
+
+**过程中确认的一条硬约束：标签页和搜索结果里的标题是同一个值，无法分开控制。**
+二者都来自 `<title>`；想让它们不同，只能在服务端按 User-Agent 返回不同 HTML，
+那正是**标题作弊 / cloaking**，Google Search Essentials 与百度搜索算法规范都明确禁止，
+会导致人工处罚。用 JS 在加载后改 `document.title` 也绕不过去 —— Google 渲染 JS，
+会看到改后的值，等于两头都输。
+
+**合规的等效做法**：只有 `<title>` 需要短，其余三个位置可以照旧丰富 —
+`og:title`（社交卡片，不影响排名）、`h1`（Google 会综合它生成搜索结果标题）、
+`description`（搜索结果摘要）。于是关键词从 `<title>` 挪到了这三处。
+
+顺带补上了站点缺失的 `h1` —— 这本来就是独立的 SEO 缺口（改前一个 h1 都没有）。
+
+> **h1 必须是可见文本。** CSS 隐藏的 h1 属于「隐藏文本」，与 cloaking 同属搜索引擎
+> 明确禁止的做法，不能用来"既让爬虫看到又不打扰用户"。
+
+**h1 的摆放有两个易踩的坑。**
+
+*① 它会掉回独占一行。* 布局是「状态行靠左 + h1 靠右，同一 flex 行」。但 1000–1150px
+窗口下 `main` 只有约 620px 宽（减去固定侧栏 360px 和内边距），两者放不下一行 ——
+若用 `flex-wrap: wrap`，h1 会被挤到上一行，又变回"标题独占一行"。所以 `.list-header`
+用 `flex-wrap: nowrap`，让「当前状态」收缩到自身内部折行（`.notice` 的 `min-width: 0`），
+h1 始终留在同一行；只有 620px 以下（连「当前状态」也放不下）才退回堆叠。
+
+*② 靠右要用 `margin-left: auto`，不能用 `justify-content: space-between`。*
+折行后每个 flex 行只剩一个元素，`space-between` 在单元素行上会退化成左对齐，
+h1 就跑到左边去了。`margin-left: auto` 无论单行还是折行都能把它推到行尾。
+
+另外 `.notice a` 设了 `white-space: nowrap`，让折行落在「；」这种自然边界 ——
+否则会断在词中间（实测出现过「…隐藏了糟 / 糕的学习途径」）。
+
+实测各宽度（状态行左边缘 / h1 右边缘均贴住 `main` 的边界，h1 距窗口右缘恒为 20px，
+即 `#app` 的 `padding`）：1000 / 1024 / 1100 / 1280 / 1600 / 1920px 均同行，
+600 / 375px 折行但 h1 仍居右。
+
+### 5.2 分享图是生成的，不是手绘
+
+分享图用 Playwright 按站点自身配色（`#2b2b2b` 底、`#ffbe31` 金、`#eee1c5` 米白，
+取自 `src/App.vue:210`）渲染成 1200×630 卡片。图标取自站点自己的
+`public/favicon.ico`（金色假面，呼应游戏内的「假面狂欢」）。
+
+生成脚本是 `tools/make-og-image.mjs`，**一次性资产生成，不参与构建**
+（CI 设了 `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`，跑不了），产出物直接提交进仓库。
+需要重新生成时：`npx playwright install chromium && node tools/make-og-image.mjs`。
+
+> **图标只有 48×48。** 该 .ico 里是 48 / 32 / 16 三档，且全是 BMP 帧（无 PNG 帧），
+> 最大 48×48 —— 所以卡片上的图标按 96px 显示（2×），再大就会明显发虚。
+> 若要提高分享图质感，得先补一档更大的 favicon。
+>
+> 早先版本用的是 `src/assets/logo.png`（96×96 的游戏内青魔法书图标），
+> 该文件**全项目从未被引用过**，已作为废弃资产删除。
+
+### 5.3 新增一道防过期的构建断言
+
+标题和描述里写死了「124 个青魔法」，而 `tools/spells.json` 由 `prebuild` 自动重新生成 ——
+加了技能却忘记改文案，数字就会悄悄过期。`tools/prerender.js` 现在会校验**每一处**出现
+（description / og:title / og:description / twitter:title / twitter:description，共 5 处），
+对不上就让构建失败，并在错误信息里提示同步重生成 `og-image.png`。
+
+> 这道断言的第一版只校验了首个匹配 —— 用"只改描述、标题保持 124"的场景一测就露馅了：
+> 标题的 124 先被匹配到，描述里的错误数字被跳过，静默放行。已改为校验全部出现处。
+
+### 5.4 一处刻意的取舍
+
+所有 meta 标签写成**单行**。不少社交平台的 OG 抓取器是正则解析而非 HTML 解析，
+跨行属性会让它们取不到值 —— 这个风险不值得为排版美观承担。
+
+### 5.5 验收
+
+- 根域与子路径两种构建的产物 head 里，12 项 meta 全部存在且取值正确
+- `og:image` 是绝对 URL，**不随 `base` 改写**（子路径构建下已验证）
+- `public/og-image.png` 正确进入 `dist/`
+- **hydration 回归测试仍 20/20 通过** —— 改 `index.html` 没有破坏预渲染
+- 数字断言的正反用例都实测过：正常数据通过、篡改数字构建失败（退出码 1）
+
+---
+
+## 6. 遗留问题与下一步
 
 按预期收益排序：
 
 1. **124 个技能的独立落地页（`/spell/<编号>`）** —— 目前全站只有一个 URL，
    要同时竞争上百个长尾词。`tools/spells.json` 已是结构化数据，构建时可以按技能生成静态页。
    这是剩余空间里最大的一块。
-2. **`meta description`** —— 搜索结果里的摘要目前是空白。预渲染解决了"能读到内容"，
-   但摘要文本仍需显式声明。
+2. **图片 `alt`** —— 线上实测 504 个 `<img>` 里 **426 个没有 alt**
+   （有 alt 的 78 个是地图图标）。这是白丢的图片搜索流量。
+   （`<h1>` 已在第三轮补上，见 5.1。）
 3. **`spell_ja` / `spell_en` 未利用** —— `tools/spells.json` 里 44 个技能带这两个字段，
-   全项目从未渲染。日/英技能名是日英搜索词的直接命中项，本次因"不动 UI"未做。
-4. **EdgeOne 软 404** —— 任意不存在的路径都返回 200 + 首页，需控制台改回源规则。
-5. **Playwright 不参与 CI** —— 当前是手动执行（`yarn verify:hydration`，约 11 秒）。
+   全项目从未渲染。日/英技能名是日英搜索词的直接命中项。
+4. **JSON-LD 结构化数据** —— 仍是空白。
+5. **未 hash 资源的缓存策略** —— `index.[hash].js` 已由 EdgeOne 给了
+   `max-age=31536000, immutable`，但 `icons/spells/*.png` 仍是 `max-age=0`，
+   15 MB 的图标每次访问都要回源校验。
+6. **EdgeOne 软 404** —— 任意不存在的路径都返回 200 + 首页，需控制台改回源规则。
+7. **提交 sitemap 到各搜索引擎** —— 主渠道 `https://bluemagic.badend.cn/sitemap.xml`。
+   Google Search Console、Bing Webmaster、**百度资源平台**（对中文站点最关键）。
+   收录不即时，提交后需过几天用 `site:bluemagic.badend.cn` 复核。
+8. **`blue-mage.badend.cn` 的 DNS 记录待确认** —— 见 4.1。
+9. **Playwright 不参与 CI** —— 当前是手动执行（`yarn verify:hydration`，约 11 秒）。
    要不要并入 CI、以及并进去后如何避免每次都下 150 MB 浏览器，是个独立决定。
 
 ---
 
-## 5. 附：本次确立的工程约定
+## 7. 附：本次确立的工程约定
 
 - **预渲染相关约束集中在 `docs/adr/0004`**。改 `index.html` 的占位符、
   `vite.config.ts` 的 `ssr.external`、地图库的 import 位置之前，先读它。
