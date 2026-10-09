@@ -1,4 +1,9 @@
 export const loadSetting = <T>(key: string): T | undefined => {
+  // 预渲染在 node 里跑，没有 window。这里必须判 window 而不是判 localStorage：
+  // Node 22.4+ 的 --experimental-webstorage 会注入 globalThis.localStorage，
+  // 那样守卫会失效并把行为变成碰运气。
+  if (typeof window === "undefined") return;
+
   let text;
   if (localStorage) {
     text = localStorage.getItem(key);
@@ -22,6 +27,8 @@ export const loadSetting = <T>(key: string): T | undefined => {
 };
 
 export const saveSetting = <T>(key: string, value: T) => {
+  if (typeof window === "undefined") return;
+
   const text = JSON.stringify(value);
 
   if (localStorage) {

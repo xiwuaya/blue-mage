@@ -31,13 +31,52 @@ function injectCanonical(): Plugin {
   };
 }
 
+/**
+ * index.html 里的两个注释占位符由 tools/prerender.js 在构建时替换。
+ * 开发服务器不跑预渲染，占位符会留在 DOM 里，让 createSSRApp().mount()
+ * 以为"有服务端内容"而去 hydration 并报不一致。serve 阶段直接抹掉，
+ * dev 的 DOM 与加预渲染之前逐字节一致。
+ */
+function stripPrerenderPlaceholders(): Plugin {
+  return {
+    name: "strip-prerender-placeholders",
+    apply: "serve",
+    transformIndexHtml(html) {
+      return html
+        .replace("<!--teleport-html-->", "")
+        .replace("<!--app-html-->", "");
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "/",
-  plugins: [vue(), injectCanonical()],
+  plugins: [vue(), injectCanonical(), stripPrerenderPlaceholders()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
+  },
+
+  /**
+   * 只有 SSR 构建（yarn prerender）会读这段。
+   *
+   * 为什么必须显式 external：这两个包的 UMD/IIFE 包装在模块顶层就摸
+   * window / document，一旦被 rollup 打进 dist-ssr/entry-server.js，
+   * node 加载产物时会立刻抛 "window is not defined"。
+   *
+   * 关键是 Vite 2.9 在 `vite build --ssr <entry>`（input 为字符串）时会设
+   * inlineDynamicImports: true，动态 import 会被内联并**立即求值** ——
+   * 所以光靠 App.vue 里的 defineAsyncComponent 切不断，这里必须点名。
+   *
+   * vue / @vue/server-renderer 由 @vitejs/plugin-vue 的 config 钩子自动加；
+   * leaflet 有独立的 module 入口，Vite 会自动 external；不用重复写。
+   */
+  ssr: {
+    external: [
+      "@thewakingsands/eorzea-interactive-map",
+      "@thewakingsands/kit-tooltip",
+    ],
   },
 });

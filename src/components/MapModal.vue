@@ -5,7 +5,6 @@ import "@thewakingsands/eorzea-interactive-map/dist/map.css";
 
 import { ref, watch, nextTick } from "vue";
 import type { ComponentPublicInstance } from "vue";
-import * as eorzeaMap from "@thewakingsands/eorzea-interactive-map";
 import type { EorzeaMapInstance } from "@thewakingsands/eorzea-interactive-map";
 import { resolveMapKey } from "@/lib/map";
 import type { SpellMethodMap } from "@/lib/spell";
@@ -73,6 +72,11 @@ async function openMap() {
   error.value = "";
 
   try {
+    // 动态 import 而不是模块顶层静态 import：该包的 UMD 包装在模块顶层就访问
+    // window，而预渲染的 SSR 构建会把动态 import 内联进单文件产物，顶层静态
+    // import 会变成急切求值的 require，node 里加载即抛 "window is not defined"。
+    const eorzeaMap = await import("@thewakingsands/eorzea-interactive-map");
+
     // create() 会清空容器 innerHTML，并内部拉取 region.json（失败即 reject）
     const map = await eorzeaMap.create(el);
     if (token !== runToken) {
