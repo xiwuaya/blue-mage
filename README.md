@@ -5,7 +5,17 @@ A book for blue mages.
 
 ### Usage
 
-| Provider     | URL                                         |
-| ------------ | ------------------------------------------- |
-| Github Pages | https://thewakingsands.github.io/blue-mage/ |
-| FFCafe       | https://guides.xivcdn.com/blue-mage/        |
+| Role    | Provider       | URL                                       | Build             |
+| ------- | -------------- | ----------------------------------------- | ----------------- |
+| Primary | EdgeOne        | https://bluemagic.badend.cn/              | `yarn build`      |
+| Mirror  | Cloudflare     | https://blue-mage.badend.cn/              | `yarn build`      |
+| Mirror  | GitHub Pages   | https://blog.badend.cn/blue-mage/         | `yarn build:subpath` |
+
+All three serve the same content; every build emits
+`<link rel="canonical" href="https://bluemagic.badend.cn/" />` so search engines
+treat the two mirrors as duplicates of the primary.
+
+The GitHub Pages mirror is served from a **sub-path**, so it must be built with
+`yarn build:subpath` (`base=/blue-mage/`). Vite rewrites the HTML references, the
+CSS `url('/icons/*.svg')` masks and the `new Worker(...)` URL accordingly — no
+source changes are needed.
