@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  站点没有路由，124 个技能、408 条途径都在同一个 URL 下（靠前端筛选切换），
+  所以这里只有一条记录。
+  等技能详情页（如 /spell/<编号>）落地后，这份文件应改为在 prebuild 里
+  由 tools/spells.json 生成，那时才会有多条 URL。
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://bluemagic.badend.cn/</loc>
+  </url>
+</urlset>

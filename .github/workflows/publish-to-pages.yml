@@ -16,7 +16,9 @@ jobs:
       - name: Install and Build 🔧
         run: |
           yarn install
-          yarn build
+          # GitHub Pages 把站点分发在子路径 blog.badend.cn/blue-mage/ 下，
+          # 必须用 base=/blue-mage/ 构建，否则资源会去请求根域的 /assets/... 而 404。
+          yarn build:subpath
 
       # --- 将你刚才新增的 Commit 步骤放在 Build 之后，Deploy 之前 ---
       - name: Commit and Push changes

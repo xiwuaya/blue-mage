@@ -1,5 +1,11 @@
 # `vite.config.ts` 的 `base` 固定为 `/`，站点以根域为前提
 
+> **已被 [ADR-0003](./0003-multi-channel-distribution.md) 修订。**
+> 「`base` 固定为 `/`、后续改动一律以根域为前提」这条约束不再成立：
+> 现在存在一个子路径分发渠道（GitHub Pages），`base` 改为构建时按渠道传入。
+> 本文保留作为历史记录——尤其是下面那段「为什么值得记下来」，
+> 它解释了为什么后来还有第二个人会再一次把 `base` 误判成 bug。
+
 `vite.config.ts` 里 `base: "/"` 是**有意为之**，不是漏改。项目正从子路径
 （`https://thewakingsands.github.io/blue-mage/`）迁移到根域部署，
 `base` 已经于 commit `e73f7f8`（2026-03-27）从 `/blue-mage/` 改成 `/`。
