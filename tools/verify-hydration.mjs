@@ -1,18 +1,32 @@
-// hydration 回归测试：用真实浏览器验证预渲染产物的行为。
+// 预渲染产物回归测试：用真实浏览器验证线上页面在各类用户状态下内容是否正确。
 //
 //   yarn build && yarn verify:hydration
 //
-// 为什么需要它：预渲染引入了一类静态检查发现不了的失败模式 ——
-// Teleport 注入位置不对时，Vue 的 handleMismatch 走的是 remove(node) 而非打补丁，
-// 会把 <div id="app"> 整个删掉。见 docs/adr/0004-build-time-prerender.md。
+// 为什么需要它：预渲染引入了一类**静态检查发现不了**的失败模式。已经踩到过两次，
+// 而两次的共同教训是「断言必须校验内容，不能只校验结构」：
+//
+//   1. Teleport 注入位置不对 → handleMismatch 走 remove(node) 而非打补丁，
+//      会把 <div id="app"> 整个删掉。见 docs/adr/0004。
+//   2. hydration 时 <img src> 不会被重新打补丁 → 老用户的列表**整列图标错位**，
+//      而技能名是对的。当时只断言了「#app 还在」「没有未捕获异常」，全数通过。
+//      见 docs/adr/0005。
 //
 // 需要先跑 `yarn build`（产出 dist/），并且必须是**根域**构建（base=/）：
 // 本脚本用 vite preview，它读 vite.config.ts 的 base，不读构建时的 --base 参数。
 //
 // 首次使用需下载浏览器：npx playwright install chromium
 
+import { readFileSync } from "fs";
 import { preview } from "vite";
 import { chromium } from "playwright";
+
+// 期望的「技能编号 → 列表图标」映射，用来逐行校验渲染结果
+const iconBookByNo = new Map(
+  JSON.parse(readFileSync(new URL("../tools/spells.json", import.meta.url), "utf8")).map((s) => [
+    Number(s.no),
+    s.icon_book,
+  ])
+);
 
 const distIndex = new URL("../dist/index.html", import.meta.url);
 const results = [];
@@ -27,7 +41,7 @@ function check(name, ok, detail = "") {
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ---------------------------------------------------------------- 前置检查
-const { readFileSync, existsSync } = await import("fs");
+const { existsSync } = await import("fs");
 if (!existsSync(distIndex)) {
   console.error("找不到 dist/index.html —— 请先执行 `yarn build`。");
   process.exit(1);
@@ -123,7 +137,7 @@ await run("场景1 全新访客（localStorage 全空）", {
     const helpVisible = await page.locator(".modal-backdrop").first().isVisible().catch(() => false);
     check("场景1 帮助弹窗正常出现", helpVisible);
 
-    check("场景1 hydration 零警告", hydrationMsgs.length === 0, hydrationMsgs.join(" | "));
+    check("场景1 零 hydration 警告（已改为整体重渲染）", hydrationMsgs.length === 0, hydrationMsgs.join(" | "));
   },
 });
 
@@ -156,9 +170,29 @@ await run("场景2 老用户（已存档进度 + 等级 30 + 关掉 raid/trail/d
     const helpVisible = await page.locator(".modal-backdrop").first().isVisible().catch(() => false);
     check("场景2 老用户不再弹帮助弹窗", !helpVisible);
 
-    // 已拍板接受的状态不一致：允许出现，但只允许这一条。
-    const unexpected = hydrationMsgs.filter((t) => !/Hydration completed but contains mismatches/.test(t));
-    check("场景2 hydration 只出现预期内的 mismatch 提示", unexpected.length === 0, unexpected.join(" | "));
+    // ★ 逐行校验「该行的图标 == 该技能的 icon_book」。
+    // 这是 hydration 错位唯一会暴露的地方：文本会被打补丁修正，而 <img src> 不会 ——
+    // 曾经整列图标停在服务端那一行上、技能名却是对的（见 docs/adr/0005）。
+    // 只断言「#app 还在」「没有异常」是查不出来的，必须校验内容。
+    const rows = await page.evaluate(() =>
+      [...document.querySelectorAll("main .spell")].map((el) => ({
+        no: el.querySelector("h4")?.textContent?.match(/No\.(\d+)/)?.[1],
+        icon: el.querySelector("img")
+          ? decodeURIComponent(new URL(el.querySelector("img").getAttribute("src"), location.href).pathname.split("/").pop())
+          : "?",
+      }))
+    );
+    const wrong = rows.filter((r) => {
+      const expect = iconBookByNo.get(Number(r.no));
+      return expect && r.icon !== expect;
+    });
+    check(
+      `场景2 每一行图标都与本行技能匹配（共 ${rows.length} 行）`,
+      rows.length > 0 && wrong.length === 0,
+      wrong.slice(0, 3).map((r) => `No.${r.no} 显示 ${r.icon}、应为 ${iconBookByNo.get(Number(r.no))}`).join(" | ")
+    );
+
+    check("场景2 无 hydration 警告（已改为整体重渲染，不该再有 hydration）", hydrationMsgs.length === 0, hydrationMsgs.join(" | "));
   },
 });
 
