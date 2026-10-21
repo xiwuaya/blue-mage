@@ -252,7 +252,7 @@ curl -sD - -o /dev/null -H "Accept-Encoding: gzip, br" https://bluemagic.badend.
 | `meta description` | 无 | 有（含 FF14 / 青魔法师 / 学习地点 / 获取途径等检索词） |
 | OG | 无 | `og:type/site_name/locale/title/description/url/image(+width/height/alt)`，`og:title` 为长版本 |
 | Twitter Card | 无 | `summary_large_image`，`twitter:title` 为长版本 |
-| `<h1>` | **不存在**（层级从 h3 起跳） | `FF14 青魔法师技能学习地点查询`，与「当前状态」同处一行：状态行靠左、h1 靠右（`SpellList.vue` 的 `.list-header`） |
+| `<h1>` | **不存在**（层级从 h3 起跳） | `FF14 青魔法师技能学习地点查询`，放在页面底部的页脚（备案 / copyright 位置），12px、`#8a8a8a`，仍是可见文本（见 5.1） |
 | 分享图 | 无 | `public/og-image.png`（1200×630） |
 
 **改前实测**（对着线上主渠道产物）：`description` / `og:*` / `twitter:*` / JSON-LD / h1
@@ -278,24 +278,22 @@ curl -sD - -o /dev/null -H "Accept-Encoding: gzip, br" https://bluemagic.badend.
 > **h1 必须是可见文本。** CSS 隐藏的 h1 属于「隐藏文本」，与 cloaking 同属搜索引擎
 > 明确禁止的做法，不能用来"既让爬虫看到又不打扰用户"。
 
-**h1 的摆放有两个易踩的坑。**
+**最终摆放：页脚。** 一开始把 h1 放在主内容区顶部（与「当前状态」同一行），但实测
+视觉上过于抢眼、与工具的定位不符，改为放到页面底部的 `<footer class="site-footer">`
+（备案信息 / copyright 通常所在的位置），并刻意做小做淡：
 
-*① 它会掉回独占一行。* 布局是「状态行靠左 + h1 靠右，同一 flex 行」。但 1000–1150px
-窗口下 `main` 只有约 620px 宽（减去固定侧栏 360px 和内边距），两者放不下一行 ——
-若用 `flex-wrap: wrap`，h1 会被挤到上一行，又变回"标题独占一行"。所以 `.list-header`
-用 `flex-wrap: nowrap`，让「当前状态」收缩到自身内部折行（`.notice` 的 `min-width: 0`），
-h1 始终留在同一行；只有 620px 以下（连「当前状态」也放不下）才退回堆叠。
+```css
+.site-footer h1 {
+  font-size: 0.75rem;   /* 12px */
+  font-weight: 400;
+  color: #8a8a8a;       /* 在 #2b2b2b 上约 3.9:1 对比度，仍是真实可读文本 */
+  letter-spacing: 1px;
+}
+```
 
-*② 靠右要用 `margin-left: auto`，不能用 `justify-content: space-between`。*
-折行后每个 flex 行只剩一个元素，`space-between` 在单元素行上会退化成左对齐，
-h1 就跑到左边去了。`margin-left: auto` 无论单行还是折行都能把它推到行尾。
-
-另外 `.notice a` 设了 `white-space: nowrap`，让折行落在「；」这种自然边界 ——
-否则会断在词中间（实测出现过「…隐藏了糟 / 糕的学习途径」）。
-
-实测各宽度（状态行左边缘 / h1 右边缘均贴住 `main` 的边界，h1 距窗口右缘恒为 20px，
-即 `#app` 的 `padding`）：1000 / 1024 / 1100 / 1280 / 1600 / 1920px 均同行，
-600 / 375px 折行但 h1 仍居右。
+`h1` 的位置对搜索排名没有要求，Google 会综合 `<title>` 与 `<h1>` 生成结果标题 ——
+放在页脚不影响它发挥作用。**但绝不能用 `display:none` / `visibility:hidden` /
+移出屏幕来"藏"它**，那才是会被判定为隐藏文本的做法；缩小字号、降低对比度不在此列。
 
 ### 5.2 分享图是生成的，不是手绘
 

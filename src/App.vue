@@ -147,6 +147,19 @@ const handleTypeChange = (type: string, checked: boolean) => {
       @search="filter = $event"
       @openMap="mapTarget = $event"
     />
+    <!--
+      全站唯一的 h1，放在页脚（备案信息 / copyright 通常所在的位置）。
+      改前站点一个 h1 都没有，标题层级从 h3 起跳；搜索结果里的标题 Google 会
+      综合 title 与 h1 标签生成，而 title 是简短品牌名，描述性关键词由这里承载。
+      （注释里不写尖括号，避免被朴素的 HTML 解析工具误认成真实的 h1。）
+
+      视觉上刻意做小、做淡，与页脚氛围一致；但**必须是真实可见的文本** ——
+      display:none / visibility:hidden / 移出屏幕都属于「隐藏文本」，
+      与 cloaking 同类，是搜索引擎明确禁止的做法。
+    -->
+    <footer class="site-footer">
+      <h1>FF14 青魔法师技能学习地点查询</h1>
+    </footer>
   </section>
   
   <Teleport to="body">
@@ -167,7 +180,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
               <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
             </ul>
             <p>
-              本网页内容最近一次更新于<strong>2026年10月11日</strong>（7.56版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+              本网页内容最近一次更新于<strong>2026年10月22日</strong>（7.56版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
                 rel="noopener noreferrer">点此提出</a>
             </p>
             <p>
@@ -280,4 +293,21 @@ input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
 .close-btn:hover { color: #ffbe31; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* 页脚：承接全站唯一的 h1。做小做淡，与页脚/版权行的观感一致。
+   #8a8a8a 在 #2b2b2b 上仍有约 3.9:1 对比度，是真实可读的文本，
+   不是用隐藏手段骗爬虫。 */
+.site-footer {
+  margin-top: 32px;
+  padding: 14px 0 4px;
+  border-top: 1px solid #3a3a3a;
+  text-align: center;
+}
+.site-footer h1 {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: #8a8a8a;
+}
 </style>
