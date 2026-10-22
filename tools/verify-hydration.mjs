@@ -20,7 +20,10 @@ import { readFileSync } from "fs";
 import { preview } from "vite";
 import { chromium } from "playwright";
 
-// 期望的「技能编号 → 列表图标」映射，用来逐行校验渲染结果
+// 期望的「技能编号 → 列表图标」映射，用来逐行校验渲染结果。
+// 图标现在是 Vite 资源，渲染出的文件名带 content hash（如 072203.a1b2c3d4.png），
+// 所以比较时先去掉 8 位 hash，只比基础文件名。
+const baseName = (f) => String(f).replace(/\.[0-9a-f]{8}\./, ".");
 const iconBookByNo = new Map(
   JSON.parse(readFileSync(new URL("../tools/spells.json", import.meta.url), "utf8")).map((s) => [
     Number(s.no),
@@ -184,7 +187,7 @@ await run("场景2 老用户（已存档进度 + 等级 30 + 关掉 raid/trail/d
     );
     const wrong = rows.filter((r) => {
       const expect = iconBookByNo.get(Number(r.no));
-      return expect && r.icon !== expect;
+      return expect && baseName(r.icon) !== baseName(expect);
     });
     check(
       `场景2 每一行图标都与本行技能匹配（共 ${rows.length} 行）`,

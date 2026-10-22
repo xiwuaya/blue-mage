@@ -792,13 +792,13 @@ onBeforeUnmount(() => {
 }
 
 .icon-visible {
-  -webkit-mask: url('/icons/Visible.svg') no-repeat center / contain;
-  mask: url('/icons/Visible.svg') no-repeat center / contain;
+  -webkit-mask: url('../assets/icons/Visible.svg') no-repeat center / contain;
+  mask: url('../assets/icons/Visible.svg') no-repeat center / contain;
 }
 
 .icon-invisible {
-  -webkit-mask: url('/icons/Invisible.svg') no-repeat center / contain;
-  mask: url('/icons/Invisible.svg') no-repeat center / contain;
+  -webkit-mask: url('../assets/icons/Invisible.svg') no-repeat center / contain;
+  mask: url('../assets/icons/Invisible.svg') no-repeat center / contain;
 }
 
 .inline-icon {
@@ -846,8 +846,8 @@ onBeforeUnmount(() => {
 }
 
 .icon-palette {
-  -webkit-mask: url('/icons/palette.svg') no-repeat center / contain;
-  mask: url('/icons/palette.svg') no-repeat center / contain;
+  -webkit-mask: url('../assets/icons/palette.svg') no-repeat center / contain;
+  mask: url('../assets/icons/palette.svg') no-repeat center / contain;
 }
 
 .visibility-btn {
@@ -925,8 +925,8 @@ onBeforeUnmount(() => {
 }
 
 .icon-palette {
-  -webkit-mask: url('/icons/palette.svg') no-repeat center / contain;
-  mask: url('/icons/palette.svg') no-repeat center / contain;
+  -webkit-mask: url('../assets/icons/palette.svg') no-repeat center / contain;
+  mask: url('../assets/icons/palette.svg') no-repeat center / contain;
 }
 
 .visibility-btn {

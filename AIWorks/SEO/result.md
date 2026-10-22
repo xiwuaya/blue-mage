@@ -337,7 +337,104 @@ curl -sD - -o /dev/null -H "Accept-Encoding: gzip, br" https://bluemagic.badend.
 
 ---
 
-## 6. 遗留问题与下一步
+## 6. 第四轮：静态资源长期缓存（2026-10-22）
+
+把「带 content hash 的资源」全部设为一年期 `immutable`，并把 523 个图标
+（14 MB）从 `public/` 迁入 Vite 资源管道，让它们也获得 content hash。
+
+### 6.1 改前 / 目标
+
+| 资源 | 改前（EdgeOne / Cloudflare / GH Pages） | 目标 |
+| --- | --- | --- |
+| `/assets/*.js、css` | immutable / **0** / 600 | 三渠道尽可能 immutable |
+| `/icons/**`（14 MB，523 个） | 0 / 0 / 600，**文件名不带 hash，不能 immutable** | 迁入 `/assets/*` 并带 hash |
+| `/`（HTML） | 0 / 0 / 600 | 永远回源校验 |
+| `favicon.ico`、`og-image.png` | 0 / 0 / 600 | 1 天 |
+| `robots.txt`、`sitemap.xml` | 0 / 0 / 600 | 1 小时 |
+
+### 6.2 图标迁入 Vite 资源管道
+
+- `public/icons/` → `src/assets/icons/`（523 个文件）。
+- `src/icon.ts` 用 `import.meta.globEager` 建立「文件名 → 带 hash URL」映射；
+  新增 `typeIcon()` 给 `Method.vue` / `TypeFilter.vue` 共用。
+- `Method.vue` 的 `map.svg` 改为静态 import；两处 CSS 遮罩改用相对
+  `url('../assets/icons/*.svg')`，由 Vite 处理并加 hash。
+- `vite.config.ts` 增加 `build.assetsInlineLimit: 0`：图标普遍 2–4 KB，
+  默认 4 KB 阈值会把相当一部分内联成 base64，既失去缓存又撑大 JS。
+- 子路径构建的 SSR 也必须同 base：新增 `prerender:subpath`
+  （`vite build --ssr ... --base=/blue-mage/`），否则预渲染出的图标 URL
+  会缺少 `/blue-mage` 前缀。
+
+构建后实测：`dist/assets` 共 **532 个文件**（526 个 png/svg），
+预渲染 HTML 里 **278 个**图标引用全部形如 `/assets/003253.dc98cd26.png`。
+
+### 6.3 `public/_headers`
+
+Cloudflare Workers Static Assets 会解析 `dist/_headers`（文件本身不对外提供）：
+
+```
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/ 、/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+/favicon.ico 、/og-image.png
+  Cache-Control: public, max-age=86400
+/robots.txt 、/sitemap.xml
+  Cache-Control: public, max-age=3600
+```
+
+**关键约束：不能写带 `Cache-Control` 的 `/*` 兜底。** Cloudflare 的多条规则是
+「合并」而不是覆盖，同名头会用逗号拼接 —— `/*` 的 `max-age=0` 会和
+`/assets/*` 的 `immutable` 拼成两个 `max-age`，行为不可靠。
+
+### 6.4 构建期安全网
+
+`tools/prerender.js` 新增 4 条断言，任何一条失败都让构建失败：
+
+1. `dist/assets/` 下每个文件都匹配 `/\.[0-9a-f]{8}\.[a-z0-9]+$/`；
+2. `dist/icons` 不存在（防止 `public/icons` 被误留）；
+3. `dist/_headers` 存在且含 `/assets/*` + `immutable`；
+4. `dist/index.html` 里所有 `/assets/...` 引用都真实存在
+   —— 专防 SSR 与客户端构建的 hash 不一致。
+
+负向测试已实测：往 `dist/assets` 放一个 `vendor.js` → 构建失败；
+删掉 `dist/_headers` → 构建失败；恢复后通过。
+
+### 6.5 验证
+
+`tools/verify-cache.mjs`（`yarn verify:cache`）分 PASS / INFO / WARN / FAIL：
+
+- **本地**：`_headers` 内容、无 `/*` 兜底、assets 全 hash、`dist/icons` 不存在、
+  HTML 引用全部存在。当前 **5 PASS**。
+- **线上**（部署前实测）：
+  - EdgeOne：HTML 与 `/assets/*` PASS；favicon 仍 0（需控制台配置）→ WARN。
+  - Cloudflare：HTML PASS；`/assets/*` 与 favicon 仍 0 → FAIL（等待重新部署）。
+  - GitHub Pages：全部 600 → INFO（平台固定，仓库侧无法修改）。
+  - 三渠道的图标检查均为 WARN —— 线上还是旧版，尚未部署 hashed 图标。
+
+部署后应变为：Cloudflare 的 `/assets/*`、图标、favicon 全部 PASS；
+EdgeOne 仅剩 favicon 一条 WARN；GitHub Pages 保持 INFO。
+
+### 6.6 附带改动
+
+- `.gitattributes` 强制 `public/_headers` 使用 LF。
+- `public/.nojekyll`；`deploy` 脚本改为 `gh-pages -d dist --nojekyll`。
+- GitHub Actions 部署加 `clean-exclude: assets/`：GitHub Pages 的 HTML 固定缓存
+  600s，保留旧 `assets/` 可避免部署后 10 分钟内旧 HTML 请求旧 hash 资源时 404。
+- `wrangler.jsonc` 显式 `not_found_handling: "none"`：防止缺失的 hashed 资源被
+  SPA 回退成首页、再被 `immutable` 缓存一年。
+
+### 6.7 已知偏差
+
+- **EdgeOne** 的 `/assets/*` 本来就正确；favicon / robots / sitemap 的缓存规则
+  只能在控制台配置，仓库侧无法覆盖。
+- **GitHub Pages** 不支持自定义响应头，固定 600s。
+- **`og-image.png`** 的社交平台抓取缓存不受 `Cache-Control` 控制；
+  换图时需改 URL（加 `?v=`），本次未做。
+
+---
+
+## 7. 遗留问题与下一步
 
 按预期收益排序：
 
@@ -350,9 +447,8 @@ curl -sD - -o /dev/null -H "Accept-Encoding: gzip, br" https://bluemagic.badend.
 3. **`spell_ja` / `spell_en` 未利用** —— `tools/spells.json` 里 44 个技能带这两个字段，
    全项目从未渲染。日/英技能名是日英搜索词的直接命中项。
 4. **JSON-LD 结构化数据** —— 仍是空白。
-5. **未 hash 资源的缓存策略** —— `index.[hash].js` 已由 EdgeOne 给了
-   `max-age=31536000, immutable`，但 `icons/spells/*.png` 仍是 `max-age=0`，
-   15 MB 的图标每次访问都要回源校验。
+5. **~~未 hash 资源的缓存策略~~** —— **已完成（见第 6 节）**：
+   图标已迁入 Vite 资源管道并带 content hash，`/assets/*` 统一一年 immutable。
 6. **EdgeOne 软 404** —— 任意不存在的路径都返回 200 + 首页，需控制台改回源规则。
 7. **提交 sitemap 到各搜索引擎** —— 主渠道 `https://bluemagic.badend.cn/sitemap.xml`。
    Google Search Console、Bing Webmaster、**百度资源平台**（对中文站点最关键）。
@@ -363,7 +459,7 @@ curl -sD - -o /dev/null -H "Accept-Encoding: gzip, br" https://bluemagic.badend.
 
 ---
 
-## 7. 附：本次确立的工程约定
+## 8. 附：本次确立的工程约定
 
 - **预渲染相关约束集中在 `docs/adr/0004`**。改 `index.html` 的占位符、
   `vite.config.ts` 的 `ssr.external`、地图库的 import 位置之前，先读它。

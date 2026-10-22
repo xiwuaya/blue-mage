@@ -19,3 +19,9 @@
   曾经（包括本项目的一份开发文档里）把它们当成"子路径下会 404 的既有 bug"，是**错误结论**。
 
 搞清楚这一点之前，很容易"顺手修好" `base`，把站点真的弄坏。
+
+**2026-10-22 更新。** 图标已从 `public/icons` 迁到 `src/assets/icons`，改由
+Vite 资源管道产出带 content hash 的 `/assets/*`（见
+[ADR-0006](./0006-static-asset-caching.md)）。因此上面关于 `public/` 图标路径的
+讨论现在只适用于仍留在 `public/` 的 `favicon.ico`、`og-image.png`、
+`robots.txt`、`sitemap.xml`。

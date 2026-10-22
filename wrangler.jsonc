@@ -3,5 +3,8 @@
     "compatibility_date": "2026-03-27",
     "assets": {
       "directory": "./dist",
+      // 不要改成 single-page-application：/assets/* 是 immutable，
+      // 缺失的 hashed 资源若被回退成 index.html 并缓存一年，会永久坏掉。
+      "not_found_handling": "none"
     }
 }

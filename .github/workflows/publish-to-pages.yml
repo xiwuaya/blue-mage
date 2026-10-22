@@ -43,3 +43,6 @@ jobs:
           branch: gh-pages
           folder: dist
           clean: true
+          # GitHub Pages 的 HTML 固定缓存 600s。部署后最多 10 分钟，持旧 HTML 的
+          # 用户仍会请求上一版 hash 资源；保留 assets/ 避免这段窗口里 404。
+          clean-exclude: assets/

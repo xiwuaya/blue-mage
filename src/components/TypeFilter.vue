@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FilterTypes, FilterKey } from "@/lib/interface";
+import { typeIcon } from "../icon";
 import Title from "./Title.vue";
 import Indicator from "./Indicator.vue";
 
@@ -28,7 +29,7 @@ const handleClick = (type: string | number, checked: boolean) => {
         :class="{ lighter: i % 2 === 0 }"
         @click="handleClick(type, checked)"
       >
-        <img :src="`icons/type_${type}.png`" />
+        <img :src="typeIcon(type)" />
         <Indicator :checked="checked" />
       </li>
     </ul>

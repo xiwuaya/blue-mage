@@ -1,0 +1,2 @@
+# Cloudflare 解析 _headers；强制 LF，避免 Windows 上提交 CRLF 导致规则解析异常
+public/_headers text eol=lf

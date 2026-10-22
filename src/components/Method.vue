@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { renderSpellMethod, SpellType } from "../lib/spell";
 import type { SpellMethod, SpellMethodMap } from "../lib/spell";
+import { typeIcon } from "../icon";
+import mapIcon from "../assets/icons/map.svg";
 import { computed } from "vue";
 
 const props = defineProps<{
@@ -8,9 +10,6 @@ const props = defineProps<{
 }>();
 
 const text = computed(() => renderSpellMethod(props.method));
-
-// 地图图标地址（用相对路径，由浏览器按当前页面地址解析，与 type 图标保持一致）
-const mapIcon = "icons/map.svg";
 
 //定义颜色别名映射表
 const colorAliasMap: Record<string, string> = {
@@ -70,7 +69,7 @@ const handleSearch = () => {
 
 <template>
   <div class="wrap">
-    <img class="type" :src="`icons/type_${props.method.type}.png`" />
+    <img class="type" :src="typeIcon(props.method.type)" />
     
     <span 
       :style="{ color: textColor }"

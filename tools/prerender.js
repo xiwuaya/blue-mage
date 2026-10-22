@@ -34,6 +34,90 @@ function inject(html, placeholder, value) {
   return html.replace(placeholder, () => value);
 }
 
+/**
+ * 构建期安全网：public/_headers 给 /assets/* 设了一年 immutable，
+ * 前提是该目录下永远只有带 content hash 的文件。任何一条不满足都让构建失败。
+ */
+function checkImmutableAssets(html) {
+  const assetsDir = path.join(distDir, "assets");
+  if (!fs.existsSync(assetsDir)) {
+    throw new Error("找不到 dist/assets 目录。");
+  }
+
+  const files = fs.readdirSync(assetsDir);
+  const unhashed = files.filter((f) => !/\.[0-9a-f]{8}\.[a-z0-9]+$/i.test(f));
+  if (unhashed.length) {
+    throw new Error(
+      `dist/assets/ 下存在没有 content hash 的文件：${unhashed.slice(0, 5).join(", ")}。` +
+        `_headers 给 /assets/* 设了 immutable，这类文件一旦更新将无法失效。`
+    );
+  }
+
+  if (fs.existsSync(path.join(distDir, "icons"))) {
+    throw new Error(
+      "dist/icons 仍然存在。图标应已迁到 src/assets/icons 并进入 Vite 资源管道；" +
+        "public/icons 不应再保留。"
+    );
+  }
+
+  const headersPath = path.join(distDir, "_headers");
+  if (!fs.existsSync(headersPath)) {
+    throw new Error("dist/_headers 不存在，Cloudflare 的缓存规则不会生效。");
+  }
+  const headers = fs.readFileSync(headersPath, "utf-8");
+  if (!/\/assets\/\*/.test(headers) || !/immutable/.test(headers)) {
+    throw new Error("dist/_headers 缺少 /assets/* 的 immutable 规则。");
+  }
+
+  // HTML 里所有本地 /assets/ 引用必须真实存在。
+  // 这条专门防 SSR 构建与客户端构建的 content hash 不一致。
+  const localRefs = [...html.matchAll(/(?:src|href)="(\/[^"]+)"/g)].map((m) => m[1]);
+  const assetRefs = localRefs.filter((u) => u.includes("/assets/"));
+  if (!assetRefs.length) {
+    throw new Error("dist/index.html 里找不到任何 /assets/ 引用，预渲染结果异常。");
+  }
+  const first = assetRefs[0];
+  const basePrefix = first.slice(0, first.indexOf("assets/"));
+  for (const ref of assetRefs) {
+    if (!ref.startsWith(basePrefix)) {
+      throw new Error(`HTML 里的资源引用前缀不一致：${ref}`);
+    }
+    const rel = ref.slice(basePrefix.length);
+    if (!fs.existsSync(path.join(distDir, rel))) {
+      throw new Error(
+        `HTML 引用了不存在的资源 ${ref}。` +
+          `通常是 SSR 构建与客户端构建的 content hash 不一致（注意 base 是否一致）。`
+      );
+    }
+  }
+
+  // 图标必须真的有引用。src/icon.ts 位于 src/ 下，glob 必须写 ./assets/...；
+  // 写成 ../assets/... 时 Vite 会静默匹配到 0 个文件 —— 页面能构建成功，
+  // 但所有图标为空。这条断言专门兜住这类静默失败。
+  const iconRefs = assetRefs.filter((u) => /\.(png|svg)$/i.test(u));
+  if (iconRefs.length < 100) {
+    throw new Error(
+      `HTML 里只有 ${iconRefs.length} 个图标引用（期望 100+）。` +
+        `通常是 src/icon.ts 的 import.meta.globEager 路径写错，匹配到了 0 个文件。`
+    );
+  }
+
+  // CSS 里的 url() 同样校验（图标遮罩等）
+  for (const file of files.filter((f) => f.endsWith(".css"))) {
+    const css = fs.readFileSync(path.join(assetsDir, file), "utf-8");
+    for (const m of css.matchAll(/url\(([^)]+)\)/g)) {
+      const u = m[1].trim().replace(/^['"]|['"]$/g, "");
+      if (/^(data:|#|https?:|blob:)/.test(u)) continue;
+      if (u.startsWith("/")) {
+        const rel = u.slice(basePrefix.length);
+        if (!fs.existsSync(path.join(distDir, rel))) {
+          throw new Error(`CSS ${file} 引用了不存在的资源 ${u}`);
+        }
+      }
+    }
+  }
+}
+
 async function main() {
   if (!fs.existsSync(ssrEntry)) {
     throw new Error(
@@ -106,6 +190,7 @@ async function main() {
   html = inject(html, APP_PLACEHOLDER, appHtml);
 
   fs.writeFileSync(indexPath, html, "utf-8");
+  checkImmutableAssets(html);
 
   const bytes = Buffer.byteLength(html, "utf8");
   const gzip = zlib.gzipSync(Buffer.from(html, "utf8")).length;
