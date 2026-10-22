@@ -46,3 +46,9 @@
 **遗留。** EdgeOne（主渠道）把不存在的路径一律回退成 SPA 首页并返回 HTTP 200，
 所以 `/robots.txt` 和 `/sitemap.xml` 目前都返回 442 字节的 HTML 而不是各自的文件
 （即软 404）。需要往 `public/` 里放真实的 `robots.txt` / `sitemap.xml` 才会被覆盖。
+
+**2026-10-22 更新。** 图标已迁到 `src/assets/icons`，CSS 遮罩改用相对
+`url('../assets/icons/*.svg')`，由 Vite 产出带 hash 的 `/assets/*` 路径；
+本文中「`--base` 会把 `url('/icons/*.svg')` 改写成 `/blue-mage/icons/...`」
+描述的是迁走之前的行为。缓存策略见
+[ADR-0006](./0006-static-asset-caching.md)。

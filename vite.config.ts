@@ -59,6 +59,16 @@ export default defineConfig({
     },
   },
 
+  build: {
+    /**
+     * 图标普遍只有 2–4 KB，默认的 4 KB 内联阈值会把相当一部分图标变成
+     * base64 塞进 JS bundle —— 既失去长期缓存（文件没有独立 URL），
+     * 又把首屏 JS 撑大。设为 0 强制所有图标产出独立文件，
+     * 文件名带 content hash，由 public/_headers 配置一年期 immutable。
+     */
+    assetsInlineLimit: 0,
+  },
+
   /**
    * 只有 SSR 构建（yarn prerender）会读这段。
    *

@@ -1,0 +1,30 @@
+# Cloudflare Workers Static Assets 的响应头配置（构建时从 public/ 复制到 dist/）。
+# 该文件本身不会被当作静态资源提供。
+#
+# 关键约束：Cloudflare 的 _headers 在「多条规则同时匹配」时是**合并**，不是覆盖。
+# 所以这里不要写带 Cache-Control 的 /* 兜底规则，否则会与 /assets/* 合并出冲突值。
+#
+# 只有文件名带 content hash 的资源才能用 immutable。图标（src/assets/icons）
+# 已经过 Vite 资源管道，构建后位于 /assets/*.png|svg，因此也覆盖在第一条规则内。
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# 以下文件名不含 hash，不能 immutable；给一个有上限的 TTL
+/favicon.ico
+  Cache-Control: public, max-age=86400
+
+/og-image.png
+  Cache-Control: public, max-age=86400
+
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600
