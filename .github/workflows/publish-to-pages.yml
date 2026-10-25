@@ -30,12 +30,12 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           
-          git add tools/spells.json
-          git add tools/method_updates.csv
-          git add tools/map-keys.json
+          git add tools/data/spells.json
+          git add tools/data/method_updates.csv
+          git add tools/data/map-keys.json
           # 新增技能时 update-descriptions.js 会增量抓取官方描述并落盘，
           # 提交缓存后后续构建不再请求 API
-          git add tools/descriptions.json
+          git add tools/data/descriptions.json
           git add src/App.vue
           
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: auto-update spells data and build date [skip ci]" && git push)

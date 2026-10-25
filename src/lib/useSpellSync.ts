@@ -1,5 +1,5 @@
 import { ref, watch, computed } from 'vue';
-import spells from "../../tools/spells.json";
+import spells from "../../tools/data/spells.json";
 import { loadSetting, saveSetting } from "./setting";
 import type { SpellStatusArray, SpellStatus } from "./interface";
 

@@ -32,7 +32,7 @@ function injectCanonical(): Plugin {
 }
 
 /**
- * index.html 里的两个注释占位符由 tools/prerender.js 在构建时替换。
+ * index.html 里的两个注释占位符由 tools/pagegen/prerender.js 在构建时替换。
  * 开发服务器不跑预渲染，占位符会留在 DOM 里，让 createSSRApp().mount()
  * 以为"有服务端内容"而去 hydration 并报不一致。serve 阶段直接抹掉，
  * dev 的 DOM 与加预渲染之前逐字节一致。
@@ -50,16 +50,16 @@ function stripPrerenderPlaceholders(): Plugin {
 }
 
 // CJS 模板模块（tools/ 下脚本共用），esbuild 打包 config 时会一并内联
-const spellPageTemplate = require("./tools/spell-page-template.js");
+const spellPageTemplate = require("./tools/pagegen/spell-page-template.js");
 
 /**
  * dev 服务器按需渲染技能详情页。
  *
- * 详情页是构建产物（dist/spell/<id>/index.html，由 tools/generate-spell-pages.js
+ * 详情页是构建产物（dist/spell/<id>/index.html，由 tools/pagegen/generate-spell-pages.js
  * 在 prerender 之后生成），yarn dev 下不存在 —— 不加这个中间件，点击技能
  * 条目的「详情页」链接会被 SPA fallback 兜回列表壳页，看起来像「没跳转」。
  *
- * 与构建期共用 tools/spell-page-template.js 这一份模板；数据（spells.json /
+ * 与构建期共用 tools/pagegen/spell-page-template.js 这一份模板；数据（spells.json /
  * descriptions.json）每次请求现读，dev 过程中改数据刷新即可见。
  * 图标没有构建 hash 可查，直接指 /src/ 源文件（dev 由 Vite 静态服务）。
  */
@@ -81,7 +81,7 @@ function spellPagesInDev(): Plugin {
         if (!ctx) {
           res.statusCode = 404;
           res.setHeader("Content-Type", "text/plain; charset=utf-8");
-          res.end(`404: tools/spells.json 里没有 action ${m[1]}`);
+          res.end(`404: tools/data/spells.json 里没有 action ${m[1]}`);
           return;
         }
         const html = spellPageTemplate.renderSpellPage({

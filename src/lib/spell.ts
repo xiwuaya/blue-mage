@@ -1,4 +1,4 @@
-import rawSpells from "../../tools/spells.json";
+import rawSpells from "../../tools/data/spells.json";
 import type { SpellStatusArray } from "./interface";
 
 // 1. 在枚举中新增 Treasure

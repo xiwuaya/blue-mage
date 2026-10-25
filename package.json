@@ -4,17 +4,17 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node tools/update-date.js && node tools/update-methods.js && node tools/update-map-keys.js && node tools/update-descriptions.js",
-    "prerender": "vite build --ssr src/entry-server.ts --outDir dist-ssr && node tools/prerender.js && node tools/generate-spell-pages.js",
-    "prerender:subpath": "vite build --ssr src/entry-server.ts --outDir dist-ssr --base=/blue-mage/ && node tools/prerender.js && node tools/generate-spell-pages.js",
+    "prebuild": "node tools/update/update-date.js && node tools/update/update-methods.js && node tools/update/update-map-keys.js && node tools/update/update-descriptions.js",
+    "prerender": "vite build --ssr src/entry-server.ts --outDir dist-ssr && node tools/pagegen/prerender.js && node tools/pagegen/generate-spell-pages.js",
+    "prerender:subpath": "vite build --ssr src/entry-server.ts --outDir dist-ssr --base=/blue-mage/ && node tools/pagegen/prerender.js && node tools/pagegen/generate-spell-pages.js",
     "build": "vue-tsc --noEmit && vite build && yarn prerender",
     "build:subpath": "yarn prebuild && vue-tsc --noEmit && vite build --base=/blue-mage/ && yarn prerender:subpath",
     "deploy": "yarn build:subpath && gh-pages -d dist --nojekyll",
     "preview": "vite preview --port 5050",
     "typecheck": "vue-tsc --noEmit",
-    "verify:hydration": "node tools/verify-hydration.mjs",
-    "verify:cache": "node tools/verify-cache.mjs",
-    "bench:party": "esbuild tools/bench-party-grouping.ts --bundle --platform=node --format=cjs --outfile=node_modules/.cache/bench-party-grouping.cjs && node node_modules/.cache/bench-party-grouping.cjs",
+    "verify:hydration": "node tools/verify/verify-hydration.mjs",
+    "verify:cache": "node tools/verify/verify-cache.mjs",
+    "bench:party": "esbuild tools/oneoff/bench-party-grouping.ts --bundle --platform=node --format=cjs --outfile=node_modules/.cache/bench-party-grouping.cjs && node node_modules/.cache/bench-party-grouping.cjs",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
