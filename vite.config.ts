@@ -49,10 +49,57 @@ function stripPrerenderPlaceholders(): Plugin {
   };
 }
 
+// CJS 模板模块（tools/ 下脚本共用），esbuild 打包 config 时会一并内联
+const spellPageTemplate = require("./tools/spell-page-template.js");
+
+/**
+ * dev 服务器按需渲染技能详情页。
+ *
+ * 详情页是构建产物（dist/spell/<id>/index.html，由 tools/generate-spell-pages.js
+ * 在 prerender 之后生成），yarn dev 下不存在 —— 不加这个中间件，点击技能
+ * 条目的「详情页」链接会被 SPA fallback 兜回列表壳页，看起来像「没跳转」。
+ *
+ * 与构建期共用 tools/spell-page-template.js 这一份模板；数据（spells.json /
+ * descriptions.json）每次请求现读，dev 过程中改数据刷新即可见。
+ * 图标没有构建 hash 可查，直接指 /src/ 源文件（dev 由 Vite 静态服务）。
+ */
+function spellPagesInDev(): Plugin {
+  return {
+    name: "spell-pages-in-dev",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const method = (req.method || "GET").toUpperCase();
+        if (method !== "GET" && method !== "HEAD") return next();
+        const url = (req.url || "").split("?")[0];
+        const base = server.config.base || "/";
+        const trimmed = url.startsWith(base) ? url.slice(base.length - 1) : url;
+        const m = trimmed.match(/^\/spell\/(\d+)\/?$/);
+        if (!m) return next();
+
+        const ctx = spellPageTemplate.loadSpellContext(m[1]);
+        if (!ctx) {
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "text/plain; charset=utf-8");
+          res.end(`404: tools/spells.json 里没有 action ${m[1]}`);
+          return;
+        }
+        const html = spellPageTemplate.renderSpellPage({
+          ...ctx,
+          base,
+          resolveIcon: (name: string) => `${base}src/assets/icons/spells/${name}`,
+        });
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.end(html);
+      });
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "/",
-  plugins: [vue(), injectCanonical(), stripPrerenderPlaceholders()],
+  plugins: [vue(), injectCanonical(), stripPrerenderPlaceholders(), spellPagesInDev()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

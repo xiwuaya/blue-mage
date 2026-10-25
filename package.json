@@ -4,9 +4,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node tools/update-date.js && node tools/update-methods.js && node tools/update-map-keys.js",
-    "prerender": "vite build --ssr src/entry-server.ts --outDir dist-ssr && node tools/prerender.js",
-    "prerender:subpath": "vite build --ssr src/entry-server.ts --outDir dist-ssr --base=/blue-mage/ && node tools/prerender.js",
+    "prebuild": "node tools/update-date.js && node tools/update-methods.js && node tools/update-map-keys.js && node tools/update-descriptions.js",
+    "prerender": "vite build --ssr src/entry-server.ts --outDir dist-ssr && node tools/prerender.js && node tools/generate-spell-pages.js",
+    "prerender:subpath": "vite build --ssr src/entry-server.ts --outDir dist-ssr --base=/blue-mage/ && node tools/prerender.js && node tools/generate-spell-pages.js",
     "build": "vue-tsc --noEmit && vite build && yarn prerender",
     "build:subpath": "yarn prebuild && vue-tsc --noEmit && vite build --base=/blue-mage/ && yarn prerender:subpath",
     "deploy": "yarn build:subpath && gh-pages -d dist --nojekyll",

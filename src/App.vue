@@ -85,6 +85,12 @@ onMounted(() => {
     showHelpModal.value = true;
     saveSetting("has-seen-help", true);
   }
+
+  // ?search= 深链：技能详情页的「在查询工具中打开」会把技能名放进 query。
+  // 必须挂在 onMounted 而不是 setup / onBeforeMount —— 预渲染不读 URL，
+  // 提前改 filter 会造成首屏 hydration 不一致。
+  const q = new URLSearchParams(location.search).get("search");
+  if (q) filter.value = q;
 });
 
 // --- 补回被遗漏的类型变更处理器 ---
@@ -180,7 +186,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
               <li><span class="color-def text-grey">灰色代表确定无法学会的途径，以免后人重复实验</span></li>
             </ul>
             <p>
-              本网页内容最近一次更新于<strong>2026年10月22日</strong>（7.56版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
+              本网页内容最近一次更新于<strong>2026年10月25日</strong>（7.56版本）。有对网页的建议反馈、或帮忙提供新的学习途径样本，可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
                 rel="noopener noreferrer">点此提出</a>
             </p>
             <p>

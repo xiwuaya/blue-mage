@@ -22,6 +22,10 @@ const emit = defineEmits<{
   (e: "search", keyword: string): void;
   (e: "openMap", payload: { spellName: string; method: SpellMethodMap }): void;
 }>();
+
+// 构建期生成的静态详情页（效果描述 + 全部获取途径）。BASE_URL 保证在
+// 根域（/）与 GitHub Pages 子路径（/blue-mage/）两种部署下都指对地方。
+const detailUrl = `${import.meta.env.BASE_URL}spell/${props.spell.action}/`;
 </script>
 
 <template>
@@ -46,6 +50,7 @@ const emit = defineEmits<{
         </Tag>
         {{ props.spell.spell }}
         <small>(Lv.{{ props.spell.level }})</small>
+        <a class="detail-link" :href="detailUrl" title="查看技能详情页：效果描述与全部获取途径">详情页</a>
         <small v-if="props.showUnlearnedCount" class="unlearned-count text-gold">
           (未掌握: {{ props.unlearnedCount }}人<span v-if="props.showUnlearnedUsers && props.unlearnedUsers && props.unlearnedUsers.length"> - <span class="unlearned-users"><span v-for="(user, index) in props.unlearnedUsers" :key="`${user.name}-${index}`" class="unlearned-user" :style="{ color: user.color }">{{ user.name }}</span></span></span>)
         </small>
@@ -89,6 +94,19 @@ const emit = defineEmits<{
   line-height: 24px;
   font-size: 1rem;
   font-weight: normal;
+}
+
+.detail-link {
+  margin-left: 8px;
+  font-size: 0.75rem;
+  color: #ffbe31;
+  opacity: 0.65;
+  text-decoration: none;
+}
+
+.detail-link:hover {
+  opacity: 1;
+  text-decoration: underline;
 }
 
 .content .indicator {
