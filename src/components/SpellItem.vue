@@ -50,7 +50,15 @@ const detailUrl = `${import.meta.env.BASE_URL}spell/${props.spell.action}/`;
         </Tag>
         {{ props.spell.spell }}
         <small>(Lv.{{ props.spell.level }})</small>
-        <a class="detail-link" :href="detailUrl" title="查看技能详情页：效果描述与全部获取途径">详情页</a>
+        <!-- 与版本号标签共用同一开关。用 v-show 而非 v-if：关闭时锚点仍留在
+             预渲染 HTML 里（仅 display:none），bot 抓取的静态页互链不受
+             「默认关闭」影响，只对人类用户隐藏视觉入口。 -->
+        <a
+          v-show="props.showPatchVersion"
+          class="detail-link"
+          :href="detailUrl"
+          title="查看技能详情页：效果描述与全部获取途径"
+        >详情页</a>
         <small v-if="props.showUnlearnedCount" class="unlearned-count text-gold">
           (未掌握: {{ props.unlearnedCount }}人<span v-if="props.showUnlearnedUsers && props.unlearnedUsers && props.unlearnedUsers.length"> - <span class="unlearned-users"><span v-for="(user, index) in props.unlearnedUsers" :key="`${user.name}-${index}`" class="unlearned-user" :style="{ color: user.color }">{{ user.name }}</span></span></span>)
         </small>
