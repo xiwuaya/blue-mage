@@ -1,0 +1,242 @@
+{
+  "names": {
+    "逆向工程": 457,
+    "怨怼的独眼——复仇者": 1956,
+    "星歌异闻：伟大武士的证明": 933,
+    "不燃怪树——蔷提可": 1451,
+    "星歌异闻：镜里蕴奥": 935,
+    "臭得冒泡": 1256,
+    "重逢的阻挠者——太阳魔花纳兰切切格": 1243,
+    "黑水": 1888,
+    "坚甲铁龙——塔拉斯克": 838,
+    "蛙蛙子": 249,
+    "狂暴巨兽——强化奇美拉": 647,
+    "怒火攻心——与火共舞马玛加": 1904,
+    "行刑人的家人——断颈鹰": 1198,
+    "狮鹫物语": 1186,
+    "自血而生": 1196,
+    "飞天魔厨——佩鲁的天敌": 1880,
+    "吞噬牦牛的巨人——巨脚雪人": 793,
+    "等待者——孤独的贝洛·罗格": 783,
+    "黑色怪鸟": 844,
+    "图拉尔候鸟": 1882,
+    "复仇鳏夫——涅那乌尼尔": 1202,
+    "失控的最终兵器——致命武器": 1207,
+    "蛇王得酷热涅：荒野的死斗": 1871,
+    "来自雪国的刺客": 1749,
+    "晶心冻魄": 1753
+  },
+  "fates": {
+    "249": {
+      "en": "You Call That a Toad",
+      "patch": 1,
+      "lvl": 4,
+      "zoneid": 31,
+      "coords": [
+        24,
+        22
+      ]
+    },
+    "457": {
+      "en": "Reverse Engineering",
+      "patch": 1,
+      "lvl": 49,
+      "zoneid": 46,
+      "coords": [
+        18,
+        15
+      ]
+    },
+    "647": {
+      "en": "Go, Go, Gorgimera",
+      "patch": 1,
+      "lvl": 49,
+      "zoneid": 46,
+      "coords": [
+        17,
+        14
+      ]
+    },
+    "783": {
+      "en": "Toad Alone",
+      "patch": 3,
+      "lvl": 59,
+      "zoneid": 2001,
+      "coords": [
+        11,
+        34
+      ]
+    },
+    "793": {
+      "en": "We Fought a Dzu",
+      "patch": 3,
+      "lvl": 51,
+      "zoneid": 2200,
+      "coords": [
+        20,
+        33
+      ]
+    },
+    "838": {
+      "en": "Special Tarasque Force",
+      "patch": 3,
+      "lvl": 53,
+      "zoneid": 2000,
+      "coords": [
+        13,
+        36
+      ]
+    },
+    "844": {
+      "en": "Anzu Trois",
+      "patch": 3,
+      "lvl": 50,
+      "zoneid": 2100,
+      "coords": [
+        29,
+        35
+      ]
+    },
+    "933": {
+      "en": "The Way of the Samurai",
+      "patch": 3.1,
+      "lvl": 31,
+      "zoneid": null,
+      "coords": null
+    },
+    "935": {
+      "en": "The Key to Amatsu: Kyori",
+      "patch": 3.1,
+      "lvl": 33,
+      "zoneid": null,
+      "coords": null
+    },
+    "1186": {
+      "en": "Fletching Returns",
+      "patch": 4,
+      "lvl": 68,
+      "zoneid": 2407,
+      "coords": [
+        26,
+        28
+      ]
+    },
+    "1196": {
+      "en": "The Day of the Griffins",
+      "patch": 4,
+      "lvl": 68,
+      "zoneid": 2407,
+      "coords": [
+        15,
+        25
+      ]
+    },
+    "1198": {
+      "en": "Breakneck",
+      "patch": 4,
+      "lvl": 68,
+      "zoneid": null,
+      "coords": null
+    },
+    "1202": {
+      "en": "Slaughterwife-five",
+      "patch": 4,
+      "lvl": 68,
+      "zoneid": 2407,
+      "coords": [
+        23,
+        30
+      ]
+    },
+    "1207": {
+      "en": "The Magitek Is Back",
+      "patch": 4,
+      "lvl": 68,
+      "zoneid": 2407,
+      "coords": [
+        12,
+        27
+      ]
+    },
+    "1243": {
+      "en": "The State of Reunion",
+      "patch": 4,
+      "lvl": 65,
+      "zoneid": 2411,
+      "coords": [
+        33,
+        24
+      ]
+    },
+    "1256": {
+      "en": "Purbol Reign",
+      "patch": 4,
+      "lvl": 65,
+      "zoneid": null,
+      "coords": null
+    },
+    "1451": {
+      "en": "I'll Be Bark",
+      "patch": 5,
+      "lvl": 74,
+      "zoneid": null,
+      "coords": null
+    },
+    "1749": {
+      "en": "Let It Grow",
+      "patch": 6,
+      "lvl": 80,
+      "zoneid": null,
+      "coords": null
+    },
+    "1753": {
+      "en": "Residual Complications",
+      "patch": 6,
+      "lvl": 88,
+      "zoneid": null,
+      "coords": null
+    },
+    "1871": {
+      "en": "The Serpentlord Seethes",
+      "patch": 7,
+      "lvl": 100,
+      "zoneid": null,
+      "coords": null
+    },
+    "1880": {
+      "en": "Panaq Attack",
+      "patch": 7,
+      "lvl": 90,
+      "zoneid": null,
+      "coords": null
+    },
+    "1882": {
+      "en": "Too Irate to Migrate",
+      "patch": 7,
+      "lvl": 91,
+      "zoneid": null,
+      "coords": null
+    },
+    "1888": {
+      "en": "By Your Powers Combined",
+      "patch": 7,
+      "lvl": 93,
+      "zoneid": null,
+      "coords": null
+    },
+    "1904": {
+      "en": "Trial by Firedance",
+      "patch": 7,
+      "lvl": 94,
+      "zoneid": null,
+      "coords": null
+    },
+    "1956": {
+      "en": "(Got My Eye) Set on You",
+      "patch": 7,
+      "lvl": 98,
+      "zoneid": null,
+      "coords": null
+    }
+  }
+}

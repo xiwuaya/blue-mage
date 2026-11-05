@@ -44,6 +44,8 @@ export interface SpellMethodFate extends SpellMethodBase {
   map: string;
   name: string;
   mob: string;
+  /** 游戏内显示坐标（update-fate-positions.js 自动补充或人工标注），缺失表示尚未定位 */
+  position?: number[];
 }
 
 export interface SpellMethodSpecial extends SpellMethodBase {
@@ -99,8 +101,11 @@ export function renderSpellMethod(method: SpellMethod) {
     case SpellType.Carnivale:
     case SpellType.Jobquest: // 新增这一行复用渲染逻辑
       return `${method.name} - ${method.mob}`;
-    case SpellType.FATE:
-      return `${method.map} - ${method.name} - ${method.mob}`;
+    case SpellType.FATE: {
+      const pos = method.position;
+      const posText = pos && pos.length ? ` (x:${pos[0]}, y:${pos[1]}${pos[2] ? `, z:${pos[2]}` : ""})` : "";
+      return `${method.map}${posText} - ${method.name} - ${method.mob}`;
+    }
     case SpellType.Special:
       return `${method.text}`;
   }

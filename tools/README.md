@@ -22,6 +22,7 @@
 | `method_updates.csv` | **人工维护**：新学习途径的增量更新 | `update/update-methods.js` |
 | `override.json` | 人工维护：parse.js 的字段覆盖 | 仅 `oneoff/parse.js` |
 | `map-keys.json` | **自动生成**：`update/update-map-keys.js` 用 XIVAPI 反查中文地名 | `src/lib/map.ts` |
+| `fate-positions.json` | **自动生成 + 缓存**：`update/update-fate-positions.js` 匹配 FATE 中文名并抓取 Garland 坐标，回写 `spells.json` 的 fate 方法 `position`（只补缺失） | 缓存本身无消费方，产物进 `spells.json` |
 | `descriptions.json` | **自动生成 + 缓存**：`update/update-descriptions.js` 抓取的官方描述（text + html 双格式） | `pagegen/generate-spell-pages.js`（详情页用 html、llms 用 text） |
 
 ## 自动化链路
@@ -30,6 +31,7 @@
 yarn build
 ├─ prebuild   update/update-date.js        改 App.vue 更新日期
 │             update/update-methods.js     应用 method_updates.csv 增量
+│             update/update-fate-positions.js 补充 fate 方法坐标（缓存完整时零请求）
 │             update/update-map-keys.js    反查 XIVAPI 生成 map-keys.json
 │             update/update-descriptions.js 增量抓取描述（缓存完整时零请求）
 ├─ vue-tsc → vite build
