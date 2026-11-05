@@ -977,13 +977,13 @@ onBeforeUnmount(() => {
   color: #ccc;
 }
 
-/* 用户名称颜色选择器 */
+/* 用户名称颜色选择器（多人模式调色盘暂时隐藏） */
 .color-picker-btn {
   position: relative;
   width: 26px;
   height: 26px;
   flex: 0 0 26px;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   color: #ccc;
@@ -1176,13 +1176,13 @@ onBeforeUnmount(() => {
   border-color: #333 !important;
 }
 
-.layer-hidden /* 用户名称颜色选择器 */
+.layer-hidden /* 用户名称颜色选择器（多人模式调色盘暂时隐藏） */
 .color-picker-btn {
   position: relative;
   width: 26px;
   height: 26px;
   flex: 0 0 26px;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   color: #ccc;
