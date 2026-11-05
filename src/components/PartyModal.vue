@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, computed, onBeforeUnmount } from 'vue';
+import { ref, watch, computed, nextTick, onBeforeUnmount } from 'vue';
 import { spells } from '@/lib/spell';
 import type { FilterTypes } from '@/lib/interface';
 import PartyGroupingWorker from '@/lib/partyGrouping.worker?worker';
 import type { PartyGroupResult } from '@/lib/partyGrouping';
+import { useSpellSync } from '@/lib/useSpellSync';
+import { spellIcon, spellIconSrcset } from '@/icon';
 
 // ==========================================
 // 1. 属性接收与事件定义 (增加了来自 App.vue 的三态状态同步)
@@ -31,6 +33,9 @@ const emit = defineEmits<{
   (e: 'update:partyVisibilityStates', val: number[]): void;
   (e: 'resetMinUnlearned'): void;
 }>();
+
+// 主用户指针与切换动作来自全局 store（useSpellSync 单例，App.vue 已初始化监听）
+const { mainUserSlot, setMainUser } = useSpellSync();
 
 // ==========================================
 // 2. 本地状态管理与双向数据对齐
@@ -163,6 +168,8 @@ const resetParty = () => {
   const isConfirmed = window.confirm("确定要重置所有队友数据吗？此操作无法撤销。");
   // 只有用户点击了“确定”，才向父组件发送修改指令
   if (isConfirmed) {
+    // 指针回用户 1：存档随之从槽 0 文本重建，避免停在数据被清空的队友槽位上
+    mainUserSlot.value = 0;
     // const len = localPartyData.value.length;
     const len = 3;
     localPartyData.value = Array(len).fill("");
@@ -187,6 +194,15 @@ const addTeammate = () => {
 };
 
 const removeTeammate = (index: number) => {
+  const slot = index + 1;
+  // 指针跟随：删的就是主用户 -> 回落到用户 1（存档由监听从槽 0 文本重建，该用户
+  // 的会话勾选随删除丢弃，与「删除即丢弃队友数据」的既有语义一致）；
+  // 删的是主用户上方的队友 -> 指针平移，继续指向同一个人
+  if (slot === mainUserSlot.value) {
+    mainUserSlot.value = 0;
+  } else if (slot < mainUserSlot.value) {
+    mainUserSlot.value -= 1;
+  }
   localPartyData.value.splice(index, 1);
   localPartyNames.value.splice(index, 1);
   localPartyColors.value.splice(index + 1, 1);
@@ -338,18 +354,34 @@ const bestParty = computed(() => {
 
 
 // --- 新增：应用该队伍配置，隐藏其余未被选中的人 ---
+// 主用户（指针所指槽位）的三态本地镜像读写：主用户不一定是用户 1
+const getMainUserVisibilityLocal = () =>
+  mainUserSlot.value === 0
+    ? localUser1VisibilityState.value
+    : (localPartyVisibilityStates.value[mainUserSlot.value - 1] ?? 0);
+const setMainUserVisibilityLocal = (val: number) => {
+  if (mainUserSlot.value === 0) {
+    localUser1VisibilityState.value = val;
+  } else {
+    localPartyVisibilityStates.value[mainUserSlot.value - 1] = val;
+  }
+};
+
 const applyConfiguration = (teamIndices: number[]) => {
-  // 1. 处理用户 1：如果在选中的队伍中(0)，设为可见(0)；否则设为隐藏(2)
-  if (teamIndices.includes(0)) {
-    if (localUser1VisibilityState.value === 2) {
-      localUser1VisibilityState.value = 0;
+  // 1. 处理主用户：如果在选中的队伍中，设为可见(0)；否则设为隐藏(2)。
+  //    teamIndices 的编号体系（0 = 用户 1，i + 1 = 队友 i）与槽位编号一致，
+  //    可直接与 mainUserSlot 比较；主用户被隐藏是正常路径（见 plan.md 决策 4）
+  if (teamIndices.includes(mainUserSlot.value)) {
+    if (getMainUserVisibilityLocal() === 2) {
+      setMainUserVisibilityLocal(0);
     }
   } else {
-    localUser1VisibilityState.value = 2;
+    setMainUserVisibilityLocal(2);
   }
 
-  // 2. 处理其他队员
+  // 2. 处理其他队员（跳过主用户槽位，已在上面处理）
   for (let i = 0; i < localPartyData.value.length; i++) {
+    if (i + 1 === mainUserSlot.value) continue;
     // 队员的索引是 i + 1
     if (teamIndices.includes(i + 1)) {
       if (localPartyVisibilityStates.value[i] === 2) {
@@ -365,10 +397,106 @@ const applyConfiguration = (teamIndices: number[]) => {
 // 5. 多队伍组合推荐（点击触发，Web Worker 后台计算）
 // ==========================================
 const displayName = (originalIndex: number) => {
-  return originalIndex === 0
-    ? (localUser1Name.value || '用户 1 (我)')
+  // 「(我)」后缀跟随主用户指针，不再固定在用户 1
+  const base = originalIndex === 0
+    ? (localUser1Name.value || '用户 1')
     : (localPartyNames.value[originalIndex - 1] || `用户 ${originalIndex + 1}`);
+  return originalIndex === mainUserSlot.value ? `${base} (我)` : base;
 };
+
+// ==========================================
+// 3.5 悬停预览：「设为我」按钮 → 该用户未掌握技能悬浮窗
+// ==========================================
+// 面板 Teleport 到 body：party-modal 有 overflow-y: auto，行内绝对定位会被裁剪。
+// 按钮外层套 span 承接鼠标事件：禁用态按钮（当前/空槽）在各浏览器里鼠标事件
+// 行为不一致，span 始终可靠；空槽无数据则不弹面板。
+type PreviewEntry = { no: number; name: string; icon: string; srcset: string; action: number };
+
+const previewSlot = ref<number | null>(null);
+const previewPos = ref({ x: 0, y: 0 });
+const previewRef = ref<HTMLElement | null>(null);
+let previewShowTimer: ReturnType<typeof setTimeout> | null = null;
+let previewHideTimer: ReturnType<typeof setTimeout> | null = null;
+
+const parsePreviewList = (text: string): PreviewEntry[] => {
+  const byNo = new Map(spells.map((s) => [Number(s.no), s]));
+  const nums = [...new Set((text.match(/\d+/g) || []).map(Number))].sort((a, b) => a - b);
+  const list: PreviewEntry[] = [];
+  for (const no of nums) {
+    const s = byNo.get(no);
+    // 数据里不存在的编号（过期存档）直接跳过
+    if (s) list.push({ no, name: s.spell, icon: spellIcon(s, true), srcset: spellIconSrcset(s, true), action: s.action });
+  }
+  return list;
+};
+
+const previewData = computed(() => {
+  const slot = previewSlot.value;
+  if (slot === null || slot > localPartyData.value.length) return null;
+  const text = slot === 0 ? localUser1Spells.value : (localPartyData.value[slot - 1] || "");
+  const name = slot === 0
+    ? (localUser1Name.value || "用户 1")
+    : (localPartyNames.value[slot - 1] || `用户 ${slot + 1}`);
+  return { name, list: parsePreviewList(text), isMain: slot === mainUserSlot.value };
+});
+
+// 面板渲染后按按钮位置贴靠：优先右侧，放不下换左侧，垂直方向夹回视口内
+const placePreview = (rect: DOMRect) => {
+  nextTick(() => {
+    const panel = previewRef.value;
+    if (!panel) return;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const pw = panel.offsetWidth;
+    const ph = panel.offsetHeight;
+    let x = rect.right + 8;
+    if (x + pw > vw - 8) x = rect.left - pw - 8;
+    if (x < 8) x = Math.max(8, vw - pw - 8);
+    let y = rect.top;
+    if (y + ph > vh - 8) y = vh - ph - 8;
+    if (y < 8) y = 8;
+    previewPos.value = { x, y };
+  });
+};
+
+const clearPreviewTimers = () => {
+  if (previewShowTimer) { clearTimeout(previewShowTimer); previewShowTimer = null; }
+  if (previewHideTimer) { clearTimeout(previewHideTimer); previewHideTimer = null; }
+};
+
+const showPreview = (slot: number, e: MouseEvent) => {
+  if (previewHideTimer) { clearTimeout(previewHideTimer); previewHideTimer = null; }
+  // 空队友槽无数据可预览：不弹面板；面板正开着则收起
+  // （用户 1 例外：学满后也允许看「没有未掌握」的状态）
+  const hasData = slot === 0 || !!(localPartyData.value[slot - 1] || "").trim();
+  if (!hasData) { previewSlot.value = null; return; }
+  // 面板已开着时在按钮间移动：立即切换，不等延时
+  const delay = previewSlot.value !== null && previewSlot.value !== slot ? 0 : 180;
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  if (previewShowTimer) { clearTimeout(previewShowTimer); previewShowTimer = null; }
+  previewShowTimer = setTimeout(() => {
+    previewShowTimer = null;
+    previewSlot.value = slot;
+    placePreview(rect);
+  }, delay);
+};
+
+const schedulePreviewHide = () => {
+  if (previewShowTimer) { clearTimeout(previewShowTimer); previewShowTimer = null; }
+  if (previewHideTimer) clearTimeout(previewHideTimer);
+  previewHideTimer = setTimeout(() => {
+    previewHideTimer = null;
+    previewSlot.value = null;
+  }, 120);
+};
+
+const cancelPreviewHide = () => {
+  if (previewHideTimer) { clearTimeout(previewHideTimer); previewHideTimer = null; }
+};
+
+// 弹窗关闭 / 组件卸载时收起面板，防止 Teleport 残留
+watch(() => props.show, (show) => { if (!show) { clearPreviewTimers(); previewSlot.value = null; } });
+onBeforeUnmount(clearPreviewTimers);
 
 type MultiTeamStatus = 'idle' | 'computing' | 'done' | 'error';
 type MultiTeamWorkerMessage =
@@ -493,11 +621,11 @@ onBeforeUnmount(() => {
 
           <div class="help-text">
             <p style="margin-bottom: 20px;">
-              在此配置队伍成员<strong>未掌握</strong>的技能编号以开启共同学习。<strong>用户 1</strong> 默认为当前使用者，请直接复制框内数据分享给其他队员。<br />
+              在此配置队伍成员<strong>未掌握</strong>的技能编号以开启共同学习。主用户（即“我”）默认为<strong>用户 1</strong>，主页的勾选记录的就是主用户的存档；点击各用户名右侧的「设为我」可随时切换主用户，切换后原用户的数据原地保留。<br />
               如果想指定某人<strong>必须参与</strong>最优组合计算，或顶替其隐藏，点击其名字右侧的
               <span class="eye-icon icon-visible inline-icon"></span>
               按钮切换状态。<br />
-              （默认：可见参与计算；点一次：高亮且最优推荐必带；再点一次：隐藏不计入且主页改动不连动）<br />
+              （默认：可见参与计算；点一次：高亮且最优推荐必带；再点一次：隐藏不计入且该用户数据不再跟随主页改动）<br />
               当除用户1外文本框非空时，自动进入多人模式，恢复到单人模式仅需要清空其他用户文本框中的内容即可<br />
               （注：此功能尚在测试阶段，如果遇到问题可以<a href="https://docs.qq.com/sheet/DSE1BTnd5YkNJeGNk" target="_blank"
                 rel="noopener noreferrer">点此反馈</a>）
@@ -520,7 +648,7 @@ onBeforeUnmount(() => {
                   <div v-for="(teamIndices, teamIdx) in bestParty.allBestUsersIndices" :key="teamIdx" class="team-row">
                     <span v-if="teamIdx > 0" class="or-text">或</span>
                     <span v-for="idx in teamIndices" :key="idx" class="user-badge">
-                      {{ idx === 0 ? (localUser1Name || '用户 1 (我)') : (localPartyNames[idx - 1] || `用户 ${idx + 1}`) }}
+                      {{ displayName(idx) }}
                     </span>
                     <span class="apply-text" @click="applyConfiguration(teamIndices)" title="点击后将隐藏不在该配置中的其他队员">
                       应用该配置
@@ -576,7 +704,13 @@ onBeforeUnmount(() => {
 
               <div class="party-user" :class="{ 'layer-hidden': localUser1VisibilityState === 2 }">
                 <div class="name-row">
-                  <input class="name-input" v-model="localUser1Name" :style="{ color: ensurePartyColor(0) }" placeholder="用户 1 (我)" />
+                  <input class="name-input" v-model="localUser1Name" :style="{ color: ensurePartyColor(0) }" :placeholder="mainUserSlot === 0 ? '用户 1 (我)' : '用户 1'" />
+                  <span class="set-main-wrap" @mouseenter="showPreview(0, $event)" @mouseleave="schedulePreviewHide">
+                    <button class="set-main-btn" :class="{ 'is-current': mainUserSlot === 0 }" :disabled="mainUserSlot === 0"
+                      @click="setMainUser(0)">
+                      {{ mainUserSlot === 0 ? '当前' : '设为我' }}
+                    </button>
+                  </span>
                   <label class="color-picker-btn" :style="{ color: ensurePartyColor(0) }" title="设置该用户名称颜色">
                     <span class="palette-icon icon-palette"></span>
                     <input class="color-input" type="color" :value="ensurePartyColor(0)" @input="setPartyColor(0, $event)" />
@@ -602,7 +736,16 @@ onBeforeUnmount(() => {
               <div class="party-user" :class="{ 'layer-hidden': localPartyVisibilityStates[index] === 2 }"
                 v-for="(data, index) in localPartyData" :key="index">
                 <div class="name-row">
-                  <input class="name-input" v-model="localPartyNames[index]" :style="{ color: ensurePartyColor(index + 1) }" :placeholder="'用户 ' + (index + 2)" />
+                  <input class="name-input" v-model="localPartyNames[index]" :style="{ color: ensurePartyColor(index + 1) }"
+                    :placeholder="(index + 1 === mainUserSlot ? '用户 ' + (index + 2) + ' (我)' : '用户 ' + (index + 2))" />
+                  <span class="set-main-wrap" @mouseenter="showPreview(index + 1, $event)" @mouseleave="schedulePreviewHide">
+                    <button class="set-main-btn" :class="{ 'is-current': index + 1 === mainUserSlot }"
+                      :disabled="index + 1 === mainUserSlot || !data.trim()"
+                      @click="setMainUser(index + 1)"
+                      :title="!data.trim() && index + 1 !== mainUserSlot ? '该用户没有数据，无法设为主用户' : undefined">
+                      {{ index + 1 === mainUserSlot ? '当前' : '设为我' }}
+                    </button>
+                  </span>
                   <label class="color-picker-btn" :style="{ color: ensurePartyColor(index + 1) }" title="设置该用户名称颜色">
                     <span class="palette-icon icon-palette"><i></i><i></i><i></i><i></i></span>
                     <input class="color-input" type="color" :value="ensurePartyColor(index + 1)" @input="setPartyColor(index + 1, $event)" />
@@ -628,11 +771,36 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="reset-wrap">
-              <button class="reset-btn" @click="resetParty" title="清空用户2至20的所有名称和数据，并恢复所有人默认可见">一键重置队友数据</button>
+              <button class="reset-btn" @click="resetParty" title="清空用户2至20的所有名称和数据，恢复所有人默认可见，并切回用户 1">一键重置队友数据</button>
             </div>
 
           </div>
         </div>
+      </div>
+    </Transition>
+  </Teleport>
+
+  <!-- 悬停预览面板：Teleport 到 body，避免被 party-modal 的 overflow 裁剪 -->
+  <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="previewData" ref="previewRef" class="spell-preview"
+        :style="{ left: previewPos.x + 'px', top: previewPos.y + 'px' }"
+        @mouseenter="cancelPreviewHide" @mouseleave="schedulePreviewHide">
+        <div class="preview-header">
+          <strong>{{ previewData.name }}</strong>
+          <span>未掌握 {{ previewData.list.length }} 个技能</span>
+        </div>
+        <div v-if="previewData.list.length" class="preview-grid slim-scrollbar-sm">
+          <div v-for="p in previewData.list" :key="p.no" class="preview-item">
+            <img class="preview-icon" :src="p.icon" :srcset="p.srcset" :data-ck-action-id="p.action" />
+            <span class="preview-no">No.{{ p.no }}</span>
+            <span class="preview-name">{{ p.name }}</span>
+          </div>
+        </div>
+        <div v-else class="preview-empty">该用户没有未掌握的技能</div>
+        <div class="preview-hint">{{ previewData.isMain
+          ? '该用户是当前主用户，主页勾选正在记录 TA 的存档'
+          : '点击「设为我」后，主页勾选将改为记录该用户的存档' }}</div>
       </div>
     </Transition>
   </Teleport>
@@ -873,6 +1041,126 @@ onBeforeUnmount(() => {
 .visibility-btn.is-must-include {
   color: #ffbe31;
   opacity: 1;
+}
+
+/* --- 新增：设为主用户按钮（名字右侧） --- */
+.set-main-btn {
+  background: transparent;
+  border: 1px solid #444;
+  color: #ccc;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.set-main-btn:hover:not(:disabled) {
+  border-color: #ffbe31;
+  color: #ffbe31;
+}
+
+.set-main-btn.is-current {
+  color: #ffbe31;
+  border-color: transparent;
+}
+
+.set-main-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* --- 新增：悬停预览（设为我按钮 → 该用户未掌握技能） --- */
+.set-main-wrap {
+  display: inline-flex;
+}
+
+.spell-preview {
+  position: fixed;
+  z-index: 2100; /* modal-backdrop(2000) 之上 */
+  width: 430px;
+  max-width: calc(100vw - 16px);
+  background: #2c2c2c;
+  border: 1px solid #ffbe31;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  padding: 10px 12px;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #ffbe31;
+  font-size: 0.9rem;
+}
+
+.preview-header span {
+  color: #aaa;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+/* 双列紧凑网格：百余个技能单列滚动太长，两列密度与可读性平衡 */
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 10px;
+  max-height: 46vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 0.78rem;
+  color: #ddd;
+  min-width: 0;
+}
+
+.preview-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  flex: 0 0 22px;
+}
+
+.preview-no {
+  color: #8a8a8a;
+  font-size: 0.7rem;
+  flex: 0 0 auto;
+}
+
+.preview-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-empty {
+  color: #999;
+  font-size: 0.85rem;
+  padding: 4px 0;
+}
+
+.preview-hint {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 190, 49, 0.3);
+  color: #888;
+  font-size: 0.72rem;
+  line-height: 1.4;
 }
 
 .layer-hidden {
