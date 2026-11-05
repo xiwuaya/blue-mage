@@ -5,7 +5,7 @@
 // 需要重新生成时手动执行：
 //
 //   npx playwright install chromium
-//   node tools/make-og-image.mjs
+//   node tools/oneoff/make-og-image.mjs
 //
 // 图标用站点自己的 public/favicon.ico，不用别的图片资源。
 // 该 .ico 里只有 48/32/16 三档、且都是 BMP 帧（无 PNG 帧），最大 48×48 ——
@@ -16,8 +16,8 @@
 import { readFileSync } from "fs";
 import { chromium } from "playwright";
 
-const outPath = new URL("../public/og-image.png", import.meta.url);
-const iconData = readFileSync(new URL("../public/favicon.ico", import.meta.url)).toString("base64");
+const outPath = new URL("../../public/og-image.png", import.meta.url);
+const iconData = readFileSync(new URL("../../public/favicon.ico", import.meta.url)).toString("base64");
 
 const html = `<!DOCTYPE html>
 <html lang="zh-CN">

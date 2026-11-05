@@ -1,8 +1,8 @@
 const fs = require('fs');
 const readCsv = require('./read-csv');
 
-const spellsPath = './tools/spells.json'; 
-const csvPath = './tools/method_updates.csv';
+const spellsPath = './tools/data/spells.json'; 
+const csvPath = './tools/data/method_updates.csv';
 
 if (!fs.existsSync(csvPath)) {
   console.log(`未找到增量更新文件 ${csvPath}，跳过更新。`);

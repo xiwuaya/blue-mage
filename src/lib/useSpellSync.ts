@@ -1,5 +1,5 @@
 import { ref, watch, computed } from 'vue';
-import spells from "../../tools/spells.json";
+import spells from "../../tools/data/spells.json";
 import { loadSetting, saveSetting } from "./setting";
 import type { SpellStatusArray, SpellStatus } from "./interface";
 
@@ -24,10 +24,10 @@ const spellStatus = ref<SpellStatusArray>(
 const partyData = ref<string[]>(loadSetting<string[]>("party-data") || Array(3).fill(""));
 const partyNames = ref<string[]>(loadSetting<string[]>("party-names") || Array(3).fill(""));
 const DEFAULT_PARTY_COLORS = [
-  "#FF4D4D", "#4D8DFF", "#52D273", "#FFD43B", "#B86BFF", "#FF8C42",
-  "#24C6C8", "#FF5C93", "#7AA7FF", "#A8D83E", "#8E6CFF", "#E85D04",
-  "#00A878", "#D94F70", "#1E9BDE", "#C4E538", "#6C4DDC", "#F5A623",
-  "#008F8C", "#C73665", "#356AE6", "#7CB342", "#9B51E0", "#E76F51"
+  "#e6194B", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4",
+  "#42d4f4", "#f032e6", "#bfef45", "#fabed4", "#469990", "#dcbeff",
+  "#9A6324", "#fffac8", "#800000", "#aaffc3", "#808000", "#ffd8b1",
+  "#000075", "#a9a9a9"
 ];
 
 const getDefaultPartyColor = (index: number) =>

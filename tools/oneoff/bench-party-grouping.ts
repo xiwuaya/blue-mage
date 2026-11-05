@@ -19,8 +19,8 @@ import {
   PartyGroupingTimeoutError,
   findBalancedPartyGroups,
   generateCombinationMasks,
-} from "../src/lib/partyGrouping";
-import type { PartyGroupResult, PartyGroupingStats } from "../src/lib/partyGrouping";
+} from "../../src/lib/partyGrouping";
+import type { PartyGroupResult, PartyGroupingStats } from "../../src/lib/partyGrouping";
 
 // ---------- 基础工具 ----------
 

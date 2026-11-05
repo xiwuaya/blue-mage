@@ -1,4 +1,4 @@
-const readCsv = require('./read-csv')
+const readCsv = require('../update/read-csv')
 const fs = require('fs')
 
 const actionFields = ['id', 'name']

@@ -16,7 +16,7 @@ import { existsSync, readFileSync, readdirSync } from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
 
-const distDir = fileURLToPath(new URL("../dist", import.meta.url));
+const distDir = fileURLToPath(new URL("../../dist", import.meta.url));
 const localOnly = process.argv.includes("--local");
 
 const rows = [];

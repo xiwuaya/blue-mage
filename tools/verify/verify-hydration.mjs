@@ -25,13 +25,13 @@ import { chromium } from "playwright";
 // 所以比较时先去掉 8 位 hash，只比基础文件名。
 const baseName = (f) => String(f).replace(/\.[0-9a-f]{8}\./, ".");
 const iconBookByNo = new Map(
-  JSON.parse(readFileSync(new URL("../tools/spells.json", import.meta.url), "utf8")).map((s) => [
+  JSON.parse(readFileSync(new URL("../data/spells.json", import.meta.url), "utf8")).map((s) => [
     Number(s.no),
     s.icon_book,
   ])
 );
 
-const distIndex = new URL("../dist/index.html", import.meta.url);
+const distIndex = new URL("../../dist/index.html", import.meta.url);
 const results = [];
 let failed = 0;
 

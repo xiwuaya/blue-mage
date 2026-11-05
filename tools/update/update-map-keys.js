@@ -1,7 +1,7 @@
 const fs = require('fs');
 
-const spellsPath = './tools/spells.json';
-const mapKeysPath = './tools/map-keys.json';
+const spellsPath = './tools/data/spells.json';
+const mapKeysPath = './tools/data/map-keys.json';
 
 const XIVAPI_BASE = 'https://xivapi-v2.xivcdn.com';
 const CONCURRENCY_DELAY = 120; // XIVAPI 限速，逐个查询之间稍作等待

@@ -3,7 +3,7 @@ import type { Spell } from "./lib/spell";
 // 图标是 Vite 资源（src/assets/icons），构建后文件名带 content hash
 // （如 003253.a1b2c3d4.png），因此可以安全地设置一年期 immutable 缓存。
 //
-// 为什么用 globEager 而不是普通 import：图标文件名来自 tools/spells.json 的
+// 为什么用 globEager 而不是普通 import：图标文件名来自 tools/data/spells.json 的
 // 运行时数据（`icons/spells/${s.icon}`），无法写成静态 import。globEager 会把
 // 目录下所有文件在构建期展开成「路径 → 模块」的静态映射，Vite 据此为每个
 // 图标产出带 hash 的文件。

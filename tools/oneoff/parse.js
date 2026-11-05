@@ -1,6 +1,6 @@
 const fs = require('fs')
-const override = require('./override.json')
-const readCsv = require('./read-csv')
+const override = require('../data/override.json')
+const readCsv = require('../update/read-csv')
 
 const enClean = en => en.toLowerCase().replace(/<([A-Za-z/]+)>/g, '').replace(/–/g, '-')
 

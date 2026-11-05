@@ -116,7 +116,7 @@ const width = (learned: number, total: number) => {
         @click="emit('update:showPatchVersion', !props.showPatchVersion)"
       >
         <Indicator :checked="props.showPatchVersion" bordered />
-        在技能名前显示版本号
+        在技能名前显示版本号和详情页
       </div>
     </div>
   </div>

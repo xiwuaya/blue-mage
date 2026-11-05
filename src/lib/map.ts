@@ -1,10 +1,10 @@
-import rawMapKeys from "../../tools/map-keys.json";
+import rawMapKeys from "../../tools/data/map-keys.json";
 import type { EorzeaMapRegionMap } from "@thewakingsands/eorzea-interactive-map";
 
 /**
  * 地图名 → Waking Sands map key。
  *
- * 优先查构建时生成的静态表 tools/map-keys.json（由 tools/update-map-keys.js 产出，
+ * 优先查构建时生成的静态表 tools/data/map-keys.json（由 tools/update/update-map-keys.js 产出，
  * 数据来自 XIVAPI，可在构建时人工核对，且已解决重名歧义）。
  * 静态表里没有时才回退到地图库自带的 getRegion() 索引 ——
  * 那份 region.json 是 create() 初始化时本来就要拉的，所以回退不产生额外请求。

@@ -139,10 +139,10 @@ const copyUser1Data = async () => {
 };
 
 const DEFAULT_PARTY_COLORS = [
-  "#FF4D4D", "#4D8DFF", "#52D273", "#FFD43B", "#B86BFF", "#FF8C42",
-  "#24C6C8", "#FF5C93", "#7AA7FF", "#A8D83E", "#8E6CFF", "#E85D04",
-  "#00A878", "#D94F70", "#1E9BDE", "#C4E538", "#6C4DDC", "#F5A623",
-  "#008F8C", "#C73665", "#356AE6", "#7CB342", "#9B51E0", "#E76F51"
+  "#e6194B", "#3cb44b", "#ffe119", "#4363d8", "#f58231", "#911eb4",
+  "#42d4f4", "#f032e6", "#bfef45", "#fabed4", "#469990", "#dcbeff",
+  "#9A6324", "#fffac8", "#800000", "#aaffc3", "#808000", "#ffd8b1",
+  "#000075", "#a9a9a9"
 ];
 const getDefaultPartyColor = (index: number) => DEFAULT_PARTY_COLORS[index % DEFAULT_PARTY_COLORS.length];
 
@@ -174,8 +174,8 @@ const resetParty = () => {
 };
 
 const addTeammate = () => {
-  if (localPartyData.value.length >= 23) {
-    alert("为保证页面计算流畅，最多支持添加 23 名队友哦！");
+  if (localPartyData.value.length >= 19) {
+    alert("为保证页面计算流畅，最多支持添加 19 名队友（含自己共 20 人）哦！");
     return;
   }
   localPartyData.value.push("");
@@ -628,7 +628,7 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="reset-wrap">
-              <button class="reset-btn" @click="resetParty" title="清空用户2至8的所有名称和数据，并恢复所有人默认可见">一键重置队友数据</button>
+              <button class="reset-btn" @click="resetParty" title="清空用户2至20的所有名称和数据，并恢复所有人默认可见">一键重置队友数据</button>
             </div>
 
           </div>
