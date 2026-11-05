@@ -707,8 +707,9 @@ onBeforeUnmount(() => {
                   <input class="name-input" v-model="localUser1Name" :style="{ color: ensurePartyColor(0) }" :placeholder="mainUserSlot === 0 ? '用户 1 (我)' : '用户 1'" />
                   <span class="set-main-wrap" @mouseenter="showPreview(0, $event)" @mouseleave="schedulePreviewHide">
                     <button class="set-main-btn" :class="{ 'is-current': mainUserSlot === 0 }" :disabled="mainUserSlot === 0"
+                      :aria-label="mainUserSlot === 0 ? '当前主用户' : '设为主用户'"
                       @click="setMainUser(0)">
-                      {{ mainUserSlot === 0 ? '当前' : '设为我' }}
+                      <span class="icon-user"></span>
                     </button>
                   </span>
                   <label class="color-picker-btn" :style="{ color: ensurePartyColor(0) }" title="设置该用户名称颜色">
@@ -741,9 +742,10 @@ onBeforeUnmount(() => {
                   <span class="set-main-wrap" @mouseenter="showPreview(index + 1, $event)" @mouseleave="schedulePreviewHide">
                     <button class="set-main-btn" :class="{ 'is-current': index + 1 === mainUserSlot }"
                       :disabled="index + 1 === mainUserSlot || !data.trim()"
+                      :aria-label="index + 1 === mainUserSlot ? '当前主用户' : '设为主用户'"
                       @click="setMainUser(index + 1)"
                       :title="!data.trim() && index + 1 !== mainUserSlot ? '该用户没有数据，无法设为主用户' : undefined">
-                      {{ index + 1 === mainUserSlot ? '当前' : '设为我' }}
+                      <span class="icon-user"></span>
                     </button>
                   </span>
                   <label class="color-picker-btn" :style="{ color: ensurePartyColor(index + 1) }" title="设置该用户名称颜色">
@@ -1043,34 +1045,45 @@ onBeforeUnmount(() => {
   opacity: 1;
 }
 
-/* --- 新增：设为主用户按钮（名字右侧） --- */
+/* --- 新增：设为主用户按钮（名字右侧，图标形态，无描边） --- */
 .set-main-btn {
   background: transparent;
-  border: 1px solid #444;
+  border: none;
   color: #ccc;
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 0.7rem;
-  font-weight: bold;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  padding: 0;
   cursor: pointer;
-  white-space: nowrap;
   transition: all 0.2s;
   outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .set-main-btn:hover:not(:disabled) {
-  border-color: #ffbe31;
   color: #ffbe31;
+  transform: scale(1.1);
 }
 
 .set-main-btn.is-current {
   color: #ffbe31;
-  border-color: transparent;
 }
 
 .set-main-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* user.svg：与 eye-icon 同款 mask 管线，剪影跟随 currentColor（灰 → 悬停金 → 当前金） */
+.icon-user {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask: url('../assets/icons/user.svg') no-repeat center / contain;
+  mask: url('../assets/icons/user.svg') no-repeat center / contain;
 }
 
 /* --- 新增：悬停预览（设为我按钮 → 该用户未掌握技能） --- */
