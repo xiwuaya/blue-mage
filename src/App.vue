@@ -26,6 +26,9 @@ const {
   user1Name,
   user1VisibilityState,
   user1Spells,
+  mainUserSlot,
+  mainUserName,
+  setMainUser,
   unlearnedCountMap,
   unlearnedNamesMap,
   unlearnedUsersMap,
@@ -104,6 +107,11 @@ const handleTypeChange = (type: string, checked: boolean) => {
 <template>
   <section>
     <aside>
+      <!-- 主用户防呆横幅：浏览他人视角时常驻提示，防止把自己的进度记到别人头上 -->
+      <div v-if="mainUserSlot !== 0" class="main-user-banner">
+        <span>当前以「{{ mainUserName }}」的视角浏览，主页勾选记录的是 TA 的存档</span>
+        <span class="switch-back-btn" @click="setMainUser(0)" title="切回用户 1">切回</span>
+      </div>
       <div class="sponsor-banner" @click="showHelpModal = true">
         <span>首次使用请点此查看帮助</span>
         <div class="help-icon" title="查看网页使用帮助">?</div>
@@ -240,6 +248,10 @@ input:focus { box-shadow: 0 0 2px #ffbe31; }
 input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
 .search { width: 100%; margin-bottom: 20px; }
 .sponsor-banner { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 8px 12px; background: rgba(255, 190, 49, 0.1); border-left: 4px solid #ffbe31; border-radius: 4px; font-size: 0.9rem; }
+/* 主用户横幅：视觉上比帮助横幅更醒目一档，提示当前不是自己的存档 */
+.main-user-banner { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 15px; padding: 8px 12px; background: rgba(255, 190, 49, 0.2); border: 1px solid #ffbe31; border-radius: 4px; font-size: 0.9rem; }
+.switch-back-btn { color: #ffbe31; font-weight: bold; cursor: pointer; text-decoration: underline; white-space: nowrap; }
+.switch-back-btn:hover { color: #fff; }
 .help-icon { width: 22px; height: 22px; background-color: #ffbe31; color: #1a1a1a; border-radius: 50%; text-align: center; line-height: 22px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
 .help-icon:hover { transform: scale(1.1); }
 .modal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 2000; }
