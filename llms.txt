@@ -114,7 +114,7 @@
 - [大回旋（No.106 · Lv.77 · 6.45版本）](https://bluemagic.badend.cn/blue-mage/spell/34564/)
 - [刺阵（No.107 · Lv.77 · 6.45版本）](https://bluemagic.badend.cn/blue-mage/spell/34565/)
 - [补水（No.108 · Lv.70 · 6.45版本）](https://bluemagic.badend.cn/blue-mage/spell/34566/)
-- [魔力吐息（No.109 · Lv.80 · 6.45版本）](https://bluemagic.badend.cn/blue-mage/spell/34567/)
+- [魔法吐息（No.109 · Lv.80 · 6.45版本）](https://bluemagic.badend.cn/blue-mage/spell/34567/)
 - [兽魂的愤怒（No.110 · Lv.80 · 6.45版本）](https://bluemagic.badend.cn/blue-mage/spell/34568/)
 - [玩泥球（No.111 · Lv.80 · 6.45版本）](https://bluemagic.badend.cn/blue-mage/spell/34569/)
 - [大扫除（No.112 · Lv.80 · 6.45版本）](https://bluemagic.badend.cn/blue-mage/spell/34570/)
