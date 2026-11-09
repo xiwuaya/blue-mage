@@ -41,7 +41,11 @@ jobs:
           git diff --quiet && git diff --staged --quiet || (git commit -m "chore: auto-update spells data and build date [skip ci]" && git push)
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.0
+        # 必须 ≥ v4.9.0：v4.1.0 的 clean-exclude 实现为 rsync --exclude，而 --exclude
+        # 对收发两侧同时生效 —— assets/ 既不会被删除，也不会被上传，2026-10-22 起
+        # 新构建的图标/JS/CSS 全部没进 gh-pages（线上备用站点资源因此全 404）。
+        # v4.9.0 改用 --filter "P assets/"，只保护旧文件不被清理，新文件正常上传。
+        uses: JamesIves/github-pages-deploy-action@v4.9.0
         with:
           branch: gh-pages
           folder: dist
