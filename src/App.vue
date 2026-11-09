@@ -218,6 +218,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
     v-model:user1VisibilityState="user1VisibilityState"
     v-model:partyVisibilityStates="partyVisibilityStates"
     :filterTypes="filterTypes"
+    :orderByUnlearned="orderByUnlearned"
     :show="showPartyModal"
     @close="showPartyModal = false"
     @resetMinUnlearned="minUnlearned = 1"

@@ -18,6 +18,7 @@ const props = defineProps<{
   partyNames: string[];
   partyColors: string[];
   filterTypes: FilterTypes;
+  orderByUnlearned: boolean;
   user1VisibilityState: number;
   partyVisibilityStates: number[];
 }>();
@@ -405,18 +406,41 @@ const displayName = (originalIndex: number) => {
 };
 
 // ==========================================
-// 3.5 悬停预览：「设为我」按钮 → 该用户未掌握技能悬浮窗
+// 3.5 悬停预览：「设为我」→ 该用户未掌握技能；「应用该配置」→ 该队伍可共同学习技能
 // ==========================================
 // 面板 Teleport 到 body：party-modal 有 overflow-y: auto，行内绝对定位会被裁剪。
 // 按钮外层套 span 承接鼠标事件：禁用态按钮（当前/空槽）在各浏览器里鼠标事件
 // 行为不一致，span 始终可靠；空槽无数据则不弹面板。
-type PreviewEntry = { no: number; name: string; icon: string; srcset: string; action: number };
+// count 仅队伍预览使用：可一起学习该技能的用户数
+type PreviewEntry = { no: number; name: string; icon: string; srcset: string; action: number; count?: number };
 
-const previewSlot = ref<number | null>(null);
+// 两类预览共用同一个面板与贴靠逻辑，渲染模型字段统一
+type PreviewModel = {
+  title: string;
+  subtitle: string;
+  list: PreviewEntry[];
+  emptyText: string;
+  hint: string;
+};
+
+type PreviewTarget =
+  | { kind: 'user'; slot: number }
+  | { kind: 'team'; indices: number[]; label: string };
+
+const previewTarget = ref<PreviewTarget | null>(null);
 const previewPos = ref({ x: 0, y: 0 });
 const previewRef = ref<HTMLElement | null>(null);
 let previewShowTimer: ReturnType<typeof setTimeout> | null = null;
 let previewHideTimer: ReturnType<typeof setTimeout> | null = null;
+
+const previewKey = (target: PreviewTarget) =>
+  target.kind === 'user' ? `user:${target.slot}` : `team:${target.indices.join(',')}`;
+
+// 槽位编号与文本框一致：0 = 用户 1，i + 1 = 队友 i
+const spellSetOf = (originalIndex: number): Set<number> => {
+  const text = originalIndex === 0 ? localUser1Spells.value : (localPartyData.value[originalIndex - 1] || "");
+  return new Set((text.match(/\d+/g) || []).map(Number));
+};
 
 const parsePreviewList = (text: string): PreviewEntry[] => {
   const byNo = new Map(spells.map((s) => [Number(s.no), s]));
@@ -430,14 +454,71 @@ const parsePreviewList = (text: string): PreviewEntry[] => {
   return list;
 };
 
-const previewData = computed(() => {
-  const slot = previewSlot.value;
-  if (slot === null || slot > localPartyData.value.length) return null;
+// 队伍预览：候选技能 = 该队伍中至少有一人未掌握的技能（并集，不再要求全员都未掌握），
+// 因此每支队伍的预览内容互不相同。与「设为我」的用户预览一致，不受主界面分类过滤
+// 影响：成员数据里有哪些未掌握技能就列出哪些。
+// 末尾计数 = 这支队伍里有多少个用户未掌握它、可以一起学习；队伍成员即使被其他配置
+// 暂时隐藏，也照常按其数据统计（队伍组成不随当前显隐状态改变）。
+const buildTeamPreview = (indices: number[], label: string): PreviewModel => {
+  const teamSets = indices.map(spellSetOf);
+
+  const list: PreviewEntry[] = [];
+  for (const spell of spells) {
+    const no = Number(spell.no);
+    let count = 0;
+    for (const set of teamSets) if (set.has(no)) count++;
+    // 队伍里没人在这个技能上未掌握，就不属于这支队伍需要关注的技能
+    if (count === 0) continue;
+    list.push({
+      no,
+      name: spell.spell,
+      icon: spellIcon(spell, true),
+      srcset: spellIconSrcset(spell, true),
+      action: spell.action,
+      count,
+    });
+  }
+
+  // 「按未掌握人数排序」开启时按人数降序（与主列表一致），关闭时按编号
+  list.sort((a, b) => {
+    if (props.orderByUnlearned) {
+      const diff = (b.count ?? 0) - (a.count ?? 0);
+      if (diff !== 0) return diff;
+    }
+    return a.no - b.no;
+  });
+
+  return {
+    title: label,
+    subtitle: `共 ${list.length} 个未掌握技能`,
+    list,
+    emptyText: '当前没有未掌握的技能',
+    hint: '点击「应用该配置」后将隐藏不在该队伍中的其他队员',
+  };
+};
+
+const previewData = computed<PreviewModel | null>(() => {
+  const target = previewTarget.value;
+  if (target === null) return null;
+
+  if (target.kind === 'team') return buildTeamPreview(target.indices, target.label);
+
+  const slot = target.slot;
+  if (slot > localPartyData.value.length) return null;
   const text = slot === 0 ? localUser1Spells.value : (localPartyData.value[slot - 1] || "");
   const name = slot === 0
     ? (localUser1Name.value || "用户 1")
     : (localPartyNames.value[slot - 1] || `用户 ${slot + 1}`);
-  return { name, list: parsePreviewList(text), isMain: slot === mainUserSlot.value };
+  const list = parsePreviewList(text);
+  return {
+    title: name,
+    subtitle: `未掌握 ${list.length} 个技能`,
+    list,
+    emptyText: '该用户没有未掌握的技能',
+    hint: slot === mainUserSlot.value
+      ? '该用户是当前主用户，主页勾选正在记录 TA 的存档'
+      : '点击「设为我」后，主页勾选将改为记录该用户的存档',
+  };
 });
 
 // 面板渲染后按按钮位置贴靠：优先右侧，放不下换左侧，垂直方向夹回视口内
@@ -464,21 +545,35 @@ const clearPreviewTimers = () => {
   if (previewHideTimer) { clearTimeout(previewHideTimer); previewHideTimer = null; }
 };
 
-const showPreview = (slot: number, e: MouseEvent) => {
+const openPreview = (target: PreviewTarget | null, e: MouseEvent) => {
   if (previewHideTimer) { clearTimeout(previewHideTimer); previewHideTimer = null; }
-  // 空队友槽无数据可预览：不弹面板；面板正开着则收起
-  // （用户 1 例外：学满后也允许看「没有未掌握」的状态）
-  const hasData = slot === 0 || !!(localPartyData.value[slot - 1] || "").trim();
-  if (!hasData) { previewSlot.value = null; return; }
+  // target 为 null：无数据可预览，不弹面板；面板正开着则收起
+  if (target === null) {
+    if (previewShowTimer) { clearTimeout(previewShowTimer); previewShowTimer = null; }
+    previewTarget.value = null;
+    return;
+  }
   // 面板已开着时在按钮间移动：立即切换，不等延时
-  const delay = previewSlot.value !== null && previewSlot.value !== slot ? 0 : 180;
+  const sameAsShown = previewTarget.value !== null && previewKey(previewTarget.value) === previewKey(target);
+  const delay = previewTarget.value !== null && !sameAsShown ? 0 : 180;
   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
   if (previewShowTimer) { clearTimeout(previewShowTimer); previewShowTimer = null; }
   previewShowTimer = setTimeout(() => {
     previewShowTimer = null;
-    previewSlot.value = slot;
+    previewTarget.value = target;
     placePreview(rect);
   }, delay);
+};
+
+const showUserPreview = (slot: number, e: MouseEvent) => {
+  // 空队友槽无数据可预览（用户 1 例外：学满后也允许看「没有未掌握」的状态）
+  const hasData = slot === 0 || !!(localPartyData.value[slot - 1] || "").trim();
+  openPreview(hasData ? { kind: 'user', slot } : null, e);
+};
+
+const showTeamPreview = (indices: number[], label: string, e: MouseEvent) => {
+  if (!indices.length) return;
+  openPreview({ kind: 'team', indices: [...indices], label }, e);
 };
 
 const schedulePreviewHide = () => {
@@ -486,7 +581,7 @@ const schedulePreviewHide = () => {
   if (previewHideTimer) clearTimeout(previewHideTimer);
   previewHideTimer = setTimeout(() => {
     previewHideTimer = null;
-    previewSlot.value = null;
+    previewTarget.value = null;
   }, 120);
 };
 
@@ -494,8 +589,28 @@ const cancelPreviewHide = () => {
   if (previewHideTimer) { clearTimeout(previewHideTimer); previewHideTimer = null; }
 };
 
+// 面板贴在触发按钮右侧，可能盖住后续行（多队伍组合 / 多个候选队伍）的
+// 「应用该配置」：指针悬停被面板拦截，预览就会一直停在第一支队伍。
+// 面板上移动时检测指针下方是否还有别的触发点，有则直接收起面板，
+// 让指针落回按钮上、由按钮自己的 mouseenter 重新展开对应队伍。
+const handlePanelMouseMove = (e: MouseEvent) => {
+  const panel = previewRef.value;
+  if (!panel) return;
+  const stack = document.elementsFromPoint(e.clientX, e.clientY) as HTMLElement[];
+  for (const el of stack) {
+    if (el === panel || panel.contains(el)) continue;
+    const teamKey = el.dataset?.previewTeam;
+    if (teamKey === undefined) continue;
+    // 底下就是当前正在预览的队伍：面板正常压着它，保持展示
+    if (previewTarget.value !== null && previewKey(previewTarget.value) === `team:${teamKey}`) return;
+    clearPreviewTimers();
+    previewTarget.value = null;
+    return;
+  }
+};
+
 // 弹窗关闭 / 组件卸载时收起面板，防止 Teleport 残留
-watch(() => props.show, (show) => { if (!show) { clearPreviewTimers(); previewSlot.value = null; } });
+watch(() => props.show, (show) => { if (!show) { clearPreviewTimers(); previewTarget.value = null; } });
 onBeforeUnmount(clearPreviewTimers);
 
 type MultiTeamStatus = 'idle' | 'computing' | 'done' | 'error';
@@ -650,7 +765,10 @@ onBeforeUnmount(() => {
                     <span v-for="idx in teamIndices" :key="idx" class="user-badge">
                       {{ displayName(idx) }}
                     </span>
-                    <span class="apply-text" @click="applyConfiguration(teamIndices)" title="点击后将隐藏不在该配置中的其他队员">
+                    <span class="apply-text" @click="applyConfiguration(teamIndices)"
+                      :data-preview-team="teamIndices.join(',')"
+                      @mouseenter="showTeamPreview(teamIndices, '最优队伍构成', $event)" @mouseleave="schedulePreviewHide"
+                      title="点击后将隐藏不在该配置中的其他队员">
                       应用该配置
                     </span>
                   </div>
@@ -686,6 +804,9 @@ onBeforeUnmount(() => {
                     <span class="multi-team-colon">：</span>
                     <span class="spell-count">共可学习<span class="highlight">{{ team.commonSkillCount }}</span>个技能</span>
                     <span class="apply-text" @click="applyMultiTeamConfiguration(team.userIndices)"
+                      :data-preview-team="team.userIndices.join(',')"
+                      @mouseenter="showTeamPreview(team.userIndices, '队伍 ' + (teamIdx + 1), $event)"
+                      @mouseleave="schedulePreviewHide"
                       title="点击后将隐藏不在该配置中的其他队员">应用该配置</span>
                   </div>
                   <div v-if="multiTeamResult.excludedUserIndices.length" class="multi-team-excluded">
@@ -705,7 +826,7 @@ onBeforeUnmount(() => {
               <div class="party-user" :class="{ 'layer-hidden': localUser1VisibilityState === 2 }">
                 <div class="name-row">
                   <input class="name-input" v-model="localUser1Name" :style="{ color: ensurePartyColor(0) }" :placeholder="mainUserSlot === 0 ? '用户 1 (我)' : '用户 1'" />
-                  <span class="set-main-wrap" @mouseenter="showPreview(0, $event)" @mouseleave="schedulePreviewHide">
+                  <span class="set-main-wrap" @mouseenter="showUserPreview(0, $event)" @mouseleave="schedulePreviewHide">
                     <button class="set-main-btn" :class="{ 'is-current': mainUserSlot === 0 }" :disabled="mainUserSlot === 0"
                       :aria-label="mainUserSlot === 0 ? '当前主用户' : '设为主用户'"
                       @click="setMainUser(0)">
@@ -739,7 +860,7 @@ onBeforeUnmount(() => {
                 <div class="name-row">
                   <input class="name-input" v-model="localPartyNames[index]" :style="{ color: ensurePartyColor(index + 1) }"
                     :placeholder="(index + 1 === mainUserSlot ? '用户 ' + (index + 2) + ' (我)' : '用户 ' + (index + 2))" />
-                  <span class="set-main-wrap" @mouseenter="showPreview(index + 1, $event)" @mouseleave="schedulePreviewHide">
+                  <span class="set-main-wrap" @mouseenter="showUserPreview(index + 1, $event)" @mouseleave="schedulePreviewHide">
                     <button class="set-main-btn" :class="{ 'is-current': index + 1 === mainUserSlot }"
                       :disabled="index + 1 === mainUserSlot || !data.trim()"
                       :aria-label="index + 1 === mainUserSlot ? '当前主用户' : '设为主用户'"
@@ -787,22 +908,23 @@ onBeforeUnmount(() => {
     <Transition name="fade">
       <div v-if="previewData" ref="previewRef" class="spell-preview"
         :style="{ left: previewPos.x + 'px', top: previewPos.y + 'px' }"
-        @mouseenter="cancelPreviewHide" @mouseleave="schedulePreviewHide">
+        @mouseenter="cancelPreviewHide" @mouseleave="schedulePreviewHide"
+        @mousemove="handlePanelMouseMove">
         <div class="preview-header">
-          <strong>{{ previewData.name }}</strong>
-          <span>未掌握 {{ previewData.list.length }} 个技能</span>
+          <strong>{{ previewData.title }}</strong>
+          <span>{{ previewData.subtitle }}</span>
         </div>
         <div v-if="previewData.list.length" class="preview-grid slim-scrollbar-sm">
           <div v-for="p in previewData.list" :key="p.no" class="preview-item">
             <img class="preview-icon" :src="p.icon" :srcset="p.srcset" :data-ck-action-id="p.action" />
             <span class="preview-no">No.{{ p.no }}</span>
             <span class="preview-name">{{ p.name }}</span>
+            <span v-if="p.count !== undefined" class="preview-count"
+              :title="`该队伍中有 ${p.count} 个用户未掌握该技能，可以一起学习`">{{ p.count }}人</span>
           </div>
         </div>
-        <div v-else class="preview-empty">该用户没有未掌握的技能</div>
-        <div class="preview-hint">{{ previewData.isMain
-          ? '该用户是当前主用户，主页勾选正在记录 TA 的存档'
-          : '点击「设为我」后，主页勾选将改为记录该用户的存档' }}</div>
+        <div v-else class="preview-empty">{{ previewData.emptyText }}</div>
+        <div class="preview-hint">{{ previewData.hint }}</div>
       </div>
     </Transition>
   </Teleport>
@@ -1159,6 +1281,15 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 队伍预览：该技能可共同学习的人数，贴右显示 */
+.preview-count {
+  margin-left: auto;
+  flex: 0 0 auto;
+  color: #ffbe31;
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .preview-empty {
