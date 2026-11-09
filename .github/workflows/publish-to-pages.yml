@@ -29,16 +29,16 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          
-          git add tools/data/spells.json
-          git add tools/data/method_updates.csv
-          git add tools/data/map-keys.json
-          # 新增技能时 update-descriptions.js 会增量抓取官方描述并落盘，
-          # 提交缓存后后续构建不再请求 API
-          git add tools/data/descriptions.json
-          git add src/App.vue
-          
-          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: auto-update spells data and build date [skip ci]" && git push)
+
+          # 整个 data 目录一起提交：update-fate-positions.js 除了 spells.json，
+          # 还会更新坐标缓存 fate-positions.json（原先漏加，构建后残留为未暂存改动）。
+          git add tools/data src/App.vue
+
+          # 只以「暂存区」判断是否有内容可提交。工作区里可能还有构建产生的
+          # 无关改动（如 yarn.lock、缓存文件），若拿工作区 diff 判断，暂存区
+          # 为空时也会进入 git commit 分支，报 "nothing to commit" 并使整个
+          # 步骤失败，后面的 Deploy 被直接跳过（同日重复构建时必现）。
+          git diff --cached --quiet || (git commit -m "chore: auto-update spells data and build date [skip ci]" && git push)
 
       - name: Deploy 🚀
         # 必须 ≥ v4.9.0：v4.1.0 的 clean-exclude 实现为 rsync --exclude，而 --exclude
