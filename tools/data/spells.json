@@ -2366,19 +2366,6 @@
       },
       {
         "type": "fate",
-        "map": "北萨纳兰",
-        "position": [
-          18,
-          15,
-          0
-        ],
-        "name": "逆向工程",
-        "mob": "废弃的魔导先锋",
-        "level": 46,
-        "color": "red"
-      },
-      {
-        "type": "fate",
         "map": "黑风海",
         "position": [
           27,
