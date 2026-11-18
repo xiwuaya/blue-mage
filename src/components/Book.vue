@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SpellStatusArray } from "@/lib/interface";
-import { spells, learnedByNo, indexByNo } from "@/lib/spell";
+import { spells, learnedByNo, indexByNo, isAlwaysLearnedIndex } from "@/lib/spell";
 import { computed, ref } from "vue";
 import { spellIcon, spellIconSrcset } from "../icon";
 import Title from "./Title.vue";
@@ -21,6 +21,8 @@ const showSpells = computed(() =>
 );
 
 const toggleSpell = (i: number) => {
+  // 锁定技能恒为已掌握，点击不再切换
+  if (isAlwaysLearnedIndex(i)) return;
   emit("change", i, !props.spellStatus[i]);
 };
 
@@ -52,9 +54,14 @@ const percent = computed(() => {
       :class="{
         lighter: i % 2 === Math.floor(i / 4) % 2,
         learned: learnedByNo(props.spellStatus, s.no),
+        locked: isAlwaysLearnedIndex(indexByNo(s.no)),
       }"
       @click="toggleSpell(indexByNo(s.no))"
-      :title="s.spell"
+      :title="
+        isAlwaysLearnedIndex(indexByNo(s.no))
+          ? `${s.spell}（自动习得，已锁定）`
+          : s.spell
+      "
       :data-ck-action-id="s.action"
     >
       <img :src="spellIcon(s)" :srcset="spellIconSrcset(s)" />
@@ -156,6 +163,19 @@ const percent = computed(() => {
 
 .spell.learned::before {
   background: #ffbe31;
+}
+
+.spell.locked {
+  cursor: not-allowed;
+}
+
+.spell.locked::after {
+  position: absolute;
+  top: 8px;
+  right: 6px;
+  content: "🔒";
+  font-size: 0.65rem;
+  line-height: 1;
 }
 
 .note {

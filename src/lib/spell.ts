@@ -116,3 +116,25 @@ export const learnedByNo = (spellStatus: SpellStatusArray, no: string) => {
 };
 
 export const indexByNo = (no: string) => +no - 1;
+
+// --- 锁定技能：No.1 水泡 ---
+// 建立青魔法师职业时自动习得，不存在其他获取途径，因此永远处于「已掌握」。
+// 存档读取、勾选、批量全选/清空、编号文本导入等所有路径都不得把它改回未掌握。
+export const ALWAYS_LEARNED_SPELL_NO = "1";
+export const ALWAYS_LEARNED_INDEX = indexByNo(ALWAYS_LEARNED_SPELL_NO);
+
+export const isAlwaysLearnedNo = (no: string | number) =>
+  Number(no) === Number(ALWAYS_LEARNED_SPELL_NO);
+
+export const isAlwaysLearnedIndex = (index: number) =>
+  index === ALWAYS_LEARNED_INDEX;
+
+/** 把锁定技能的状态修正为已掌握；无需改动时原样返回，避免触发多余重渲染。 */
+export const ensureAlwaysLearned = (
+  status: SpellStatusArray
+): SpellStatusArray => {
+  if (status[ALWAYS_LEARNED_INDEX] === 1) return status;
+  const next = [...status] as SpellStatusArray;
+  next[ALWAYS_LEARNED_INDEX] = 1;
+  return next;
+};

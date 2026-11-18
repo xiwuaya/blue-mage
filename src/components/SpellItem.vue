@@ -9,6 +9,8 @@ import Indicator from "./Indicator.vue";
 const props = defineProps<{
   spell: Spell;
   learned: boolean;
+  /** 锁定技能：恒为已学会，勾选不可点击（No.1 水泡） */
+  locked?: boolean;
   unlearnedCount?: number;
   unlearnedNames?: string[];
   unlearnedUsers?: { name: string; color: string }[];
@@ -26,6 +28,12 @@ const emit = defineEmits<{
 // 构建期生成的静态详情页（效果描述 + 全部获取途径）。BASE_URL 保证在
 // 根域（/）与 GitHub Pages 子路径（/blue-mage/）两种部署下都指对地方。
 const detailUrl = `${import.meta.env.BASE_URL}spell/${props.spell.action}/`;
+
+// 锁定技能的勾选只作展示，不发出变更事件
+const toggleLearned = () => {
+  if (props.locked) return;
+  emit("change", !props.learned);
+};
 </script>
 
 <template>
@@ -41,12 +49,13 @@ const detailUrl = `${import.meta.env.BASE_URL}spell/${props.spell.action}/`;
         <patch-version v-show="props.showPatchVersion" :version="spell.patch" />
         <Tag
           color="#eee1c5"
-          title="点击切换学习状态"
-          style="cursor: pointer"
-          @click="emit('change', !learned)"
+          :title="props.locked ? '该技能自动习得，已锁定，不可更改' : '点击切换学习状态'"
+          :style="{ cursor: props.locked ? 'not-allowed' : 'pointer' }"
+          @click="toggleLearned"
         >
-          <Indicator :checked="props.learned" />
+          <Indicator :checked="props.locked || props.learned" />
           No.{{ props.spell.no }}
+          <span v-if="props.locked" class="lock-badge" aria-hidden="true">🔒</span>
         </Tag>
         {{ props.spell.spell }}
         <small>(Lv.{{ props.spell.level }})</small>
@@ -119,6 +128,12 @@ const detailUrl = `${import.meta.env.BASE_URL}spell/${props.spell.action}/`;
 
 .content .indicator {
   margin-right: 3px;
+}
+
+.lock-badge {
+  margin-left: 3px;
+  font-size: 0.7rem;
+  line-height: 1;
 }
 
 .unlearned-count {

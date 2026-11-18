@@ -1,6 +1,12 @@
 import { ref, watch, computed } from 'vue';
 import spells from "../../tools/data/spells.json";
 import { loadSetting, saveSetting } from "./setting";
+import {
+  ALWAYS_LEARNED_INDEX,
+  ensureAlwaysLearned,
+  isAlwaysLearnedIndex,
+  isAlwaysLearnedNo,
+} from "./spell";
 import type { SpellStatusArray, SpellStatus } from "./interface";
 
 // 1. 将所有状态定义在函数外部，使其成为全局单例 (类似 Pinia Store)
@@ -10,11 +16,16 @@ const spellStatus = ref<SpellStatusArray>(
     const saved = loadSetting<SpellStatusArray>("spell-status");
 
     if (saved) {
-      return saved;
+      // 旧存档可能把 No.1 记成未掌握（旧版允许取消勾选），读取时统一修正并落盘
+      const normalized = ensureAlwaysLearned(saved);
+      if (normalized !== saved) {
+        saveSetting("spell-status", normalized);
+      }
+      return normalized;
     }
 
     const defaultStatus = Array(spells.length).fill(0) as SpellStatusArray;
-    defaultStatus[0] = 1;
+    defaultStatus[ALWAYS_LEARNED_INDEX] = 1;
 
     saveSetting("spell-status", defaultStatus);
 
@@ -55,6 +66,20 @@ const user1Spells = ref<string>("");
 // 「设为我」切换的就是这个指针，数据原地不动（见 AIWorks/主用户切换/plan.md）。
 const mainUserSlot = ref<number>(loadSetting<number>("main-user-slot") ?? 0);
 
+// 解析「未掌握技能编号串」。锁定技能永远已掌握，任何来源的文本都不能把它算作未掌握。
+const parseUnlearnedNos = (text: string) =>
+  new Set(
+    (text.match(/\d+/g) || [])
+      .map(Number)
+      .filter((no) => !isAlwaysLearnedNo(no))
+  );
+
+// 去掉「未掌握技能编号串」里的锁定技能编号，并规范化成升序、空格分隔
+const normalizeUnlearnedString = (text: string) =>
+  Array.from(parseUnlearnedNos(text))
+    .sort((a, b) => a - b)
+    .join(" ");
+
 // 由当前存档生成「未掌握技能编号串」（各槽位文本框的统一数据形态）
 const buildUnlearnedString = () =>
   spells
@@ -65,9 +90,11 @@ const buildUnlearnedString = () =>
 
 // 由编号串重建存档（文本框编辑 -> 主页勾选 的解析，原用户 1 监听的泛化）
 const rebuildStatusFromString = (val: string): SpellStatusArray => {
-  const nums = (val.match(/\d+/g) || []).map(Number);
-  const unlearnedSet = new Set(nums);
-  return spells.map((s: any) => (unlearnedSet.has(Number(s.no)) ? 0 : 1));
+  const unlearnedSet = parseUnlearnedNos(val);
+  // 锁定技能强制为已掌握，即便文本里出现了它的编号
+  return spells.map((s: any, i: number) =>
+    isAlwaysLearnedIndex(i) || !unlearnedSet.has(Number(s.no)) ? 1 : 0
+  );
 };
 
 // 指针所指槽位的文本（槽 0 = 用户 1 文本框，槽 k = 队友文本框），可写。
@@ -127,7 +154,9 @@ export function useSpellSync() {
     user1Spells.value =
       mainUserSlot.value === 0
         ? buildUnlearnedString()
-        : loadSetting<string>("user1-spells") ?? buildUnlearnedString();
+        : normalizeUnlearnedString(
+            loadSetting<string>("user1-spells") ?? buildUnlearnedString()
+          );
     // 计算结果立即落盘：保存 watcher 注册在其后，捕获不到这次赋值；若不显式写，
     // 「本会话只切换、不打勾」的路径会让该键一直缺失，下次启动指针 ≠ 0 时
     // 无键可读，回退分支会把所指队友的数据错误复制进槽 0
@@ -149,6 +178,14 @@ export function useSpellSync() {
       if (JSON.stringify(statusArr) !== JSON.stringify(spellStatus.value)) {
         saveSetting("spell-status", statusArr);
         spellStatus.value = statusArr;
+        // 存档变更后由监听 1 基于新存档重建文本，锁定技能不会出现在里面
+        return;
+      }
+      // 文本里若手动混入锁定技能的编号，回写成不含它的规范文本；重复触发时
+      // normalized === val，不会形成循环
+      const normalized = normalizeUnlearnedString(val);
+      if (normalized !== val) {
+        mainUserSpells.value = normalized;
       }
     });
 
@@ -197,15 +234,13 @@ export function useSpellSync() {
   const validUsers = computed(() => {
     const users = [];
     if (user1VisibilityState.value !== 2) {
-      const nums = (user1Spells.value.match(/\d+/g) || []).map(Number);
-      users.push(new Set(nums));
+      users.push(parseUnlearnedNos(user1Spells.value));
     }
     for (let i = 0; i < partyData.value.length; i++) {
       if (partyVisibilityStates.value[i] !== 2) {
         const str = partyData.value[i] || "";
         if (str.trim()) {
-          const nums = (str.match(/\d+/g) || []).map(Number);
-          users.push(new Set(nums));
+          users.push(parseUnlearnedNos(str));
         }
       }
     }
@@ -229,15 +264,13 @@ export function useSpellSync() {
   const validUsersWithNames = computed(() => {
     const users: { name: string, color: string, set: Set<number> }[] = [];
     if (user1VisibilityState.value !== 2) {
-      const nums = (user1Spells.value.match(/\d+/g) || []).map(Number);
-      users.push({ name: slotDisplayName(0), color: partyColors.value[0] || getDefaultPartyColor(0), set: new Set(nums) });
+      users.push({ name: slotDisplayName(0), color: partyColors.value[0] || getDefaultPartyColor(0), set: parseUnlearnedNos(user1Spells.value) });
     }
     for (let i = 0; i < partyData.value.length; i++) {
       if (partyVisibilityStates.value[i] !== 2) {
         const str = partyData.value[i] || "";
         if (str.trim()) {
-          const nums = (str.match(/\d+/g) || []).map(Number);
-          users.push({ name: slotDisplayName(i + 1), color: partyColors.value[i + 1] || getDefaultPartyColor(i + 1), set: new Set(nums) });
+          users.push({ name: slotDisplayName(i + 1), color: partyColors.value[i + 1] || getDefaultPartyColor(i + 1), set: parseUnlearnedNos(str) });
         }
       }
     }
@@ -288,6 +321,9 @@ export function useSpellSync() {
 
   // 单一状态改变同步处理器
   const handleStatusChange = (index: number, learned: SpellStatus | boolean) => {
+    // 锁定技能（No.1 水泡）不接受任何勾选/取消操作
+    if (isAlwaysLearnedIndex(index)) return;
+
     const statusArr: SpellStatusArray = spells.map((_, i) =>
       (i === index ? learned : spellStatus.value[i]) ? 1 : 0
     );
@@ -323,6 +359,8 @@ export function useSpellSync() {
   // 批量状态改变同步处理器
   const handleBatchStatusChange = (patch: string, learned: boolean) => {
     const statusArr: SpellStatusArray = spells.map((s, i) => {
+      // 锁定技能永远已掌握，批量全选/清空都不能改动
+      if (isAlwaysLearnedIndex(i)) return 1;
       if (patch === "all" || s.patch === patch) return learned ? 1 : 0;
       return spellStatus.value[i];
     });
@@ -341,7 +379,8 @@ export function useSpellSync() {
         const nums = (str.match(/\d+/g) || []).map(Number);
         const numSet = new Set(nums);
 
-        spells.forEach((s) => {
+        spells.forEach((s, si) => {
+          if (isAlwaysLearnedIndex(si)) return;
           if (patch === "all" || s.patch === patch) {
             const targetSpellNo = Number(s.no);
             if (learned) numSet.delete(targetSpellNo);

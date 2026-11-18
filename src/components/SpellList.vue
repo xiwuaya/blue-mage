@@ -4,6 +4,7 @@ import {
   spells,
   learnedByNo,
   indexByNo,
+  isAlwaysLearnedNo,
   type Spell,
   type SpellMethodMap,
   renderSpellMethod,
@@ -214,6 +215,7 @@ const allLearned = computed(() =>
 
     <spell-item v-for="spell in showSpells" :key="spell.no" :spell="spell"
       :learned="props.isPartyModeActive ? (props.unlearnedCountMap.get(Number(spell.no)) || 0) === 0 : learnedByNo(props.spellStatus, spell.no)" 
+      :locked="isAlwaysLearnedNo(spell.no)"
       :unlearnedCount="props.unlearnedCountMap.get(Number(spell.no))"
       :unlearnedNames="props.unlearnedNamesMap.get(Number(spell.no))"
       :unlearnedUsers="props.unlearnedUsersMap.get(Number(spell.no))"
