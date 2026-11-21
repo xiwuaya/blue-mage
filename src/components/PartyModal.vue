@@ -785,7 +785,7 @@ onBeforeUnmount(() => {
               <div class="multi-team-section">
                 <div class="multi-team-title">多队伍组合推荐</div>
                 <p class="multi-team-desc">
-                  将全部参与用户一次性划分为尽可能多的满员队伍（人数不能整除时排除部分普通用户），在共同技能总量与队伍均衡之间取最优。人数较多时计算较慢，点击按钮开始。
+                  将全部参与用户一次性划分为尽可能多的满员队伍（人数不能整除时排除部分普通用户），按各队共同未学技能数查表计分，优先选择总分最高的方案，同分时优先选择各队得分更均衡的方案。人数较多时计算较慢，点击按钮开始。
                 </p>
                 <div class="multi-team-toolbar">
                   <button class="multi-team-btn" @click="startMultiTeamCompute" :disabled="m === ''">

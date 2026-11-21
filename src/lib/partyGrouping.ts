@@ -6,7 +6,7 @@
  *
  * 评分与比较（依次比较，文档 §33-§40）：
  *   1. effectiveTotalCommonSkillCount 最大
- *      （每队有效共同技能 = min(真实共同技能, MAX_EFFECTIVE_COMMON_SKILLS)）
+ *      （按每队真实共同技能数查表赋分）
  *   2. varianceScore 最小（基于有效共同技能的整数方差 T·Σxi² − (Σxi)²）
  *   3. 队伍 userIndices 字典序最小（队内升序，队伍按首成员升序的规范序）
  *   4. 排除用户 userIndices 字典序最小（升序）
@@ -19,13 +19,29 @@
  * 由调用方完成后再传入。N ≤ 30（number 位掩码约束）。
  */
 
-export const MAX_EFFECTIVE_COMMON_SKILLS = 12;
+// 下标为真实共同技能数；超出当前技能表时沿用最后一档。
+const COMMON_SKILL_POINTS = [
+  0.0, 0.2, 1.0, 2.6, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, // 0–9
+  10.0, 11.0, 12.0, 12.9, 13.7, 14.4, 15.0, 15.5, 15.9, 16.2, // 10–19
+  16.4, 16.5, 16.6, 16.7, 16.8, 16.9, 17.0, 17.1, 17.2, 17.3, // 20–29
+  17.4, 17.5, 17.6, 17.7, 17.8, 17.9, 18.0, 18.1, 18.2, 18.3, // 30–39
+  18.4, 18.5, 18.6, 18.7, 18.8, 18.9, 19.0, 19.1, 19.2, 19.3, // 40–49
+  19.4, 19.5, 19.6, 19.7, 19.8, 19.9, 20.0, 20.1, 20.2, 20.3, // 50–59
+  20.4, 20.5, 20.6, 20.7, 20.8, 20.9, 21.0, 21.1, 21.2, 21.3, // 60–69
+  21.4, 21.5, 21.6, 21.7, 21.8, 21.9, 22.0, 22.1, 22.2, 22.3, // 70–79
+  22.4, 22.5, 22.6, 22.7, 22.8, 22.9, 23.0, 23.1, 23.2, 23.3, // 80–89
+  23.4, 23.5, 23.6, 23.7, 23.8, 23.9, 24.0, 24.1, 24.2, 24.3, // 90–99
+  24.4, 24.5, 24.6, 24.7, 24.8, 24.9, 25.0, 25.1, 25.2, 25.3, // 100–109
+  25.4, 25.5, 25.6, 25.7, 25.8, 25.9, 26.0, 26.1, 26.2, 26.3, // 110–119
+  26.4, 26.5, 26.6, 26.7, 26.8, // 120–124
+];
+const POINT_SCALE = 10;
 
 /** 单支 M 人队伍的评分 */
 export type TeamScore = {
   /** 真实共同技能数量，用于 UI 展示与最终结果记录 */
   commonSkillCount: number;
-  /** 算法使用的有效共同技能数量 = min(commonSkillCount, MAX_EFFECTIVE_COMMON_SKILLS) */
+  /** 算法使用的查表得分（单位：分） */
   effectiveCommonSkillCount: number;
 };
 
@@ -124,7 +140,7 @@ export function calculateTeamScore(partyMask: number, spellMasks: Map<number, nu
   }
   return {
     commonSkillCount,
-    effectiveCommonSkillCount: Math.min(commonSkillCount, MAX_EFFECTIVE_COMMON_SKILLS),
+    effectiveCommonSkillCount: COMMON_SKILL_POINTS[Math.min(commonSkillCount, COMMON_SKILL_POINTS.length - 1)],
   };
 }
 
@@ -172,10 +188,11 @@ export function findBalancedPartyGroups(input: FindBalancedPartyGroupsInput): Pa
   }
   // DFS 扫描面：teamScoreMap 的数组形式（避免热循环中每次迭代分配 entry 元组）
   const teamMaskList: number[] = [];
-  const teamEffectiveList: number[] = [];
+  const teamPointsTenths: number[] = [];
   for (const [teamMask, score] of teamScoreMap) {
     teamMaskList.push(teamMask);
-    teamEffectiveList.push(score.effectiveCommonSkillCount);
+    // 以十分之一分为单位，回溯加减与并列比较都使用整数。
+    teamPointsTenths.push(Math.round(score.effectiveCommonSkillCount * POINT_SCALE));
   }
 
   // ---- DFS / Backtracking（文档 §24-§32）----
@@ -264,8 +281,8 @@ export function findBalancedPartyGroups(input: FindBalancedPartyGroupsInput): Pa
     return {
       teams,
       excludedUserIndices,
-      effectiveTotalCommonSkillCount: bestTotal,
-      varianceScore: teamCount * bestSumSq - bestTotal * bestTotal,
+      effectiveTotalCommonSkillCount: bestTotal / POINT_SCALE,
+      varianceScore: (teamCount * bestSumSq - bestTotal * bestTotal) / (POINT_SCALE * POINT_SCALE),
     };
   };
 
@@ -298,7 +315,7 @@ export function findBalancedPartyGroups(input: FindBalancedPartyGroupsInput): Pa
       const teamMask = teamMaskList[i];
       if ((teamMask & uBit) === 0) continue;
       if ((teamMask & ~remainingMask) !== 0) continue;
-      const eff = teamEffectiveList[i];
+      const eff = teamPointsTenths[i];
       curTeamMasks.push(teamMask);
       curTotal += eff;
       curSumSq += eff * eff;

@@ -7,7 +7,7 @@
  * 内容：
  *   0. 手工可验证场景断言（N=6, M=3，技能互不重叠的两组）
  *   1. 正确性对拍：独立暴力参考实现 vs 主算法，随机场景数百组
- *      （覆盖无解、mustInclude 上限、排除名额、12 技能封顶、originalIndex 置换）
+ *      （覆盖无解、mustInclude 上限、排除名额、技能查表赋分、originalIndex 置换）
  *   2. 规模 Benchmark：N=6/10/12/15/18，记录 DFS 节点数、完整分组数、耗时与结果
  *
  * 本脚本位于 tools/（tsconfig 不包含），经 esbuild 打包后由 node 执行，
@@ -15,7 +15,6 @@
  */
 
 import {
-  MAX_EFFECTIVE_COMMON_SKILLS,
   PartyGroupingTimeoutError,
   findBalancedPartyGroups,
   generateCombinationMasks,
@@ -23,6 +22,13 @@ import {
 import type { PartyGroupResult, PartyGroupingStats } from "../../src/lib/partyGrouping";
 
 // ---------- 基础工具 ----------
+
+// 测试参考值使用十分之一分，独立校验生产查表及单位换算。
+function referencePointsTenths(count: number): number {
+  const firstScores = [0, 2, 10, 26, 40, 50, 60, 70, 80, 90, 100, 110, 120, 129, 137, 144, 150, 155, 159, 162];
+  if (count < firstScores.length) return firstScores[count];
+  return 164 + Math.min(count, 124) - 20;
+}
 
 const popcount = (mask: number): number => {
   let c = 0;
@@ -145,7 +151,7 @@ function bruteForceBestGrouping(
     let total = 0;
     let sumSq = 0;
     for (const real of realCounts) {
-      const eff = Math.min(real, MAX_EFFECTIVE_COMMON_SKILLS);
+      const eff = referencePointsTenths(real);
       total += eff;
       sumSq += eff * eff;
     }
@@ -251,7 +257,7 @@ type RandomInstance = {
 
 function randomInstance(rng: () => number, n: number, m: number): RandomInstance {
   const skillCount = 20 + Math.floor(rng() * 20); // 20..39 个技能
-  const p = 0.25 + rng() * 0.5; // 0.25..0.75，高 p 会触发 12 技能封顶
+  const p = 0.25 + rng() * 0.5; // 0.25..0.75，高 p 可覆盖高技能数组合
   const spellMasks = new Map<number, number>();
   for (let s = 0; s < skillCount; s++) {
     let mask = 0;
@@ -299,11 +305,11 @@ function referenceSignature(r: RefBest, originalIndices: number[]): string {
     teams: r.teams.map((members, k) => [
       members.map((u) => originalIndices[u]),
       r.realCounts[k],
-      Math.min(r.realCounts[k], MAX_EFFECTIVE_COMMON_SKILLS),
+      referencePointsTenths(r.realCounts[k]) / 10,
     ]),
     excluded: r.excluded.map((u) => originalIndices[u]),
-    total: r.total,
-    variance: r.variance,
+    total: r.total / 10,
+    variance: r.variance / 100,
   });
 }
 
@@ -504,7 +510,7 @@ function main(): void {
   }
 
   console.log(
-    `均衡组队算法 Benchmark（MAX_EFFECTIVE_COMMON_SKILLS=${MAX_EFFECTIVE_COMMON_SKILLS}，node ${process.version}）\n`,
+    `均衡组队算法 Benchmark（查表赋分，node ${process.version}）\n`,
   );
 
   const handcraftedOk = runHandcraftedCheck();
