@@ -230,6 +230,18 @@ const getFilterKey = (method: any): keyof FilterTypes => {
   return method.type as keyof FilterTypes;
 };
 
+// 当前分类过滤下有效的技能编号。组队算法（buildAlgoInputData）与
+// 「应用该配置」的队伍预览共用这一口径，见 docs/adr/0007-party-preview-filtering.md。
+const validSpellNos = computed<Set<number>>(() => {
+  const set = new Set<number>();
+  for (const spell of spells) {
+    if (spell.method.some((method) => props.filterTypes[getFilterKey(method)])) {
+      set.add(Number(spell.no));
+    }
+  }
+  return set;
+});
+
 
 // 提取自原 bestParty：构建算法输入（activeUsers / mustIncludeMask / spellMasks），
 // 供「最优组队推荐」与「多队伍组合推荐」共用
@@ -268,16 +280,10 @@ const buildAlgoInputData = () => {
     }
   }
 
-  const validSpellNos = new Set<number>();
-  for (const spell of spells) {
-    const isValid = spell.method.some((method) => props.filterTypes[getFilterKey(method)]);
-    if (isValid) validSpellNos.add(Number(spell.no));
-  }
-
   const spellMasks = new Map<number, number>();
   for (let i = 0; i < activeUsers.length; i++) {
     for (const spellNo of activeUsers[i].spellSet) {
-      if (!validSpellNos.has(spellNo)) continue;
+      if (!validSpellNos.value.has(spellNo)) continue;
       const currentMask = spellMasks.get(spellNo) || 0;
       spellMasks.set(spellNo, currentMask | (1 << i));
     }
@@ -454,9 +460,11 @@ const parsePreviewList = (text: string): PreviewEntry[] => {
   return list;
 };
 
-// 队伍预览：候选技能 = 该队伍中至少有一人未掌握的技能（并集，不再要求全员都未掌握），
-// 因此每支队伍的预览内容互不相同。与「设为我」的用户预览一致，不受主界面分类过滤
-// 影响：成员数据里有哪些未掌握技能就列出哪些。
+// 队伍预览：候选技能 = 该队伍中至少有一人未掌握、且处于当前「分类过滤」范围内的技能
+// （并集，不要求全员都未掌握，因此每支队伍的预览内容互不相同）。
+// 这里刻意跟随主界面分类过滤，与「设为我」的用户预览不同：行内「共可学习 X 个技能」、
+// 最优队伍/多队伍推荐都按同一口径统计，预览若列出被过滤掉的技能就会和这些数字对不上。
+// 两者的口径差异是有意为之，见 docs/adr/0007-party-preview-filtering.md。
 // 末尾计数 = 这支队伍里有多少个用户未掌握它、可以一起学习；队伍成员即使被其他配置
 // 暂时隐藏，也照常按其数据统计（队伍组成不随当前显隐状态改变）。
 const buildTeamPreview = (indices: number[], label: string): PreviewModel => {
@@ -465,6 +473,8 @@ const buildTeamPreview = (indices: number[], label: string): PreviewModel => {
   const list: PreviewEntry[] = [];
   for (const spell of spells) {
     const no = Number(spell.no);
+    // 分类过滤只剔除展示项，不改变成员数据；计数仍在「可见」技能内进行
+    if (!validSpellNos.value.has(no)) continue;
     let count = 0;
     for (const set of teamSets) if (set.has(no)) count++;
     // 队伍里没人在这个技能上未掌握，就不属于这支队伍需要关注的技能
@@ -492,7 +502,7 @@ const buildTeamPreview = (indices: number[], label: string): PreviewModel => {
     title: label,
     subtitle: `共 ${list.length} 个未掌握技能`,
     list,
-    emptyText: '当前没有未掌握的技能',
+    emptyText: '当前分类过滤下没有可显示的未掌握技能',
     hint: '点击「应用该配置」后将隐藏不在该队伍中的其他队员',
   };
 };
@@ -509,6 +519,8 @@ const previewData = computed<PreviewModel | null>(() => {
   const name = slot === 0
     ? (localUser1Name.value || "用户 1")
     : (localPartyNames.value[slot - 1] || `用户 ${slot + 1}`);
+  // 「设为我」预览展示该用户数据里的全部未掌握技能，刻意不套用分类过滤
+  // （与「应用该配置」的队伍预览相反，见 docs/adr/0007-party-preview-filtering.md）。
   const list = parsePreviewList(text);
   return {
     title: name,
