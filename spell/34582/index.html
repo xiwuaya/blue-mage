@@ -43,6 +43,16 @@ footer{border-top:1px solid #444;margin-top:28px;padding-top:12px;font-size:.85r
 footer a{color:#ffbe31;text-decoration:none}
 footer a:hover{text-decoration:underline}
 .meta{opacity:.6;font-size:.78rem}
+.history{margin:20px 0;border-block:1px solid #525252;padding:8px 0}
+.history summary{cursor:pointer;padding:5px 0}
+.history>summary strong,.history a{color:#ffbe31}
+.history>summary span{display:inline-block;max-width:100%;vertical-align:bottom;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.87rem;color:#ddd}
+.history ol{list-style:none;padding:0 0 0 14px}
+.history li{border-left:2px solid #666;padding:0 12px;margin:18px 0}
+.history p{margin:4px 0}.history .sources{margin-top:10px;font-size:.85rem}
+.wording{white-space:pre-wrap;overflow-wrap:anywhere;background:#202020;padding:8px 12px}
+.wording mark{color:#efffd9;background:#355138}.old mark{color:#ffe6dd;background:#633e38}
+.history summary:focus-visible{outline:2px solid #ffbe31}
 @media (max-width:480px){.head{gap:10px}.icon{width:48px;height:48px}h1{font-size:1.3rem}}
 </style>
 </head>
@@ -57,6 +67,18 @@ footer a:hover{text-decoration:underline}
   </div>
 </header>
 <section><h2>效果</h2><p>对自身周围的敌人发动无属性范围魔法攻击　<span style="color:rgba(0,204,34,1);">威力：</span>800<br>攻击复数敌人时，对第一个之外的敌人威力降低50%<br>与<span style="color:rgba(255,123,26,1);">启示录</span>共享复唱时间</p></section>
+<details class="history"><summary><strong>历史变更（1 条）</strong>
+    <span>最早见于 7.2 · 明确范围以自身为中心</span></summary>
+    <ol><li><strong>最早见于 7.2</strong> · 描述文本变更
+      <p>明确范围以自身为中心</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 7.15</p><div class="old wording">对周围的敌人发动无属性范围魔法攻击　威力：800
+攻击复数敌人时，对第一个之外的敌人威力降低50%
+与启示录共享复唱时间</div>
+      <p>改动后 · 7.2</p><div class="wording">对<mark>自身</mark>周围的敌人发动无属性范围魔法攻击　威力：800
+攻击复数敌人时，对第一个之外的敌人威力降低50%
+与启示录共享复唱时间</div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/c6514b3ea015e33b9a0df9b038ee0e86427c9c86/ActionTransient.csv">国服 7.15 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/ef291b6b9e7c9d610bd9b1ff23a2f198ed8a82fa/ActionTransient.csv">国服 7.2 快照</a></p></li></ol></details>
 <section>
 <h2>获取途径（2 条）</h2>
 <ol class="methods">
@@ -79,7 +101,7 @@ footer a:hover{text-decoration:underline}
     </nav>
 <footer>
 <p><a href="/blue-mage/?search=%E7%BB%88%E6%9C%89%E4%B8%80%E6%AD%BB">在查询工具中打开「终有一死」</a>（可按副本 / 地图筛选，标记学习进度）</p>
-<p class="meta">青魔法来源查询 · 构建于 2026-11-22 · 游戏数据来源：最终幻想14</p>
+<p class="meta">青魔法来源查询 · 构建于 2026-11-23 · 游戏数据来源：最终幻想14</p>
 </footer>
 </main>
 </body>

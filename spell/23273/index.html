@@ -43,6 +43,16 @@ footer{border-top:1px solid #444;margin-top:28px;padding-top:12px;font-size:.85r
 footer a{color:#ffbe31;text-decoration:none}
 footer a:hover{text-decoration:underline}
 .meta{opacity:.6;font-size:.78rem}
+.history{margin:20px 0;border-block:1px solid #525252;padding:8px 0}
+.history summary{cursor:pointer;padding:5px 0}
+.history>summary strong,.history a{color:#ffbe31}
+.history>summary span{display:inline-block;max-width:100%;vertical-align:bottom;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.87rem;color:#ddd}
+.history ol{list-style:none;padding:0 0 0 14px}
+.history li{border-left:2px solid #666;padding:0 12px;margin:18px 0}
+.history p{margin:4px 0}.history .sources{margin-top:10px;font-size:.85rem}
+.wording{white-space:pre-wrap;overflow-wrap:anywhere;background:#202020;padding:8px 12px}
+.wording mark{color:#efffd9;background:#355138}.old mark{color:#ffe6dd;background:#633e38}
+.history summary:focus-visible{outline:2px solid #ffbe31}
 @media (max-width:480px){.head{gap:10px}.icon{width:48px;height:48px}h1{font-size:1.3rem}}
 </style>
 </head>
@@ -57,6 +67,97 @@ footer a:hover{text-decoration:underline}
   </div>
 </header>
 <section><h2>效果</h2><p>展开玄结界，令自身所受的伤害减轻20%<br><span style="color:rgba(0,204,34,1);">持续时间：</span>10秒<br><span style="color:rgba(0,204,34,1);">追加效果：</span>持续时间内如果受到超过自身最大体力30%的伤害，则对自身附加<span style="color:rgba(255,123,26,1);">玄天武水壁</span><br><span style="color:rgba(0,204,34,1);">玄天武水壁效果：</span>技能<span style="color:rgba(255,123,26,1);">玄结界</span>变化为<span style="color:rgba(255,123,26,1);">玄天武水壁</span><br>效果时间内发动技能或进行移动、转身都会使玄结界立即消失<br>此外当玄结界消失时，玄天武水壁也会同时消失<br>发动之后会停止自动攻击<br>该魔法有单独计算的复唱时间，并与<span style="color:rgba(255,123,26,1);">红宝石电圈</span>、<span style="color:rgba(255,123,26,1);">斗灵弹</span>共享复唱时间<br><br><span style="color:rgba(255,123,26,1);">玄天武水壁</span><br>对自身周围的敌人发动水属性范围魔法攻击　<span style="color:rgba(0,204,34,1);">威力：</span>500<br>自身处于<span style="color:rgba(255,123,26,1);">以太复制：防护</span>状态时　<span style="color:rgba(0,204,34,1);">威力：</span>1000<br>攻击复数敌人时，对第一个之外的敌人威力降低50%<br><span style="color:rgba(0,204,34,1);">效果发动条件：</span><span style="color:rgba(255,123,26,1);">玄天武水壁</span>状态中</p></section>
+<details class="history"><summary><strong>历史变更（3 条）</strong>
+    <span>最早见于 6.5 · 补充停止自动攻击说明</span></summary>
+    <ol><li><strong>最早见于 6.5</strong> · 描述文本变更
+      <p>补充停止自动攻击说明</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 6.45</p><div class="old wording">展开玄结界，令自身所受的伤害减轻20%
+持续时间：10秒
+追加效果：持续时间内如果受到超过自身最大体力30%的伤害，则对自身附加玄天武水壁
+玄天武水壁效果：技能玄结界变化为玄天武水壁
+效果时间内发动技能或进行移动、转身都会使玄结界立即消失
+此外当玄结界消失时，玄天武水壁也会同时消失
+该魔法有单独计算的复唱时间，并与红宝石电圈、斗灵弹共享复唱时间
+
+玄天武水壁
+对自身周围的敌人发动水属性范围魔法攻击　威力：500
+自身处于以太复制：防护状态时　威力：1000
+攻击复数敌人时，对第一个之外的敌人威力降低50%
+效果发动条件：玄天武水壁状态中</div>
+      <p>改动后 · 6.5</p><div class="wording">展开玄结界，令自身所受的伤害减轻20%
+持续时间：10秒
+追加效果：持续时间内如果受到超过自身最大体力30%的伤害，则对自身附加玄天武水壁
+玄天武水壁效果：技能玄结界变化为玄天武水壁
+效果时间内发动技能或进行移动、转身都会使玄结界立即消失
+此外当玄结界消失时，玄天武水壁也会同时消失
+<mark>发动之后会停止自动攻击
+</mark>该魔法有单独计算的复唱时间，并与红宝石电圈、斗灵弹共享复唱时间
+
+玄天武水壁
+对自身周围的敌人发动水属性范围魔法攻击　威力：500
+自身处于以太复制：防护状态时　威力：1000
+攻击复数敌人时，对第一个之外的敌人威力降低50%
+效果发动条件：玄天武水壁状态中</div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/deedee85ffecc063e16266e5b436de6814f56234/ActionTransient.csv">国服 6.45 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/3c48da7d97d5c60556d41fc56d73a822342bf4e8/ActionTransient.csv">国服 6.5 快照</a></p></li><li><strong>最早见于 6.45</strong> · 描述文本变更
+      <p>明确与红宝石电圈、斗灵弹共享复唱时间</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 6.4</p><div class="old wording">展开玄结界，令自身所受的伤害减轻20%
+持续时间：10秒
+追加效果：持续时间内如果受到超过自身最大体力30%的伤害，则对自身附加玄天武水壁
+玄天武水壁效果：技能玄结界变化为玄天武水壁
+效果时间内发动技能或进行移动、转身都会使玄结界立即消失
+此外当玄结界消失时，玄天武水壁也会同时消失
+该魔法有单独计算的复唱时间，并与<mark>部分青魔法</mark>共享复唱时间
+
+玄天武水壁
+对自身周围的敌人发动水属性范围魔法攻击　威力：500
+自身处于以太复制：防护状态时　威力：1000
+攻击复数敌人时，对第一个之外的敌人威力降低50%
+效果发动条件：玄天武水壁状态中</div>
+      <p>改动后 · 6.45</p><div class="wording">展开玄结界，令自身所受的伤害减轻20%
+持续时间：10秒
+追加效果：持续时间内如果受到超过自身最大体力30%的伤害，则对自身附加玄天武水壁
+玄天武水壁效果：技能玄结界变化为玄天武水壁
+效果时间内发动技能或进行移动、转身都会使玄结界立即消失
+此外当玄结界消失时，玄天武水壁也会同时消失
+该魔法有单独计算的复唱时间，并与<mark>红宝石电圈、斗灵弹</mark>共享复唱时间
+
+玄天武水壁
+对自身周围的敌人发动水属性范围魔法攻击　威力：500
+自身处于以太复制：防护状态时　威力：1000
+攻击复数敌人时，对第一个之外的敌人威力降低50%
+效果发动条件：玄天武水壁状态中</div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/53270db5987173682cc8c26310dff74b01e40ef3/ActionTransient.csv">国服 6.4 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/deedee85ffecc063e16266e5b436de6814f56234/ActionTransient.csv">国服 6.45 快照</a></p></li><li><strong>最早见于 6.15</strong> · 描述文本变更
+      <p>调整复数目标的表述</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 6.11</p><div class="old wording">展开玄结界，令自身所受的伤害减轻20%
+持续时间：10秒
+追加效果：持续时间内如果受到超过自身最大体力30%的伤害，则对自身附加玄天武水壁
+玄天武水壁效果：技能玄结界变化为玄天武水壁
+效果时间内发动技能或进行移动、转身都会使玄结界立即消失
+此外当玄结界消失时，玄天武水壁也会同时消失
+该魔法有单独计算的复唱时间，并与部分青魔法共享复唱时间
+
+玄天武水壁
+对自身周围的敌人发动水属性范围魔法攻击　威力：500
+自身处于以太复制：防护状态时　威力：1000
+攻击复数敌人时，对<mark>目标</mark>之外的敌人威力降低50%
+效果发动条件：玄天武水壁状态中</div>
+      <p>改动后 · 6.15</p><div class="wording">展开玄结界，令自身所受的伤害减轻20%
+持续时间：10秒
+追加效果：持续时间内如果受到超过自身最大体力30%的伤害，则对自身附加玄天武水壁
+玄天武水壁效果：技能玄结界变化为玄天武水壁
+效果时间内发动技能或进行移动、转身都会使玄结界立即消失
+此外当玄结界消失时，玄天武水壁也会同时消失
+该魔法有单独计算的复唱时间，并与部分青魔法共享复唱时间
+
+玄天武水壁
+对自身周围的敌人发动水属性范围魔法攻击　威力：500
+自身处于以太复制：防护状态时　威力：1000
+攻击复数敌人时，对<mark>第一个</mark>之外的敌人威力降低50%
+效果发动条件：玄天武水壁状态中</div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/c52aef96d91cfcbf6ccfcc6708690b8a18685ca3/ActionTransient.csv">国服 6.11 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/475a4f8c0399ae71859834f01a4c1b8e705ced6d/ActionTransient.csv">国服 6.15 快照</a></p></li></ol></details>
 <section>
 <h2>获取途径（1 条）</h2>
 <ol class="methods">
@@ -74,7 +175,7 @@ footer a:hover{text-decoration:underline}
     </nav>
 <footer>
 <p><a href="/blue-mage/?search=%E7%8E%84%E7%BB%93%E7%95%8C">在查询工具中打开「玄结界」</a>（可按副本 / 地图筛选，标记学习进度）</p>
-<p class="meta">青魔法来源查询 · 构建于 2026-11-22 · 游戏数据来源：最终幻想14</p>
+<p class="meta">青魔法来源查询 · 构建于 2026-11-23 · 游戏数据来源：最终幻想14</p>
 </footer>
 </main>
 </body>

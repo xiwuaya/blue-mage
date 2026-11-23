@@ -43,6 +43,16 @@ footer{border-top:1px solid #444;margin-top:28px;padding-top:12px;font-size:.85r
 footer a{color:#ffbe31;text-decoration:none}
 footer a:hover{text-decoration:underline}
 .meta{opacity:.6;font-size:.78rem}
+.history{margin:20px 0;border-block:1px solid #525252;padding:8px 0}
+.history summary{cursor:pointer;padding:5px 0}
+.history>summary strong,.history a{color:#ffbe31}
+.history>summary span{display:inline-block;max-width:100%;vertical-align:bottom;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.87rem;color:#ddd}
+.history ol{list-style:none;padding:0 0 0 14px}
+.history li{border-left:2px solid #666;padding:0 12px;margin:18px 0}
+.history p{margin:4px 0}.history .sources{margin-top:10px;font-size:.85rem}
+.wording{white-space:pre-wrap;overflow-wrap:anywhere;background:#202020;padding:8px 12px}
+.wording mark{color:#efffd9;background:#355138}.old mark{color:#ffe6dd;background:#633e38}
+.history summary:focus-visible{outline:2px solid #ffbe31}
 @media (max-width:480px){.head{gap:10px}.icon{width:48px;height:48px}h1{font-size:1.3rem}}
 </style>
 </head>
@@ -57,6 +67,30 @@ footer a:hover{text-decoration:underline}
   </div>
 </header>
 <section><h2>效果</h2><p>对目标发动无属性物理攻击　<span style="color:rgba(0,204,34,1);">威力：</span>10<br><span style="color:rgba(0,204,34,1);">追加效果：</span>中断目标的技能咏唱</p></section>
+<details class="history"><summary><strong>历史变更（3 条）</strong>
+    <span>最早见于 5.21 · 修正「击」字写法</span></summary>
+    <ol><li><strong>最早见于 5.21</strong> · 描述文本变更
+      <p>修正「击」字写法</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 5.2</p><div class="old wording">对目标发动无属性物理攻<mark>撃</mark>　威力：10
+追加效果：中断目标的技能咏唱</div>
+      <p>改动后 · 5.21</p><div class="wording">对目标发动无属性物理攻<mark>击</mark>　威力：10
+追加效果：中断目标的技能咏唱</div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/1d59c23124f2282f8c08384887ded7289c4dc75b/ActionTransient.csv">国服 5.2 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/498fc8e1be96b12a7d9346286e811cfca35c0d4e/ActionTransient.csv">国服 5.21 快照</a></p></li><li><strong>最早见于 5.0</strong> · 描述文本变更
+      <p>沉默调整为中断目标咏唱</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 4.57</p><div class="old wording">对目标发动无属性物理攻<mark>击</mark>　威力：10
+追加效果：<mark>沉默　持续时间：1秒</mark></div>
+      <p>改动后 · 5.0</p><div class="wording">对目标发动无属性物理攻<mark>撃</mark>　威力：10
+追加效果：<mark>中断目标的技能咏唱</mark></div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/e925ec798a8c801d8c0c8d4248309362244505dc/ActionTransient.csv">国服 4.57 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/bb7e87942a55ea074b7f64eafd69f87161921c30/ActionTransient.csv">国服 5.0 快照</a></p></li><li><strong>最早见于 4.55</strong> · 描述文本变更
+      <p>修正「击」字写法</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 4.5</p><div class="old wording">对目标发动无属性物理攻<mark>撃</mark>　威力：10
+追加效果：沉默　持续时间：1秒</div>
+      <p>改动后 · 4.55</p><div class="wording">对目标发动无属性物理攻<mark>击</mark>　威力：10
+追加效果：沉默　持续时间：1秒</div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/b15ab76897d0bd397dfdcfc772639cf64e070185/ActionTransient.csv">国服 4.5 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/3a06ecf19da6a773d8a8709fd904fb12ba78b2b3/ActionTransient.csv">国服 4.55 快照</a></p></li></ol></details>
 <section>
 <h2>获取途径（2 条）</h2>
 <ol class="methods">
@@ -79,7 +113,7 @@ footer a:hover{text-decoration:underline}
     </nav>
 <footer>
 <p><a href="/blue-mage/?search=%E6%8A%95%E6%8E%B7%E6%B2%99%E4%B8%81%E9%B1%BC">在查询工具中打开「投掷沙丁鱼」</a>（可按副本 / 地图筛选，标记学习进度）</p>
-<p class="meta">青魔法来源查询 · 构建于 2026-11-22 · 游戏数据来源：最终幻想14</p>
+<p class="meta">青魔法来源查询 · 构建于 2026-11-23 · 游戏数据来源：最终幻想14</p>
 </footer>
 </main>
 </body>

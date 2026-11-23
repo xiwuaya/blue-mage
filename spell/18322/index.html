@@ -43,6 +43,16 @@ footer{border-top:1px solid #444;margin-top:28px;padding-top:12px;font-size:.85r
 footer a{color:#ffbe31;text-decoration:none}
 footer a:hover{text-decoration:underline}
 .meta{opacity:.6;font-size:.78rem}
+.history{margin:20px 0;border-block:1px solid #525252;padding:8px 0}
+.history summary{cursor:pointer;padding:5px 0}
+.history>summary strong,.history a{color:#ffbe31}
+.history>summary span{display:inline-block;max-width:100%;vertical-align:bottom;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.87rem;color:#ddd}
+.history ol{list-style:none;padding:0 0 0 14px}
+.history li{border-left:2px solid #666;padding:0 12px;margin:18px 0}
+.history p{margin:4px 0}.history .sources{margin-top:10px;font-size:.85rem}
+.wording{white-space:pre-wrap;overflow-wrap:anywhere;background:#202020;padding:8px 12px}
+.wording mark{color:#efffd9;background:#355138}.old mark{color:#ffe6dd;background:#633e38}
+.history summary:focus-visible{outline:2px solid #ffbe31}
 @media (max-width:480px){.head{gap:10px}.icon{width:48px;height:48px}h1{font-size:1.3rem}}
 </style>
 </head>
@@ -57,6 +67,43 @@ footer a:hover{text-decoration:underline}
   </div>
 </header>
 <section><h2>效果</h2><p>指定一名除自身外的玩家，复制其以太特性<br>对自身附加<span style="color:rgba(255,123,26,1);">以太复制：防护</span>、<span style="color:rgba(255,123,26,1);">以太复制：进攻</span>、<span style="color:rgba(255,123,26,1);">以太复制：治疗</span>状态中的一种<br>指定玩家的职能将决定附加的状态<br><span style="color:rgba(255,123,26,1);">以太复制：防护</span>状态下，自身的防御力上升，同时强化部分青魔法<br><span style="color:rgba(255,123,26,1);">以太复制：进攻</span>状态下，自身的暴击发动率和直击发动率提高20%，同时强化部分青魔法<br><span style="color:rgba(255,123,26,1);">以太复制：治疗</span>状态下，自身发动的体力恢复效果提高20%，同时强化部分青魔法<br>再次发动时则取消该状态　<span style="color:rgba(0,204,34,1);">持续时间：</span>永久</p></section>
+<details class="history"><summary><strong>历史变更（2 条）</strong>
+    <span>最早见于 6.5 · 调整治疗状态的恢复效果表述</span></summary>
+    <ol><li><strong>最早见于 6.5</strong> · 描述文本变更
+      <p>调整治疗状态的恢复效果表述</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 6.45</p><div class="old wording">指定一名除自身外的玩家，复制其以太特性
+对自身附加以太复制：防护、以太复制：进攻、以太复制：治疗状态中的一种
+指定玩家的职能将决定附加的状态
+以太复制：防护状态下，自身的防御力上升，同时强化部分青魔法
+以太复制：进攻状态下，自身的暴击发动率和直击发动率提高20%，同时强化部分青魔法
+以太复制：治疗状态下，自身发动<mark>治疗魔法</mark>的<mark>治疗量</mark>提高20%，同时强化部分青魔法
+再次发动时则取消该状态　持续时间：永久</div>
+      <p>改动后 · 6.5</p><div class="wording">指定一名除自身外的玩家，复制其以太特性
+对自身附加以太复制：防护、以太复制：进攻、以太复制：治疗状态中的一种
+指定玩家的职能将决定附加的状态
+以太复制：防护状态下，自身的防御力上升，同时强化部分青魔法
+以太复制：进攻状态下，自身的暴击发动率和直击发动率提高20%，同时强化部分青魔法
+以太复制：治疗状态下，自身发动的<mark>体力恢复效果</mark>提高20%，同时强化部分青魔法
+再次发动时则取消该状态　持续时间：永久</div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/deedee85ffecc063e16266e5b436de6814f56234/ActionTransient.csv">国服 6.45 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/3c48da7d97d5c60556d41fc56d73a822342bf4e8/ActionTransient.csv">国服 6.5 快照</a></p></li><li><strong>最早见于 6.0</strong> · 描述文本变更
+      <p>补充防护状态对部分青魔法的强化</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 5.58</p><div class="old wording">指定一名除自身外的玩家，复制其以太特性
+对自身附加以太复制：防护、以太复制：进攻、以太复制：治疗状态中的一种
+指定玩家的职能将决定附加的状态
+以太复制：防护状态下，自身的防御力上升，同时强化部分青魔法
+以太复制：进攻状态下，自身的暴击发动率和直击发动率提高20%
+以太复制：治疗状态下，自身发动治疗魔法的治疗量提高20%，同时强化部分青魔法
+再次发动时则取消该状态　持续时间：永久</div>
+      <p>改动后 · 6.0</p><div class="wording">指定一名除自身外的玩家，复制其以太特性
+对自身附加以太复制：防护、以太复制：进攻、以太复制：治疗状态中的一种
+指定玩家的职能将决定附加的状态
+以太复制：防护状态下，自身的防御力上升，同时强化部分青魔法
+以太复制：进攻状态下，自身的暴击发动率和直击发动率提高20%<mark>，同时强化部分青魔法</mark>
+以太复制：治疗状态下，自身发动治疗魔法的治疗量提高20%，同时强化部分青魔法
+再次发动时则取消该状态　持续时间：永久</div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/bfde0dd23cc333e906cce53eed8bb817253a6cd7/ActionTransient.csv">国服 5.58 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/df01054ec9ee330144ff0cfca42291010f09b3b2/ActionTransient.csv">国服 6.0 快照</a></p></li></ol></details>
 <section>
 <h2>获取途径（1 条）</h2>
 <ol class="methods">
@@ -74,7 +121,7 @@ footer a:hover{text-decoration:underline}
     </nav>
 <footer>
 <p><a href="/blue-mage/?search=%E4%BB%A5%E5%A4%AA%E5%A4%8D%E5%88%B6">在查询工具中打开「以太复制」</a>（可按副本 / 地图筛选，标记学习进度）</p>
-<p class="meta">青魔法来源查询 · 构建于 2026-11-22 · 游戏数据来源：最终幻想14</p>
+<p class="meta">青魔法来源查询 · 构建于 2026-11-23 · 游戏数据来源：最终幻想14</p>
 </footer>
 </main>
 </body>

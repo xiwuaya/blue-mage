@@ -43,6 +43,16 @@ footer{border-top:1px solid #444;margin-top:28px;padding-top:12px;font-size:.85r
 footer a{color:#ffbe31;text-decoration:none}
 footer a:hover{text-decoration:underline}
 .meta{opacity:.6;font-size:.78rem}
+.history{margin:20px 0;border-block:1px solid #525252;padding:8px 0}
+.history summary{cursor:pointer;padding:5px 0}
+.history>summary strong,.history a{color:#ffbe31}
+.history>summary span{display:inline-block;max-width:100%;vertical-align:bottom;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.87rem;color:#ddd}
+.history ol{list-style:none;padding:0 0 0 14px}
+.history li{border-left:2px solid #666;padding:0 12px;margin:18px 0}
+.history p{margin:4px 0}.history .sources{margin-top:10px;font-size:.85rem}
+.wording{white-space:pre-wrap;overflow-wrap:anywhere;background:#202020;padding:8px 12px}
+.wording mark{color:#efffd9;background:#355138}.old mark{color:#ffe6dd;background:#633e38}
+.history summary:focus-visible{outline:2px solid #ffbe31}
 @media (max-width:480px){.head{gap:10px}.icon{width:48px;height:48px}h1{font-size:1.3rem}}
 </style>
 </head>
@@ -57,6 +67,25 @@ footer a:hover{text-decoration:underline}
   </div>
 </header>
 <section><h2>效果</h2><p>向目标所在方向发出无属性直线范围物理攻击　<span style="color:rgba(0,204,34,1);">威力：</span>220<br><span style="color:rgba(0,204,34,1);">追加效果：</span>附加<span style="color:rgba(255,123,26,1);">头晕</span>　<span style="color:rgba(0,204,34,1);">持续时间：</span>5秒<br>短时间内对同一目标重复使用时，每次可令目标头晕的时间都会减少，直至完全无效<br>令目标陷入头晕状态时威力上升<br><span style="color:rgba(0,204,34,1);">令目标陷入头晕状态时威力：</span>400<br>攻击复数敌人时，对目标之外的敌人威力降低50%</p></section>
+<details class="history"><summary><strong>历史变更（1 条）</strong>
+    <span>最早见于 5.5 · 细化重复施放时的头晕说明</span></summary>
+    <ol><li><strong>最早见于 5.5</strong> · 描述文本变更
+      <p>细化重复施放时的头晕说明</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 5.45</p><div class="old wording">向目标所在方向发出无属性直线范围物理攻击　威力：220
+追加效果：附加头晕<mark>
+</mark>持续时间：5秒
+<mark>在</mark>短时间内对同一<mark>对象</mark>重复<mark>附加</mark>头晕<mark>状态会造成持续</mark>时间减少，<mark>最终导致</mark>无效
+目标<mark>处于</mark>头晕状态时<mark>，</mark>威力上升
+目标<mark>处于</mark>头晕状态时威力：400
+攻击复数敌人时，对目标之外的敌人威力降低50%</div>
+      <p>改动后 · 5.5</p><div class="wording">向目标所在方向发出无属性直线范围物理攻击　威力：220
+追加效果：附加头晕<mark>　</mark>持续时间：5秒
+短时间内对同一<mark>目标</mark>重复<mark>使用时，每次可令目标</mark>头晕<mark>的</mark>时间<mark>都会</mark>减少，<mark>直至完全</mark>无效
+<mark>令</mark>目标<mark>陷入</mark>头晕状态时威力上升
+<mark>令</mark>目标<mark>陷入</mark>头晕状态时威力：400
+攻击复数敌人时，对目标之外的敌人威力降低50%</div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/dcf228d4550bf849c976f076343a3c13bb7d4cfd/ActionTransient.csv">国服 5.45 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/5aa2afd1eb073f128be578f1b78e2b717f81a5be/ActionTransient.csv">国服 5.5 快照</a></p></li></ol></details>
 <section>
 <h2>获取途径（2 条）</h2>
 <ol class="methods">
@@ -79,7 +108,7 @@ footer a:hover{text-decoration:underline}
     </nav>
 <footer>
 <p><a href="/blue-mage/?search=%E7%94%9F%E6%88%90%E5%A4%96%E8%AE%BE">在查询工具中打开「生成外设」</a>（可按副本 / 地图筛选，标记学习进度）</p>
-<p class="meta">青魔法来源查询 · 构建于 2026-11-22 · 游戏数据来源：最终幻想14</p>
+<p class="meta">青魔法来源查询 · 构建于 2026-11-23 · 游戏数据来源：最终幻想14</p>
 </footer>
 </main>
 </body>

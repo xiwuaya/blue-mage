@@ -43,6 +43,16 @@ footer{border-top:1px solid #444;margin-top:28px;padding-top:12px;font-size:.85r
 footer a{color:#ffbe31;text-decoration:none}
 footer a:hover{text-decoration:underline}
 .meta{opacity:.6;font-size:.78rem}
+.history{margin:20px 0;border-block:1px solid #525252;padding:8px 0}
+.history summary{cursor:pointer;padding:5px 0}
+.history>summary strong,.history a{color:#ffbe31}
+.history>summary span{display:inline-block;max-width:100%;vertical-align:bottom;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.87rem;color:#ddd}
+.history ol{list-style:none;padding:0 0 0 14px}
+.history li{border-left:2px solid #666;padding:0 12px;margin:18px 0}
+.history p{margin:4px 0}.history .sources{margin-top:10px;font-size:.85rem}
+.wording{white-space:pre-wrap;overflow-wrap:anywhere;background:#202020;padding:8px 12px}
+.wording mark{color:#efffd9;background:#355138}.old mark{color:#ffe6dd;background:#633e38}
+.history summary:focus-visible{outline:2px solid #ffbe31}
 @media (max-width:480px){.head{gap:10px}.icon{width:48px;height:48px}h1{font-size:1.3rem}}
 </style>
 </head>
@@ -57,6 +67,19 @@ footer a:hover{text-decoration:underline}
   </div>
 </header>
 <section><h2>效果</h2><p>一定时间内，目标所受伤害提高5%<br><span style="color:rgba(0,204,34,1);">持续时间：</span>15秒<br>该魔法有单独计算的复唱时间，不受其他魔法复唱时间的影响<br>与<span style="color:rgba(255,123,26,1);">惊奇光</span>共享复唱时间</p></section>
+<details class="history"><summary><strong>历史变更（1 条）</strong>
+    <span>最早见于 5.1 · 调整易伤效果、持续时间和共享复唱</span></summary>
+    <ol><li><strong>最早见于 5.1</strong> · 描述文本变更
+      <p>调整易伤效果、持续时间和共享复唱</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · 5.05</p><div class="old wording">一定时间内，<mark>自身对</mark>目标<mark>造成的</mark>伤害提高<mark>50</mark>%
+持续时间<mark>内目标被打倒时，重置本技能复唱时间　持续时间</mark>：<mark>30</mark>秒
+该魔法有单独计算的复唱时间</div>
+      <p>改动后 · 5.1</p><div class="wording">一定时间内，目标<mark>所受</mark>伤害提高<mark>5</mark>%
+持续时间：<mark>15</mark>秒
+该魔法有单独计算的复唱时间<mark>，不受其他魔法复唱时间的影响
+与惊奇光共享复唱时间</mark></div>
+      </details><p class="sources"><a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/41d419b4060adc8e1f721692852022d5b2890caa/ActionTransient.csv">国服 5.05 快照</a> · <a href="https://github.com/thewakingsands/ffxiv-datamining-cn/blob/7a1c5c7c940c4c6e106dd3eabb1eae64d8c17e5d/ActionTransient.csv">国服 5.1 快照</a></p></li></ol></details>
 <section>
 <h2>获取途径（1 条）</h2>
 <ol class="methods">
@@ -74,7 +97,7 @@ footer a:hover{text-decoration:underline}
     </nav>
 <footer>
 <p><a href="/blue-mage/?search=%E7%A0%B4%E9%98%B2">在查询工具中打开「破防」</a>（可按副本 / 地图筛选，标记学习进度）</p>
-<p class="meta">青魔法来源查询 · 构建于 2026-11-22 · 游戏数据来源：最终幻想14</p>
+<p class="meta">青魔法来源查询 · 构建于 2026-11-23 · 游戏数据来源：最终幻想14</p>
 </footer>
 </main>
 </body>
