@@ -1,0 +1,109 @@
+diff --git a/tools/update/import-spell-history.py b/tools/update/import-spell-history.py
+index a7505cc..d27f7c6 100644
+--- a/tools/update/import-spell-history.py
++++ b/tools/update/import-spell-history.py
+@@ -1,7 +1,4 @@
+-"""Generate spell-history.json from a local ffxiv-datamining-cn Git checkout.
+-
+-Usage: python tools/update/import-spell-history.py /path/to/ffxiv-datamining-cn
+-"""
++import argparse
+ import csv
+ import difflib
+ import io
+@@ -9,8 +6,13 @@ import json
+ from pathlib import Path
+ import re
+ import subprocess
+-import sys
++import tempfile
++import time
++from urllib.error import URLError
++from urllib.request import urlopen
+ 
++UPSTREAM = "https://github.com/thewakingsands/ffxiv-datamining-cn.git"
++RAW = "https://raw.githubusercontent.com/thewakingsands/ffxiv-datamining-cn"
+ DATA = Path(__file__).resolve().parents[1] / "data"
+ COLOR = re.compile(r"<(UIForeground|UIGlow)>[0-9A-Fa-f]+</\1>")
+ TOKEN = re.compile(r"\d+(?:\.\d+)?|.", re.S)
+@@ -32,7 +34,7 @@ def changes(before, after):
+ 
+ 
+ def generate(versions, read_csv):
+-    spells = json.loads((DATA / "spells.json").read_text())
++    spells = json.loads((DATA / "spells.json").read_text(encoding="utf-8"))
+     actions = {str(s["action"]): s for s in spells}
+     history, previous = {}, {}
+     for patch, sha in versions:
+@@ -58,17 +60,63 @@ def generate(versions, read_csv):
+     return {"versions": dict(versions), "spells": history}
+ 
+ 
++def remote_versions():
++    output = subprocess.check_output(
++        ["git", "ls-remote", "--tags", UPSTREAM, "refs/tags/patch-*"], text=True
++    )
++    # Annotated tags have a second, peeled ref pointing at the actual commit.
++    refs = dict(line.split()[::-1] for line in output.splitlines())
++    versions = {}
++    for ref, sha in refs.items():
++        if ref.endswith("^{}"):
++            continue
++        patch = ref.split("patch-", 1)[1]
++        if patch_key(patch) >= patch_key("4.5"):
++            versions[patch] = refs.get(ref + "^{}", sha)
++    return sorted(versions.items(), key=lambda item: patch_key(item[0]))
++
++
++def remote_csv(patch, sha):
++    url = f"{RAW}/{sha}/ActionTransient.csv"
++    for attempt in range(3):
++        try:
++            with urlopen(url, timeout=30) as response:
++                return response.read().decode("utf-8-sig")
++        except (URLError, OSError) as error:
++            if attempt == 2:
++                raise RuntimeError(f"读取国服 {patch} 失败：{url}") from error
++            time.sleep(2 ** attempt)
++
++
+ def main(repo):
+-    def git(*args):
+-        return subprocess.check_output(["git", "-C", repo, *args]).decode("utf-8-sig")
++    if repo is None:
++        versions = remote_versions()
++        read_csv = remote_csv
++    else:
++        def git(*args):
++            return subprocess.check_output(["git", "-C", repo, *args]).decode("utf-8-sig")
++
++        tags = sorted(git("tag", "-l", "patch-*").splitlines(), key=lambda tag: patch_key(tag[6:]))
++        versions = [(tag[6:], git("rev-parse", tag + "^{}").strip())
++                    for tag in tags if patch_key(tag[6:]) >= patch_key("4.5")]
++        def read_csv(patch, sha):
++            return git("show", sha + ":ActionTransient.csv")
+ 
+-    tags = sorted(git("tag", "-l", "patch-*").splitlines(), key=lambda tag: patch_key(tag[6:]))
+-    versions = [(tag[6:], git("rev-parse", tag + "^{}").strip())
+-                for tag in tags if patch_key(tag[6:]) >= patch_key("4.5")]
+-    result = generate(versions, lambda patch, sha: git("show", sha + ":ActionTransient.csv"))
++    if not versions:
++        raise ValueError("找不到国服 4.5 起的版本标签")
++    result = generate(versions, read_csv)
+     target = DATA / "spell-history.json"
+-    target.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
++    with tempfile.NamedTemporaryFile(dir=DATA, delete=False) as temp:
++        pending = Path(temp.name)
++    try:
++        pending.write_bytes((json.dumps(result, ensure_ascii=False, indent=2) + "\n").encode("utf-8"))
++        pending.replace(target)
++    finally:
++        pending.unlink(missing_ok=True)
++    print(f"已处理 {len(versions)} 个国服快照，写入 {target.name}")
+ 
+ 
+ if __name__ == "__main__":
+-    main(sys.argv[1])
++    parser = argparse.ArgumentParser(description="在线按版本读取技能描述，也可使用本地解包仓库")
++    parser.add_argument("repo", nargs="?", help="已有国服解包仓库的本地路径（可选）")
++    main(parser.parse_args().repo)

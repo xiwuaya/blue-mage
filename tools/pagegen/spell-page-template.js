@@ -97,6 +97,41 @@ function methodColor(m) {
   return COLOR_ALIAS[m.color.toLowerCase()] || m.color;
 }
 
+const archive = require("../data/spell-history.json");
+const summaries = require("../data/spell-history-summaries.json");
+const notes51 = "https://na.finalfantasyxiv.com/lodestone/topics/detail/3a23a8ba13b2c4152681ec4fa5716915b851002f";
+
+function renderHistory(action) {
+  const entries = archive.spells[action];
+  if (!entries?.length) return "";
+  const rows = [...entries].reverse().map(({ from, to, parts }) => {
+    const confirmed = action === 11385 && to === "5.1";
+    const version = confirmed ? to : `最早见于 ${to}`;
+    const summary = summaries[action]?.[to] || "描述文本变更";
+    function compare(side) {
+      return parts.map(p => {
+        if (typeof p === "string") return esc(p);
+        return p[side] ? `<mark>${esc(p[side])}</mark>` : "";
+      }).join("");
+    }
+    function snapshot(patch) {
+      const url = `https://github.com/thewakingsands/ffxiv-datamining-cn/blob/${archive.versions[patch]}/ActionTransient.csv`;
+      return `<a href="${url}">国服 ${esc(patch)} 快照</a>`;
+    }
+    const type = confirmed ? "技能效果调整" : "描述文本变更";
+    const html = `<li><strong>${esc(version)}</strong> · ${type}
+      <p>${esc(summary)}</p>
+      <details><summary>查看改动前后</summary>
+      <p>改动前 · ${esc(from)}</p><div class="old wording">${compare(0)}</div>
+      <p>改动后 · ${esc(to)}</p><div class="wording">${compare(1)}</div>
+      </details><p class="sources">${snapshot(from)} · ${snapshot(to)}${confirmed ? ` · <a href="${notes51}">官方更新笔记</a>` : ""}</p></li>`;
+    return {html, version, summary};
+  });
+  return `<details class="history"><summary><strong>历史变更（${rows.length} 条）</strong>
+    <span>${esc(rows[0].version)} · ${esc(rows[0].summary)}</span></summary>
+    <ol>${rows.map(r => r.html).join("")}</ol></details>`;
+}
+
 const PAGE_CSS = `
 :root{color-scheme:dark}
 *{box-sizing:border-box}
@@ -122,6 +157,16 @@ footer{border-top:1px solid #444;margin-top:28px;padding-top:12px;font-size:.85r
 footer a{color:#ffbe31;text-decoration:none}
 footer a:hover{text-decoration:underline}
 .meta{opacity:.6;font-size:.78rem}
+.history{margin:20px 0;border-block:1px solid #525252;padding:8px 0}
+.history summary{cursor:pointer;padding:5px 0}
+.history>summary strong,.history a{color:#ffbe31}
+.history>summary span{display:inline-block;max-width:100%;vertical-align:bottom;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.87rem;color:#ddd}
+.history ol{list-style:none;padding:0 0 0 14px}
+.history li{border-left:2px solid #666;padding:0 12px;margin:18px 0}
+.history p{margin:4px 0}.history .sources{margin-top:10px;font-size:.85rem}
+.wording{white-space:pre-wrap;overflow-wrap:anywhere;background:#202020;padding:8px 12px}
+.wording mark{color:#efffd9;background:#355138}.old mark{color:#ffe6dd;background:#633e38}
+.history summary:focus-visible{outline:2px solid #ffbe31}
 @media (max-width:480px){.head{gap:10px}.icon{width:48px;height:48px}h1{font-size:1.3rem}}
 `;
 
@@ -265,6 +310,7 @@ function renderSpellPage({
   </div>
 </header>
 ${descHtml}
+${renderHistory(spell.action)}
 <section>
 <h2>获取途径（${spell.method.length} 条）</h2>
 <ol class="methods">${methodsHtml}
