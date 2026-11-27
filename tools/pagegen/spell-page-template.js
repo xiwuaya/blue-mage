@@ -97,6 +97,25 @@ function methodColor(m) {
   return COLOR_ALIAS[m.color.toLowerCase()] || m.color;
 }
 
+const dutyUnlocks = require("../data/duty-unlocks.json");
+const huntSpawns = require("../data/hunt-spawns.json");
+
+function methodMapLinks(method, url) {
+  const links = [];
+  const pickup = method.questStart || dutyUnlocks[method.name?.trim()];
+  if (pickup) {
+    const purpose = method.questStart || pickup.quest ? "任务接取" : "对话解锁";
+    const label = [purpose, pickup.quest, pickup.npc, pickup.map].filter(Boolean).join(" · ");
+    links.push(`<a href="${esc(url)}&amp;map=quest">${esc(label)} (X:${esc(pickup.position[0])}, Y:${esc(pickup.position[1])})</a>`);
+  }
+  if (method.type === "hunt") {
+    const spawn = huntSpawns[method.mob];
+    const count = spawn && spawn.map === method.map ? spawn.positions.length : method.position?.length >= 2 ? 1 : 0;
+    if (count) links.push(`<a href="${esc(url)}&amp;map=encounter">查看刷新点（${count}）</a>`);
+  }
+  return links.join(" ");
+}
+
 const archive = require("../data/spell-history.json");
 const summaries = require("../data/spell-history-summaries.json");
 const notes51 = "https://na.finalfantasyxiv.com/lodestone/topics/detail/3a23a8ba13b2c4152681ec4fa5716915b851002f";
@@ -258,10 +277,11 @@ function renderSpellPage({
 
   const methodsHtml = spell.method
     .map(
-      (m) => `
+      (m, index) => `
       <li class="method">
         <span class="badge">${esc(TYPE_LABELS[m.type] || m.type)}</span>
         <span style="color:${esc(methodColor(m))}">${esc(methodText(m))} <sup>Lv.${esc(m.level ?? "")}</sup></span>
+        ${methodMapLinks(m, `${base}?search=${encodeURIComponent(spell.spell)}&action=${spell.action}&method=${index}`)}
         ${m.note ? `<p class="note">${esc(m.note)}</p>` : ""}
       </li>`
     )

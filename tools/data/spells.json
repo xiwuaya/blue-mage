@@ -121,7 +121,6 @@
         "type": "hunt",
         "map": "拉诺西亚外地",
         "rank": "A",
-        "position": [],
         "mob": "角祖",
         "level": 50
       }
@@ -250,7 +249,6 @@
         "type": "hunt",
         "map": "北萨纳兰",
         "rank": "B",
-        "position": [],
         "mob": "永恒不灭的菲兰德副耀士",
         "note": "远离目标时瞬发使用",
         "level": 50,
@@ -276,7 +274,15 @@
         "mob": "焚书任务：回收禁书«假面怪物» - 自由假面",
         "level": 50,
         "note": "确定不会使用",
-        "color": "grey"
+        "color": "grey",
+        "questStart": {
+          "npc": "艾洛因",
+          "map": "伊修加德基础层",
+          "position": [
+            10.1,
+            10.3
+          ]
+        }
       }
     ]
   },
@@ -352,7 +358,6 @@
         "type": "hunt",
         "map": "伊尔美格",
         "rank": "S",
-        "position": [],
         "mob": "阿格拉俄珀",
         "level": 80
       }
@@ -381,7 +386,6 @@
         "type": "hunt",
         "map": "中萨纳兰",
         "rank": "S",
-        "position": [],
         "mob": "布隆特斯",
         "level": 50,
         "color": "red"
@@ -512,7 +516,15 @@
         "mob": "辉长岩巨像 ",
         "level": 53,
         "note": "学者53级职业任务，需与学者组队学习",
-        "color": "red"
+        "color": "red",
+        "questStart": {
+          "npc": "斯里托·卡里托",
+          "map": "拉诺西亚高地",
+          "position": [
+            25.6,
+            22.3
+          ]
+        }
       },
       {
         "type": "treasure",
@@ -638,7 +650,6 @@
         "type": "hunt",
         "map": "拉诺西亚高地",
         "rank": "A",
-        "position": [],
         "mob": "玛贝利",
         "level": 50,
         "note": "读条“研磨石”后赋予自身强化状态，瞬发消耗后的强力单体攻击即为“锋利菜刀”"
@@ -699,7 +710,15 @@
         "mob": "毕托所信徒",
         "level": 53,
         "note": "学者53级职业任务，需与学者组队学习",
-        "color": "red"
+        "color": "red",
+        "questStart": {
+          "npc": "斯里托·卡里托",
+          "map": "拉诺西亚高地",
+          "position": [
+            25.6,
+            22.3
+          ]
+        }
       },
       {
         "type": "fate",
@@ -1030,11 +1049,6 @@
         "type": "hunt",
         "map": "龙堡内陆低地",
         "rank": "A",
-        "position": [
-          9.5,
-          22,
-          0
-        ],
         "mob": "机工兵 斯利普金克斯",
         "level": 60,
         "color": "red"
@@ -1316,7 +1330,6 @@
         "type": "hunt",
         "map": "东拉诺西亚",
         "rank": "B",
-        "position": [],
         "mob": "血腥玛丽",
         "level": 50,
         "color": "red"
@@ -1408,7 +1421,15 @@
         "position": null,
         "mob": "焚书任务：回收禁书《尖牙利齿的怪物》 暗黑扎哈克",
         "level": 50,
-        "color": "red"
+        "color": "red",
+        "questStart": {
+          "npc": "克·蕾塔伊",
+          "map": "摩杜纳",
+          "position": [
+            29.7,
+            12.5
+          ]
+        }
       },
       {
         "type": "dungeon",
@@ -1704,7 +1725,6 @@
         "type": "hunt",
         "map": "拉诺西亚低地",
         "rank": "S",
-        "position": [],
         "mob": "咕尔呱洛斯",
         "level": 50,
         "color": "red"
@@ -1961,7 +1981,6 @@
         "type": "hunt",
         "map": "雷克兰德",
         "rank": "S",
-        "position": [],
         "mob": "戾虫",
         "level": 80,
         "color": "red"
@@ -2089,7 +2108,6 @@
         "type": "hunt",
         "map": "雷克兰德",
         "rank": "S",
-        "position": [],
         "mob": "戾虫",
         "level": 80,
         "color": "red"
@@ -2331,7 +2349,6 @@
         "type": "hunt",
         "map": "黑衣森林南部林区",
         "rank": "S",
-        "position": [],
         "mob": "夺心魔",
         "level": 50,
         "color": "red"
@@ -2445,7 +2462,6 @@
         "type": "hunt",
         "map": "摩杜纳",
         "rank": "A",
-        "position": [],
         "mob": "库雷亚",
         "level": 50,
         "note": "无读条瞬发",
@@ -2768,11 +2784,6 @@
         "type": "hunt",
         "map": "基拉巴尼亚山区",
         "rank": "A",
-        "position": [
-          11,
-          8.5,
-          0
-        ],
         "mob": "弗克施泰因",
         "level": 70,
         "note": "无读条，未测试是否可学会",
@@ -2891,7 +2902,6 @@
         "type": "hunt",
         "map": "库尔札斯西部高地",
         "rank": "A",
-        "position": null,
         "mob": "米勒卡",
         "level": 60,
         "color": "red"
@@ -3010,7 +3020,15 @@
         "position": null,
         "mob": "焚书任务：回收禁书《青眼怪物》 上级恶魔",
         "level": 58,
-        "note": "疑似贴近后更容易使用，同一理符还有 62蛙腿。从伊修加德基础层接取理符，大规模的也一起接个吧"
+        "note": "疑似贴近后更容易使用，同一理符还有 62蛙腿。从伊修加德基础层接取理符，大规模的也一起接个吧",
+        "questStart": {
+          "npc": "艾洛因",
+          "map": "伊修加德基础层",
+          "position": [
+            10.1,
+            10.3
+          ]
+        }
       },
       {
         "type": "dungeon",
@@ -3058,7 +3076,6 @@
         "type": "hunt",
         "map": "龙堡内陆低地",
         "rank": "A",
-        "position": null,
         "mob": "斯特拉斯",
         "level": 60,
         "color": "red"
@@ -3067,7 +3084,6 @@
         "type": "hunt",
         "map": "阿巴拉提亚云海",
         "rank": "B",
-        "position": null,
         "mob": "斯奎克",
         "level": 60,
         "color": "red"
@@ -3193,7 +3209,6 @@
         "type": "hunt",
         "map": "龙堡内陆低地",
         "rank": "A",
-        "position": null,
         "mob": "机工兵 斯利普金克斯",
         "level": 60
       },
@@ -3278,7 +3293,15 @@
         "position": null,
         "mob": "焚书任务：回收禁书《青眼怪物》- 离水智蛙",
         "level": 58,
-        "note": "需要靠近才会使用，同一理符还有 55深渊贯穿。从伊修加德基础层接取理符，大规模的也可以。"
+        "note": "需要靠近才会使用，同一理符还有 55深渊贯穿。从伊修加德基础层接取理符，大规模的也可以。",
+        "questStart": {
+          "npc": "艾洛因",
+          "map": "伊修加德基础层",
+          "position": [
+            10.1,
+            10.3
+          ]
+        }
       },
       {
         "type": "map",
@@ -3555,7 +3578,6 @@
         "type": "hunt",
         "map": "延夏",
         "rank": "S",
-        "position": null,
         "mob": "伽马",
         "level": 70,
         "color": "red"
@@ -3774,7 +3796,6 @@
         "type": "hunt",
         "map": "基拉巴尼亚湖区",
         "rank": "A",
-        "position": [],
         "mob": "马希沙",
         "level": 70,
         "color": "red"
@@ -3783,7 +3804,6 @@
         "type": "hunt",
         "map": "萨维奈岛",
         "rank": "A",
-        "position": [],
         "mob": "尤兰",
         "level": 90,
         "note": "未确定可习得",
@@ -3964,7 +3984,6 @@
         "type": "hunt",
         "map": "延夏",
         "rank": "B",
-        "position": [],
         "mob": "闪雷击 鱼雷",
         "level": 70,
         "color": "red"
@@ -4000,7 +4019,6 @@
         "type": "hunt",
         "map": "延夏",
         "rank": "B",
-        "position": [],
         "mob": "闪雷击 鱼雷",
         "level": 70,
         "color": "red"
@@ -4129,7 +4147,6 @@
         "type": "hunt",
         "map": "伊尔美格",
         "rank": "A",
-        "position": [],
         "mob": "泥人",
         "level": 80
       },
@@ -4272,7 +4289,6 @@
         "type": "hunt",
         "map": "基拉巴尼亚山区",
         "rank": "B",
-        "position": [],
         "mob": "蛇仆蚂蜓",
         "level": 70,
         "color": "red"
@@ -4408,7 +4424,6 @@
         "type": "hunt",
         "map": "基拉巴尼亚湖区",
         "rank": "A",
-        "position": [],
         "mob": "泛光晶体",
         "level": 70
       },
@@ -4723,7 +4738,6 @@
         "type": "hunt",
         "map": "珂露西亚岛",
         "rank": "A",
-        "position": [],
         "mob": "小小杀手",
         "level": 80,
         "color": "red"
@@ -4798,7 +4812,6 @@
         "type": "hunt",
         "map": "萨维奈岛",
         "rank": "B",
-        "position": [],
         "mob": "金刚鸠摩罗",
         "level": 90,
         "color": "red"

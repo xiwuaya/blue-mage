@@ -6,7 +6,7 @@ import {
   indexByNo,
   isAlwaysLearnedNo,
   type Spell,
-  type SpellMethodMap,
+  type MethodMapTarget,
   renderSpellMethod,
 } from "../lib/spell";
 import type { FilterTypes, SpellStatusArray } from "@/lib/interface";
@@ -32,7 +32,7 @@ const emit = defineEmits<{
   (e: "change", i: number, status: boolean): void;
   (e: "clearFilter"): void;
   (e: "search", keyword: string): void;
-  (e: "openMap", payload: { spellName: string; method: SpellMethodMap }): void;
+  (e: "openMap", payload: { spellName: string; method: MethodMapTarget }): void;
 }>();
 
 const notLearnedOnly = ref(loadSetting<boolean>("notLearnedOnly") ?? true);

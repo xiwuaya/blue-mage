@@ -7,7 +7,7 @@ import PartyModal from "./components/PartyModal.vue";
 import { loadSetting, saveSetting } from "./lib/setting";
 import { defineAsyncComponent, onBeforeMount, onMounted, ref, computed, watch } from "vue";
 import type { FilterTypes } from "./lib/interface";
-import type { SpellMethodMap } from "./lib/spell";
+import { encounterMap, questMap, spells, type MethodMapTarget } from "./lib/spell";
 import Progress from "./components/Progress.vue";
 import { useSpellSync } from "./lib/useSpellSync";
 
@@ -60,7 +60,7 @@ const showHelpModal = ref(false);
 const showPartyModal = ref(false);
 
 // 当前要在地图中查看的途径；为 null 表示关闭地图弹窗
-const mapTarget = ref<{ spellName: string; method: SpellMethodMap } | null>(null);
+const mapTarget = ref<{ spellName: string; method: MethodMapTarget } | null>(null);
 // 监听持久化配置自动保存
 
 watch(level, val => saveSetting("level", val));
@@ -83,8 +83,17 @@ onBeforeMount(() => {
 // 帮助弹窗的判定挪到 onMounted：SSR 不执行生命周期钩子，服务端 HTML 里永远
 // 没有弹窗，留在 onBeforeMount 会让新访客首屏必然产生一次 hydration 不一致。
 onMounted(() => {
+  const params = new URLSearchParams(location.search);
+  const spell = spells.find(entry => String(entry.action) === params.get("action"));
+  const index = params.get("method");
+  const selected = index && /^\d+$/.test(index) ? spell?.method[Number(index)] : undefined;
+  if (selected && spell) {
+    const target = params.get("map") === "quest" ? questMap(selected) :
+      params.get("map") === "encounter" ? encounterMap(selected) : undefined;
+    if (target) mapTarget.value = { spellName: spell.spell, method: target };
+  }
   const hasSeenHelp = loadSetting<boolean>("has-seen-help");
-  if (!hasSeenHelp) {
+  if (!hasSeenHelp && !mapTarget.value) {
     showHelpModal.value = true;
     saveSetting("has-seen-help", true);
   }
@@ -92,7 +101,7 @@ onMounted(() => {
   // ?search= 深链：技能详情页的「在查询工具中打开」会把技能名放进 query。
   // 必须挂在 onMounted 而不是 setup / onBeforeMount —— 预渲染不读 URL，
   // 提前改 filter 会造成首屏 hydration 不一致。
-  const q = new URLSearchParams(location.search).get("search");
+  const q = params.get("search");
   if (q) filter.value = q;
 });
 

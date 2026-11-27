@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Spell, SpellMethodMap } from "@/lib/spell";
+import type { Spell, MethodMapTarget } from "@/lib/spell";
 import { spellIcon, spellIconSrcset } from "../icon";
 import SpellMethod from "./Method.vue";
 import PatchVersion from "./PatchVersion.vue";
@@ -22,7 +22,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "change", status: boolean): void;
   (e: "search", keyword: string): void;
-  (e: "openMap", payload: { spellName: string; method: SpellMethodMap }): void;
+  (e: "openMap", payload: { spellName: string; method: MethodMapTarget }): void;
 }>();
 
 // 构建期生成的静态详情页（效果描述 + 全部获取途径）。BASE_URL 保证在
