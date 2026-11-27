@@ -30,8 +30,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-          # 整个 data 目录一起提交：update-fate-positions.js 除了 spells.json，
-          # 还会更新坐标缓存 fate-positions.json（原先漏加，构建后残留为未暂存改动）。
+          # 一并提交本轮构建产生的数据更新。
           git add tools/data src/App.vue
 
           # 只以「暂存区」判断是否有内容可提交。工作区里可能还有构建产生的

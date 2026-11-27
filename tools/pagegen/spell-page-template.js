@@ -98,6 +98,7 @@ function methodColor(m) {
 }
 
 const dutyUnlocks = require("../data/duty-unlocks.json");
+const fateSpawns = require("../data/fate-spawns.json");
 const huntSpawns = require("../data/hunt-spawns.json");
 
 function methodMapLinks(method, url) {
@@ -108,8 +109,8 @@ function methodMapLinks(method, url) {
     const label = [purpose, pickup.quest, pickup.npc, pickup.map].filter(Boolean).join(" · ");
     links.push(`<a href="${esc(url)}&amp;map=quest">${esc(label)} (X:${esc(pickup.position[0])}, Y:${esc(pickup.position[1])})</a>`);
   }
-  if (method.type === "hunt") {
-    const spawn = huntSpawns[method.mob];
+  if (method.type === "hunt" || method.type === "fate") {
+    const spawn = method.type === "fate" ? fateSpawns[method.name] : huntSpawns[method.mob];
     const count = spawn && spawn.map === method.map ? spawn.positions.length : method.position?.length >= 2 ? 1 : 0;
     if (count) links.push(`<a href="${esc(url)}&amp;map=encounter">查看刷新点（${count}）</a>`);
   }

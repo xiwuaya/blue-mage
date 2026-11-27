@@ -82,10 +82,10 @@ const handleSearch = () => {
     </span>
 
     <button v-if="encounter" class="map-button" type="button"
-      :title="method.type === 'hunt' ? '查看狩猎刷新点' : '在地图中查看'"
+      :title="method.type === 'map' ? '在地图中查看' : '查看刷新位置'"
       @click.stop="openMap(encounter)">
       <img class="map" :src="mapIcon" alt="" />
-      {{ method.type === 'hunt' ? `刷新点（${encounter.positions.length}）` : '地图' }}
+      {{ method.type === 'map' ? '地图' : `刷新点（${encounter.positions.length}）` }}
     </button>
     <button v-if="pickup" class="map-button" type="button"
       @click.stop="openMap(pickup)">

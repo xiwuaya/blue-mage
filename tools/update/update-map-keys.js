@@ -11,7 +11,7 @@ function collectMapNames(spells) {
   const names = new Set();
   spells.forEach(spell => {
     (spell.method || []).forEach(m => {
-      if ((m.type === 'map' || m.type === 'hunt') && m.map) names.add(m.map);
+      if ((m.type === 'map' || m.type === 'hunt' || m.type === 'fate') && m.map) names.add(m.map);
       if (m.questStart) names.add(m.questStart.map);
     });
   });

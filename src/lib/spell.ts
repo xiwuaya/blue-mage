@@ -1,4 +1,5 @@
 import rawDutyUnlocks from "../../tools/data/duty-unlocks.json";
+import rawFateSpawns from "../../tools/data/fate-spawns.json";
 import rawHuntSpawns from "../../tools/data/hunt-spawns.json";
 import rawSpells from "../../tools/data/spells.json";
 import type { SpellStatusArray } from "./interface";
@@ -57,7 +58,7 @@ export interface SpellMethodFate extends SpellMethodBase {
   map: string;
   name: string;
   mob: string;
-  /** 游戏内显示坐标（update-fate-positions.js 自动补充或人工标注），缺失表示尚未定位 */
+  /** 单条途径的旧格式坐标，也可用于尚未收录的新事件。 */
   position?: number[];
 }
 
@@ -81,15 +82,20 @@ export interface MethodMapTarget {
   positions: number[][];
 }
 
+const fateSpawns: Record<string, { map: string; positions: number[][] }> = rawFateSpawns;
 const huntSpawns: Record<string, { map: string; positions: number[][] }> = rawHuntSpawns;
 
 export function encounterMap(method: SpellMethod): MethodMapTarget | undefined {
-  if (method.type !== SpellType.Map && method.type !== SpellType.Hunt) return;
-  const hunt = method.type === SpellType.Hunt ? huntSpawns[method.mob] : undefined;
-  const positions = hunt?.map === method.map ? hunt.positions :
+  if (method.type !== SpellType.Map && method.type !== SpellType.Hunt && method.type !== SpellType.FATE) return;
+  let spawn;
+  if (method.type === SpellType.FATE) spawn = fateSpawns[method.name];
+  if (method.type === SpellType.Hunt) spawn = huntSpawns[method.mob];
+
+  const positions = spawn?.map === method.map ? spawn.positions :
     method.position && method.position.length >= 2 ? [method.position] : [];
   if (!positions.length) return;
-  return { map: method.map, label: `${method.mob} Lv.${method.level}`, positions };
+  const name = method.type === SpellType.FATE ? method.name : method.mob;
+  return { map: method.map, label: `${name} Lv.${method.level}`, positions };
 }
 
 export function questMap(method: SpellMethod): MethodMapTarget | undefined {
@@ -142,7 +148,8 @@ export function renderSpellMethod(method: SpellMethod) {
     case SpellType.Jobquest: // 新增这一行复用渲染逻辑
       return `${method.name} - ${method.mob}`;
     case SpellType.FATE: {
-      const pos = method.position;
+      const points = encounterMap(method)?.positions;
+      const pos = points?.length === 1 ? points[0] : undefined;
       const posText = pos && pos.length ? ` (x:${pos[0]}, y:${pos[1]}${pos[2] ? `, z:${pos[2]}` : ""})` : "";
       return `${method.map}${posText} - ${method.name} - ${method.mob}`;
     }

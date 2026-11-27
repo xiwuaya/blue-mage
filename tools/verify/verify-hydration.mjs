@@ -201,13 +201,13 @@ await run("场景2 老用户（已存档进度 + 等级 30 + 关掉 raid/trail/d
 
 // ---------------------------------------------------------------- 场景 3：交互与懒加载
 await run("场景3 交互（搜索 / 勾选 / 地图弹窗懒加载）", {
-  storage: { "has-seen-help": "true", "spell-status": statusFirstNUnlearned(124) },
+  storage: { "has-seen-help": "true", "spell-status": statusFirstNUnlearned(124), "hide-special-color": "false" },
   fn: async (page) => {
     await page.goto(PAGE_URL, { waitUntil: "load" });
     await sleep(1200);
 
     const full = await page.evaluate(() => document.querySelectorAll(".methods").length);
-    check("场景3 初始列表完整（124 —— 显式存档时水炮也算未掌握）", full === 124, `实际 ${full}`);
+    check("场景3 初始列表完整（水炮锁定为已掌握）", full === iconBookByNo.size - 1, `实际 ${full}`);
 
     await page.fill("input.search", "水炮");
     await sleep(600);
@@ -216,24 +216,24 @@ await run("场景3 交互（搜索 / 勾选 / 地图弹窗懒加载）", {
     await page.fill("input.search", "");
     await sleep(400);
 
-    const mapIconCount = await page.locator('img[alt="在地图中查看"]').count();
-    check("场景3 存在地图入口图标", mapIconCount > 0, `实际 ${mapIconCount} 个`);
-
-    if (mapIconCount > 0) {
-      const chunks = [];
-      page.on("request", (r) => {
-        if (/MapModal|map\.[0-9a-f]+\.js/.test(r.url())) chunks.push(r.url().split("/").pop());
-      });
-      await page.locator('img[alt="在地图中查看"]').first().click();
-      await sleep(4000);
-      check("场景3 地图懒加载 chunk 被按需请求", chunks.length > 0, chunks.join(", "));
-
-      const mapRendered = await page.evaluate(() => {
-        const c = document.querySelector(".leaflet-container");
-        return !!c && c.getBoundingClientRect().height > 50;
-      });
-      check("场景3 地图容器渲染且可见", mapRendered);
-    }
+    const button = page.locator(".wrap").filter({ hasText: "逆向工程" }).getByRole("button", { name: /刷新点/ });
+    check("场景3 FATE 途径显示地图按钮", await button.count() === 1);
+    // 使用最小地图元数据，使交互回归可以离线运行。
+    const map = { 24: { "#": "24", id: "w1f5/00", sizeFactor: 100, mapMarkerRange: 43 } };
+    await page.route("**/assets/data/*.json", route =>
+      route.fulfill({ json: route.request().url().endsWith("/map.json") ? map : [] }));
+    await page.route(/https:\/\/(map\.ffcafe\.cn|xivapi-v2\.xivcdn\.com)\//, route =>
+      route.request().resourceType() === "image"
+        ? route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg"/>' })
+        : route.fallback());
+    const chunks = [];
+    page.on("request", r => {
+      if (/MapModal|map\.[0-9a-f]+\.js/.test(r.url())) chunks.push(r.url());
+    });
+    await button.click();
+    await page.locator(".leaflet-popup-pane .leaflet-marker-icon").first().waitFor();
+    check("场景3 地图按需加载", chunks.length > 0);
+    check("场景3 地图显示所选 FATE", (await page.locator(".map-info").innerText()).includes("逆向工程"));
   },
 });
 
