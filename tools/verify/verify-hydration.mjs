@@ -216,6 +216,18 @@ await run("场景3 交互（搜索 / 勾选 / 地图弹窗懒加载）", {
     await page.fill("input.search", "");
     await sleep(400);
 
+    for (const type of ["hunt", "map", "fate"]) {
+      const entry = page.locator(".wrap").filter({ has: page.locator(`img.type[src*="type_${type}."]`) })
+        .locator(".map-entry").first();
+      const icon = entry.getByRole("button");
+      const preview = entry.locator(".map-preview");
+      check(`${type} 入口只显示图标`, (await icon.innerText()) === "" && !await preview.isVisible());
+      await icon.hover();
+      check(`${type} 悬停预览坐标`, await preview.isVisible() && (await preview.innerText()).includes("X:"));
+      check(`${type} 悬停时地图保持关闭`, await page.locator(".map-modal").count() === 0);
+      await page.mouse.move(0, 0);
+    }
+
     const button = page.locator(".wrap").filter({ hasText: "逆向工程" }).getByRole("button", { name: /刷新点/ });
     check("场景3 FATE 途径显示地图按钮", await button.count() === 1);
     // 使用最小地图元数据，使交互回归可以离线运行。
