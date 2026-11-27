@@ -102,7 +102,7 @@ const toggleLearned = () => {
 }
 
 .content {
-  overflow: hidden;
+  min-width: 0;
   color: #fff;
 }
 

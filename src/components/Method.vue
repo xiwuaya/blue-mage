@@ -3,7 +3,7 @@ import { renderSpellMethod, encounterMap, questMap } from "../lib/spell";
 import type { SpellMethod, MethodMapTarget } from "../lib/spell";
 import { typeIcon } from "../icon";
 import mapIcon from "../assets/icons/map.svg";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const props = defineProps<{
   method: SpellMethod;
@@ -41,6 +41,14 @@ const emit = defineEmits<{
 
 const encounter = computed(() => encounterMap(props.method));
 const pickup = computed(() => questMap(props.method));
+const pickupPreview = computed(() => {
+  if (!pickup.value) return "";
+  const { label, map, positions } = pickup.value;
+  const [x, y] = positions[0];
+  return `${label} · ${map} (X:${x}, Y:${y})`;
+});
+const previewDismissed = ref(false);
+
 function openMap(target?: MethodMapTarget) {
   if (target) emit("openMap", target);
 }
@@ -87,12 +95,17 @@ const handleSearch = () => {
       <img class="map" :src="mapIcon" alt="" />
       {{ method.type === 'map' ? '地图' : `刷新点（${encounter.positions.length}）` }}
     </button>
-    <button v-if="pickup" class="map-button" type="button"
-      @click.stop="openMap(pickup)">
-      <img class="map" :src="mapIcon" alt="" />
-      {{ pickup.label }} · {{ pickup.map }}
-      (X:{{ pickup.positions[0][0] }}, Y:{{ pickup.positions[0][1] }})
-    </button>
+    <span v-if="pickup" class="pickup">
+      <button class="map-button pickup-button" type="button"
+        :aria-label="`查看地图：${pickupPreview}`"
+        @mouseenter="previewDismissed = false"
+        @focus="previewDismissed = false"
+        @keydown.esc="previewDismissed = true"
+        @click.stop="previewDismissed = true; openMap(pickup)">
+        <img class="map" :src="mapIcon" alt="" />
+      </button>
+      <span v-if="!previewDismissed" class="pickup-preview" aria-hidden="true">{{ pickupPreview }}</span>
+    </span>
 
     <p v-if="!!props.method.note" class="note">{{ props.method.note }}</p>
   </div>
@@ -100,6 +113,7 @@ const handleSearch = () => {
 
 <style scoped>
 .wrap {
+  position: relative;
   margin: 0;
   line-height: 24px;
 }
@@ -125,6 +139,36 @@ const handleSearch = () => {
   cursor: pointer;
   padding: 0 3px;
 }
+
+.pickup-button {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+}
+.pickup-button .map { margin: 0; }
+
+.pickup-preview {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  bottom: 100%;
+  left: 0;
+  width: max-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 5px 9px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  background: #252525;
+  color: #fff;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+@media (hover: hover) {
+  .pickup:hover .pickup-preview { display: block; }
+}
+.pickup-button:focus-visible + .pickup-preview { display: block; }
 
 .map {
   width: 16px;
