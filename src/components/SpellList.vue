@@ -26,6 +26,7 @@ const props = defineProps<{
   unlearnedUsersMap: Map<number, { name: string; color: string }[]>;
   isPartyModeActive: boolean;
   showPatchVersion: boolean;
+  showMainScenarioUnlocks: boolean;
   showUnlearnedUsers: boolean;
 }>();
 const emit = defineEmits<{
@@ -221,6 +222,7 @@ const allLearned = computed(() =>
       :unlearnedUsers="props.unlearnedUsersMap.get(Number(spell.no))"
       :showUnlearnedCount="props.isPartyModeActive"
       :showPatchVersion="props.showPatchVersion"
+      :showMainScenarioUnlocks="props.showMainScenarioUnlocks"
       :showUnlearnedUsers="showUnlearnedUsers"
       @change="emit('change', indexByNo(spell.no), $event)"
       @search="emit('search', $event)"

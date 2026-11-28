@@ -2,11 +2,12 @@
 import { renderSpellMethod, encounterMap, questMap } from "../lib/spell";
 import type { SpellMethod, MethodMapTarget } from "../lib/spell";
 import { typeIcon } from "../icon";
-import mapIcon from "../assets/icons/map.svg";
+import MapButton from "./MapButton.vue";
 import { computed } from "vue";
 
 const props = defineProps<{
   method: SpellMethod;
+  showMainScenarioUnlocks: boolean;
 }>();
 
 const text = computed(() => renderSpellMethod(props.method));
@@ -40,11 +41,7 @@ const emit = defineEmits<{
 }>();
 
 const encounter = computed(() => encounterMap(props.method));
-const pickup = computed(() => questMap(props.method));
-function openMap(target?: MethodMapTarget) {
-  if (target) emit("openMap", target);
-}
-
+const pickup = computed(() => questMap(props.method, props.showMainScenarioUnlocks));
 // 2. 提取地点或副本名称作为搜索关键词，过滤掉特殊途径（因为描述太长）
 const searchKeyword = computed(() => {
   // --- 新增：如果是 fate 类型，强制优先使用 map 字段 ---
@@ -81,18 +78,10 @@ const handleSearch = () => {
       {{ text }} <sup>Lv.{{ props.method.level }}</sup>
     </span>
 
-    <button v-if="encounter" class="map-button" type="button"
-      :title="method.type === 'hunt' ? '查看狩猎刷新点' : '在地图中查看'"
-      @click.stop="openMap(encounter)">
-      <img class="map" :src="mapIcon" alt="" />
-      {{ method.type === 'hunt' ? `刷新点（${encounter.positions.length}）` : '地图' }}
-    </button>
-    <button v-if="pickup" class="map-button" type="button"
-      @click.stop="openMap(pickup)">
-      <img class="map" :src="mapIcon" alt="" />
-      {{ pickup.label }} · {{ pickup.map }}
-      (X:{{ pickup.positions[0][0] }}, Y:{{ pickup.positions[0][1] }})
-    </button>
+    <MapButton v-if="encounter" :target="encounter"
+      :purpose="method.type === 'map' ? '怪物位置' : '刷新点'"
+      @open="emit('openMap', $event)" />
+    <MapButton v-if="pickup" :target="pickup" @open="emit('openMap', $event)" />
 
     <p v-if="!!props.method.note" class="note">{{ props.method.note }}</p>
   </div>
@@ -100,6 +89,7 @@ const handleSearch = () => {
 
 <style scoped>
 .wrap {
+  position: relative;
   margin: 0;
   line-height: 24px;
 }
@@ -116,32 +106,6 @@ const handleSearch = () => {
   font-size: 0.75rem;
   opacity: 0.75;
   margin-left: 20px;
-}
-
-.map-button {
-  background: transparent;
-  color: #ffce68;
-  border: 0;
-  cursor: pointer;
-  padding: 0 3px;
-}
-
-.map {
-  width: 16px;
-  height: 16px;
-  margin-left: 4px;
-  vertical-align: middle;
-  /* 悬停高亮：提亮图标 + 金色辉光（金色取自项目强调色 #ffbe31）
-     这里用 filter 而不是项目其它图标用的 mask 方案：
-     map.svg 作为 mask 时整块不可见，实测无效。 */
-  filter: brightness(1);
-  transition: filter 0.2s;
-  cursor: pointer;
-}
-
-.map:hover {
-  filter: brightness(1.4) drop-shadow(0 0 2px rgba(255, 190, 49, 0.85));
-  transform: scale(1.1);
 }
 
 /* 5. 新增可点击元素的交互样式 */

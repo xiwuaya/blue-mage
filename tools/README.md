@@ -22,7 +22,7 @@
 | `method_updates.csv` | **人工维护**：新学习途径的增量更新 | `update/update-methods.js` |
 | `override.json` | 人工维护：parse.js 的字段覆盖 | 仅 `oneoff/parse.js` |
 | `map-keys.json` | **自动生成**：`update/update-map-keys.js` 用 XIVAPI 反查中文地名 | `src/lib/map.ts` |
-| `fate-positions.json` | **自动生成 + 缓存**：`update/update-fate-positions.js` 匹配 FATE 中文名并抓取 Garland 坐标，回写 `spells.json` 的 fate 方法 `position`（只补缺失） | 缓存本身无消费方，产物进 `spells.json` |
+| `fate-spawns.json` | 按 FATE 名称、游戏 ID 和所属地图维护的游戏内 X、Y 坐标数组 | 途径列表、地图弹窗、技能详情页 |
 | `descriptions.json` | **自动生成 + 缓存**：`update/update-descriptions.js` 抓取的官方描述（text + html 双格式） | `pagegen/generate-spell-pages.js`（详情页用 html、llms 用 text） |
 | `spell-history.json` | **离线生成，随仓库提交**：`update/import-spell-history.py` 从国服各版本标签的 `ActionTransient.csv` 生成版本索引与逐技能文本差异 | `pagegen/spell-page-template.js`（详情页「历史变更」区块） |
 | `spell-history-summaries.json` | **人工维护**：按动作 ID + 变更版本填写中文摘要；缺失时页面显示「描述文本变更」 | `pagegen/spell-page-template.js` |
@@ -33,7 +33,6 @@
 yarn build
 ├─ prebuild   update/update-date.js        改 App.vue 更新日期
 │             update/update-methods.js     应用 method_updates.csv 增量
-│             update/update-fate-positions.js 补充 fate 方法坐标（缓存完整时零请求）
 │             update/update-map-keys.js    反查 XIVAPI 生成 map-keys.json
 │             update/update-descriptions.js 增量抓取描述（缓存完整时零请求）
 ├─ vue-tsc → vite build
@@ -89,5 +88,18 @@ python tools/update/import-spell-history.py /path/to/ffxiv-datamining-cn
 
 - 单条途径可以在 `spells.json` 里添加可选的 `questStart`，例如 `{"npc":"艾洛因","map":"伊修加德基础层","position":[10.1,10.3]}`。接取地点与途径本身的战斗地图分别维护。
 - 同名副本共用 `duty-unlocks.json` 的记录，以去除首尾空格后的途径名称查找。`quest` 是开放任务，`questId` 可用于复查游戏数据。需要完成前置剧情后直接对话开放的内容只记录对话对象。副本有多种开放方式时，记录其中一条可行途径。巴哈姆特大迷宫等按章节开放的内容标记该章节的起始任务。
+- `mainScenario: true` 表示开放任务本身属于主线。按 `questId` 对照[国服 ScenarioTree 的任务行号](https://github.com/thewakingsands/ffxiv-datamining-cn/blob/ae29be8b21a32329e3356709422427540bf7e364/ScenarioTree.csv)填写。支线任务和直接对话解锁的记录省略此字段。
 - `mapKey` 指定接取 NPC 所在的实际地图或楼层。任务接取人和坐标取自[国服游戏数据](https://github.com/thewakingsands/ffxiv-datamining-cn/tree/ae29be8b21a32329e3356709422427540bf7e364)，由 Quest 的 Issuer{Start}、Issuer{Location} 关联 ENpcResident、Level 和 Map。开放条件可在[副本前置条件表](https://ff14.huijiwiki.com/wiki/模块:Instance/Preq)复核。
 - 狩猎刷新点维护在 `hunt-spawns.json`，每只怪物一条记录。`positions` 中每对数字是一个候选点的游戏内 X、Y 坐标。同怪出现在多个技能中时只需更新一次。A级点位取自 [Scout 的怪物与刷新点对照表](https://github.com/pm-wobbuffet/scout/blob/11ae48b79098d6564c757394ffc9120e815113e0/resources/csv/SPAWN_POINT_MOBS.csv)，按区域、怪物和 valid_mobs 筛选。B、S 级点位取自 [PuniMapper](https://punimapper.ffxivhunts.com/about/)，B 级使用该怪物的专属点和额外点，S 级使用该地区的 S 级候选点。
+
+### FATE 刷新位置
+
+`data/fate-spawns.json` 按途径里的事件名共享记录。`id` 是游戏 Fate 表的行号，`map` 是事件发生地图。`positions[0]` 保存事件中心；有独立来源确认其他候选点时，在数组末尾追加游戏内 `[X, Y]` 并在本节记录出处。地图会一次展示所有位置。不同资料对同一事件中心的取整差异不计作新的刷新点。
+
+本次 26 个事件的身份通过[国服 Fate 表](https://github.com/thewakingsands/ffxiv-datamining-cn/blob/ae29be8b21a32329e3356709422427540bf7e364/Fate.csv)核对，坐标取自 [Teamcraft fates.json 快照](https://github.com/ffxiv-teamcraft/ffxiv-teamcraft/blob/cb9eede14f45cd16b4ee229e7a80e624a44c0209/libs/data/src/lib/json/fates.json)。该表每个事件提供一个中心点。本次未确认这些事件有额外的随机位置。
+
+新增事件时，核对游戏 ID 和地图，登记名称、`id`、`map`、`positions: []` 并确认 `map-keys.json` 包含该地图。下载上游 JSON 后运行以下命令。脚本检查途径覆盖和地图编号，只刷新首个位置，保留人工补充的点。日常构建直接读取已提交的结果。
+
+```sh
+node tools/update/sync-fate-spawns.js /path/to/fates.json
+```

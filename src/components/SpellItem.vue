@@ -16,6 +16,7 @@ const props = defineProps<{
   unlearnedUsers?: { name: string; color: string }[];
   showUnlearnedCount?: boolean;
   showPatchVersion: boolean;
+  showMainScenarioUnlocks: boolean;
   showUnlearnedUsers: boolean;
 }>();
 
@@ -76,6 +77,7 @@ const toggleLearned = () => {
         <li v-for="(m, mi) in props.spell.method" :key="mi">
           <spell-method
             :method="m"
+            :showMainScenarioUnlocks="props.showMainScenarioUnlocks"
             @search="emit('search', $event)"
             @openMap="emit('openMap', { spellName: props.spell.spell, method: $event })"
           />
@@ -102,7 +104,7 @@ const toggleLearned = () => {
 }
 
 .content {
-  overflow: hidden;
+  min-width: 0;
   color: #fff;
 }
 
