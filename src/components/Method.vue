@@ -7,6 +7,7 @@ import { computed } from "vue";
 
 const props = defineProps<{
   method: SpellMethod;
+  showMainScenarioUnlocks: boolean;
 }>();
 
 const text = computed(() => renderSpellMethod(props.method));
@@ -40,7 +41,7 @@ const emit = defineEmits<{
 }>();
 
 const encounter = computed(() => encounterMap(props.method));
-const pickup = computed(() => questMap(props.method));
+const pickup = computed(() => questMap(props.method, props.showMainScenarioUnlocks));
 // 2. 提取地点或副本名称作为搜索关键词，过滤掉特殊途径（因为描述太长）
 const searchKeyword = computed(() => {
   // --- 新增：如果是 fate 类型，强制优先使用 map 字段 ---

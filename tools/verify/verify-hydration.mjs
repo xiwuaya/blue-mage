@@ -249,6 +249,29 @@ await run("场景3 交互（搜索 / 勾选 / 地图弹窗懒加载）", {
   },
 });
 
+await run("主线副本地图开关", {
+  storage: { "has-seen-help": "true", "show-more-config": "true" },
+  fn: async page => {
+    await page.goto(PAGE_URL);
+    const toggle = page.getByRole("checkbox", { name: "显示主线副本的解锁途径" });
+    const main = page.locator(".methods li").filter({ hasText: "利维亚桑歼灭战" }).first();
+    const side = page.locator(".methods li").filter({ hasText: "利维亚桑歼殛战" }).first();
+    const map = main.getByRole("button", { name: /查看地图/ });
+    await main.waitFor();
+    check("默认显示主线路径但隐藏其地图", !await toggle.isChecked() && await map.count() === 0);
+    check("支线副本地图默认可用", await side.getByRole("button", { name: /查看地图/ }).isVisible());
+    await toggle.check();
+    await map.waitFor();
+    check("勾选后显示主线地图", await map.isVisible());
+    await page.reload();
+    await map.waitFor();
+    check("刷新后保留主线地图设置", await toggle.isChecked());
+    await toggle.uncheck();
+    await map.waitFor({ state: "detached" });
+    check("关闭后支线地图仍可用", await side.getByRole("button", { name: /查看地图/ }).isVisible());
+  },
+});
+
 // ---------------------------------------------------------------- 收尾
 await browser.close();
 await new Promise((resolve) => server.httpServer.close(resolve));

@@ -54,6 +54,7 @@ const orderByUnlearned = ref(loadSetting<boolean>("order-by-unlearned") ?? false
 
 const showMoreConfig = ref(loadSetting<boolean>("show-more-config") ?? false);
 const showPatchVersion = ref(loadSetting<boolean>("show-patch-version") ?? false);
+const showMainScenarioUnlocks = ref(loadSetting<boolean>("show-main-scenario-unlocks") ?? false);
 const showUnlearnedUsers = ref(loadSetting<boolean>("show-unlearned-users") ?? false)
 
 const showHelpModal = ref(false);
@@ -70,6 +71,7 @@ watch(orderByUnlearned, val => saveSetting("order-by-unlearned", val));
 
 watch(showMoreConfig, val => saveSetting("show-more-config", val));
 watch(showPatchVersion, val => saveSetting("show-patch-version", val));
+watch(showMainScenarioUnlocks, val => saveSetting("show-main-scenario-unlocks", val));
 watch(showUnlearnedUsers, val => saveSetting("show-unlearned-users", val));
 
 onBeforeMount(() => {
@@ -132,6 +134,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
         :spellStatus="spellStatus" 
         v-model:isExpanded="showMoreConfig"
         v-model:showPatchVersion="showPatchVersion"
+        v-model:showMainScenarioUnlocks="showMainScenarioUnlocks"
         @change="handleStatusChange" 
         @batchChange="handleBatchStatusChange"
       />
@@ -164,6 +167,7 @@ const handleTypeChange = (type: string, checked: boolean) => {
       :unlearnedUsersMap="unlearnedUsersMap"
       :isPartyModeActive="isPartyModeActive"
       :showPatchVersion="showPatchVersion"
+      :showMainScenarioUnlocks="showMainScenarioUnlocks"
       :showUnlearnedUsers="showUnlearnedUsers"
       @change="handleStatusChange"
       @clearFilter="filter = ''"

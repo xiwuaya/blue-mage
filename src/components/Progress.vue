@@ -11,6 +11,7 @@ const props = defineProps<{
   spellStatus: SpellStatusArray;
   isExpanded: boolean; // --- 新增：接收从 App.vue 传来的折叠状态 ---
   showPatchVersion: boolean;
+  showMainScenarioUnlocks: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -18,6 +19,7 @@ const emit = defineEmits<{
   (e: "update:isExpanded", val: boolean): void; // --- 新增：向父组件汇报折叠状态的更改 ---
   (e: "batchChange", patch: string, status: boolean): void; // --- 新增批量事件 ---
   (e: "update:showPatchVersion", val: boolean): void;
+  (e: "update:showMainScenarioUnlocks", val: boolean): void;
 }>();
 
 
@@ -118,6 +120,13 @@ const width = (learned: number, total: number) => {
         <Indicator :checked="props.showPatchVersion" bordered />
         在技能名前显示版本号和详情页
       </div>
+      <button type="button" class="order unlock-setting" role="checkbox"
+        :aria-checked="props.showMainScenarioUnlocks"
+        :class="{ checked: props.showMainScenarioUnlocks }"
+        @click="emit('update:showMainScenarioUnlocks', !props.showMainScenarioUnlocks)">
+        <Indicator :checked="props.showMainScenarioUnlocks" bordered />
+        显示主线副本的解锁途径
+      </button>
     </div>
   </div>
 </template>
@@ -198,6 +207,13 @@ const width = (learned: number, total: number) => {
   cursor: pointer;
   font-size: 0.9rem;
   color: #ccc;
+}
+.unlock-setting {
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
 }
 .extra-setting .indicator {
   margin-right: 6px;

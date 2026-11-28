@@ -27,6 +27,7 @@ export interface QuestStart {
   mapKey?: number;
   quest?: string;
   questId?: number;
+  mainScenario?: boolean;
 }
 const dutyUnlocks: Record<string, QuestStart> = rawDutyUnlocks;
 
@@ -98,10 +99,10 @@ export function encounterMap(method: SpellMethod): MethodMapTarget | undefined {
   return { map: method.map, label: `${name} Lv.${method.level}`, positions };
 }
 
-export function questMap(method: SpellMethod): MethodMapTarget | undefined {
+export function questMap(method: SpellMethod, showMainScenarioUnlocks = true): MethodMapTarget | undefined {
   const duty = "name" in method ? dutyUnlocks[method.name.trim()] : undefined;
   const start = method.questStart ?? duty;
-  if (!start) return;
+  if (!start || (start.mainScenario && !showMainScenarioUnlocks)) return;
   const purpose = duty && !start.quest && !method.questStart ? "对话解锁" : "任务接取";
   const label = [purpose, start.quest, start.npc].filter(Boolean).join(" · ");
   return { map: start.map, mapKey: start.mapKey, label, positions: [start.position] };

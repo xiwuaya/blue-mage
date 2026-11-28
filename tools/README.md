@@ -88,6 +88,7 @@ python tools/update/import-spell-history.py /path/to/ffxiv-datamining-cn
 
 - 单条途径可以在 `spells.json` 里添加可选的 `questStart`，例如 `{"npc":"艾洛因","map":"伊修加德基础层","position":[10.1,10.3]}`。接取地点与途径本身的战斗地图分别维护。
 - 同名副本共用 `duty-unlocks.json` 的记录，以去除首尾空格后的途径名称查找。`quest` 是开放任务，`questId` 可用于复查游戏数据。需要完成前置剧情后直接对话开放的内容只记录对话对象。副本有多种开放方式时，记录其中一条可行途径。巴哈姆特大迷宫等按章节开放的内容标记该章节的起始任务。
+- `mainScenario: true` 表示开放任务本身属于主线。按 `questId` 对照[国服 ScenarioTree 的任务行号](https://github.com/thewakingsands/ffxiv-datamining-cn/blob/ae29be8b21a32329e3356709422427540bf7e364/ScenarioTree.csv)填写。支线任务和直接对话解锁的记录省略此字段。
 - `mapKey` 指定接取 NPC 所在的实际地图或楼层。任务接取人和坐标取自[国服游戏数据](https://github.com/thewakingsands/ffxiv-datamining-cn/tree/ae29be8b21a32329e3356709422427540bf7e364)，由 Quest 的 Issuer{Start}、Issuer{Location} 关联 ENpcResident、Level 和 Map。开放条件可在[副本前置条件表](https://ff14.huijiwiki.com/wiki/模块:Instance/Preq)复核。
 - 狩猎刷新点维护在 `hunt-spawns.json`，每只怪物一条记录。`positions` 中每对数字是一个候选点的游戏内 X、Y 坐标。同怪出现在多个技能中时只需更新一次。A级点位取自 [Scout 的怪物与刷新点对照表](https://github.com/pm-wobbuffet/scout/blob/11ae48b79098d6564c757394ffc9120e815113e0/resources/csv/SPAWN_POINT_MOBS.csv)，按区域、怪物和 valid_mobs 筛选。B、S 级点位取自 [PuniMapper](https://punimapper.ffxivhunts.com/about/)，B 级使用该怪物的专属点和额外点，S 级使用该地区的 S 级候选点。
 
