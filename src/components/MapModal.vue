@@ -7,12 +7,12 @@ import { ref, watch, nextTick } from "vue";
 import type { ComponentPublicInstance } from "vue";
 import type { EorzeaMapInstance } from "@thewakingsands/eorzea-interactive-map";
 import { resolveMapKey } from "@/lib/map";
-import type { SpellMethodMap } from "@/lib/spell";
+import type { MethodMapTarget } from "@/lib/spell";
 
 const props = defineProps<{
   show: boolean;
   spellName: string;
-  method: SpellMethodMap;
+  method: MethodMapTarget;
 }>();
 
 const emit = defineEmits<{
@@ -32,9 +32,6 @@ let mapEl: HTMLElement | null = null;
 const setMapElement = (el: Element | ComponentPublicInstance | null) => {
   mapEl = el as HTMLElement | null;
 };
-
-const x = () => props.method.position[0];
-const y = () => props.method.position[1];
 
 let instance: EorzeaMapInstance | null = null;
 /**
@@ -78,6 +75,8 @@ async function openMap() {
     const eorzeaMap = await import("@thewakingsands/eorzea-interactive-map");
 
     // create() 会清空容器 innerHTML，并内部拉取 region.json（失败即 reject）
+    // create() 会先缩放到默认视图。关闭初始缩放动画，避免动画结束时覆盖刷新点视图。
+    eorzeaMap.L.Map.mergeOptions({ zoomAnimation: false });
     const map = await eorzeaMap.create(el);
     if (token !== runToken) {
       // 创建过程中弹窗已被关闭
@@ -90,7 +89,7 @@ async function openMap() {
     }
     instance = map;
 
-    const key = await resolveMapKey(props.method.map);
+    const key = props.method.mapKey ?? await resolveMapKey(props.method.map);
     if (token !== runToken) return;
 
     if (key === null) {
@@ -104,16 +103,17 @@ async function openMap() {
     if (token !== runToken) return;
 
     const iconUrl = eorzeaMap.loader.getIconUrl("ui/icon/060000/060561.tex");
-    // position[0]/[1] 已经是游戏内显示坐标，直接使用，不做任何换算
-    map.addMarker(eorzeaMap.simpleMarker(x(), y(), iconUrl, map.mapInfo));
-
-    // animate: false —— 关掉平移动画。
-    //
-    // 库在 loadMapKey 内部会先 panTo 到地图中心，本项目的 setView 排在它之后才生效。
-    // 如果带平移动画，视图会有一段肉眼可见的"慢慢挪过去"的过程（实测单实例约 800ms，
-    // 网络拥塞时更长），用户就会看到标记先偏在一边、再飘到正确位置。
-    // 关掉动画后是一次到位，不存在那段中间状态，也就不必为了遮住它而把加载遮罩一直挂着。
-    map.setView(map.mapToLatLng2D(x(), y()), 0, { animate: false });
+    const centers = props.method.positions.map(([x, y]) => {
+      const marker = eorzeaMap.simpleMarker(x, y, iconUrl, map.mapInfo);
+      marker.bindTooltip(`X:${x}, Y:${y}`);
+      map.addMarker(marker);
+      return map.mapToLatLng2D(x, y);
+    });
+    if (centers.length === 1) {
+      map.setView(centers[0], 0, { animate: false });
+    } else {
+      map.fitBounds(centers, { padding: [24, 24], maxZoom: 0, animate: false });
+    }
     done();
   } catch (e) {
     if (token !== runToken) return;
@@ -153,12 +153,21 @@ watch(
 
           <div class="map-info">
             <div class="map-info-main">
-              {{ spellName }} · {{ method.mob }} Lv.{{ method.level }}
+              {{ spellName }} · {{ method.label }}
             </div>
             <div class="map-info-sub">
-              {{ method.map }} (x:{{ x() }}, y:{{ y() }})
+              {{ method.map }}
+              <span v-if="method.positions.length === 1">(X:{{ method.positions[0][0] }}, Y:{{ method.positions[0][1] }})</span>
+              <span v-else>· {{ method.positions.length }} 个可能刷新点</span>
             </div>
           </div>
+
+          <details v-if="method.positions.length > 1" class="coordinates">
+            <summary>查看刷新点坐标</summary>
+            <ul>
+              <li v-for="[x, y] in method.positions" :key="`${x},${y}`">X:{{ x }}, Y:{{ y }}</li>
+            </ul>
+          </details>
 
           <!-- 容器必须有显式尺寸，库不提供任何宽高样式 -->
           <div :ref="setMapElement" class="map-container"></div>
@@ -197,6 +206,22 @@ watch(
   color: #ccc;
   font-size: 0.85rem;
   line-height: 20px;
+}
+
+.coordinates {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+.coordinates summary { cursor: pointer; }
+.coordinates ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  max-height: 12vh;
+  overflow: auto;
+  padding: 0;
+  margin: 4px 0;
+  list-style: none;
 }
 
 .map-container {

@@ -1,3 +1,5 @@
+import rawDutyUnlocks from "../../tools/data/duty-unlocks.json";
+import rawHuntSpawns from "../../tools/data/hunt-spawns.json";
 import rawSpells from "../../tools/data/spells.json";
 import type { SpellStatusArray } from "./interface";
 
@@ -17,18 +19,29 @@ export enum SpellType {
   Jobquest = "jobquest", //新增：职业任务
 }
 
+export interface QuestStart {
+  npc: string;
+  map: string;
+  position: number[];
+  mapKey?: number;
+  quest?: string;
+  questId?: number;
+}
+const dutyUnlocks: Record<string, QuestStart> = rawDutyUnlocks;
+
 export interface SpellMethodBase {
   type: SpellType;
   level: number;
   note?: string;
   color?: string;
+  questStart?: QuestStart;
 }
 
 export interface SpellMethodMap extends SpellMethodBase {
   type: SpellType.Map | SpellType.Hunt | SpellType.Levequests;
   map: string;
-  rank: string | null;
-  position: [number, number] | [number, number, number] | number[];
+  rank?: string | null;
+  position?: number[] | null;
   mob: string;
 }
 
@@ -60,6 +73,33 @@ export type SpellMethod =
   | SpellMethodSpecial
   | SpellMethodFate
   | SpellMethodInstance
+
+export interface MethodMapTarget {
+  map: string;
+  mapKey?: number;
+  label: string;
+  positions: number[][];
+}
+
+const huntSpawns: Record<string, { map: string; positions: number[][] }> = rawHuntSpawns;
+
+export function encounterMap(method: SpellMethod): MethodMapTarget | undefined {
+  if (method.type !== SpellType.Map && method.type !== SpellType.Hunt) return;
+  const hunt = method.type === SpellType.Hunt ? huntSpawns[method.mob] : undefined;
+  const positions = hunt?.map === method.map ? hunt.positions :
+    method.position && method.position.length >= 2 ? [method.position] : [];
+  if (!positions.length) return;
+  return { map: method.map, label: `${method.mob} Lv.${method.level}`, positions };
+}
+
+export function questMap(method: SpellMethod): MethodMapTarget | undefined {
+  const duty = "name" in method ? dutyUnlocks[method.name.trim()] : undefined;
+  const start = method.questStart ?? duty;
+  if (!start) return;
+  const purpose = duty && !start.quest && !method.questStart ? "对话解锁" : "任务接取";
+  const label = [purpose, start.quest, start.npc].filter(Boolean).join(" · ");
+  return { map: start.map, mapKey: start.mapKey, label, positions: [start.position] };
+}
 
 export interface Spell {
   no: string;

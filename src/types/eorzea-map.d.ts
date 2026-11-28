@@ -40,6 +40,7 @@ declare module "@thewakingsands/eorzea-interactive-map" {
 
   /** 标记对象；本项目只把它交给 addMarker，不直接操作 */
   export interface EorzeaMapMarker {
+    bindTooltip(text: string): EorzeaMapMarker;
     remove(): void;
   }
 
@@ -52,6 +53,7 @@ declare module "@thewakingsands/eorzea-interactive-map" {
     mapInfo: EorzeaMapInfo;
     /** 把"显示坐标"换算为 Leaflet 坐标，配合 setView 使用。返回 [lat, lng] */
     mapToLatLng2D(x: number, y: number): [number, number];
+    fitBounds(points: [number, number][], options: { padding: [number, number]; maxZoom: number; animate: boolean }): EorzeaMapInstance;
     /** 当前视图中心。返回 { lat, lng } */
     getCenter(): { lat: number; lng: number };
     /** options.animate=false 可关掉平移动画（Leaflet 原生选项） */
@@ -94,5 +96,5 @@ declare module "@thewakingsands/eorzea-interactive-map" {
 
   export const version: string;
   export const xy: (...args: unknown[]) => unknown;
-  export const L: unknown;
+  export const L: { Map: { mergeOptions(options: { zoomAnimation: boolean }): void } };
 }

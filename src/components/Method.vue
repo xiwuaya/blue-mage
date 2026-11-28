@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { renderSpellMethod, SpellType } from "../lib/spell";
-import type { SpellMethod, SpellMethodMap } from "../lib/spell";
+import { renderSpellMethod, encounterMap, questMap } from "../lib/spell";
+import type { SpellMethod, MethodMapTarget } from "../lib/spell";
 import { typeIcon } from "../icon";
 import mapIcon from "../assets/icons/map.svg";
 import { computed } from "vue";
@@ -36,13 +36,14 @@ const textColor = computed(() => {
 // 1. 定义向外抛出的 search 事件
 const emit = defineEmits<{
   (e: "search", keyword: string): void;
-  (e: "openMap", method: SpellMethodMap): void;
+  (e: "openMap", method: MethodMapTarget): void;
 }>();
 
-// 点击地图图标：把该途径抛给上层，由 MapModal 打开地图
-const handleOpenMap = () => {
-  emit("openMap", props.method as SpellMethodMap);
-};
+const encounter = computed(() => encounterMap(props.method));
+const pickup = computed(() => questMap(props.method));
+function openMap(target?: MethodMapTarget) {
+  if (target) emit("openMap", target);
+}
 
 // 2. 提取地点或副本名称作为搜索关键词，过滤掉特殊途径（因为描述太长）
 const searchKeyword = computed(() => {
@@ -80,15 +81,18 @@ const handleSearch = () => {
       {{ text }} <sup>Lv.{{ props.method.level }}</sup>
     </span>
 
-    <!-- 地图类途径：在途径文本后单独显示地图图标 -->
-    <img
-      v-if="props.method.type === SpellType.Map"
-      class="map"
-      :src="mapIcon"
-      alt="在地图中查看"
-      title="在地图中查看"
-      @click.stop="handleOpenMap"
-    />
+    <button v-if="encounter" class="map-button" type="button"
+      :title="method.type === 'hunt' ? '查看狩猎刷新点' : '在地图中查看'"
+      @click.stop="openMap(encounter)">
+      <img class="map" :src="mapIcon" alt="" />
+      {{ method.type === 'hunt' ? `刷新点（${encounter.positions.length}）` : '地图' }}
+    </button>
+    <button v-if="pickup" class="map-button" type="button"
+      @click.stop="openMap(pickup)">
+      <img class="map" :src="mapIcon" alt="" />
+      {{ pickup.label }} · {{ pickup.map }}
+      (X:{{ pickup.positions[0][0] }}, Y:{{ pickup.positions[0][1] }})
+    </button>
 
     <p v-if="!!props.method.note" class="note">{{ props.method.note }}</p>
   </div>
@@ -112,6 +116,14 @@ const handleSearch = () => {
   font-size: 0.75rem;
   opacity: 0.75;
   margin-left: 20px;
+}
+
+.map-button {
+  background: transparent;
+  color: #ffce68;
+  border: 0;
+  cursor: pointer;
+  padding: 0 3px;
 }
 
 .map {
